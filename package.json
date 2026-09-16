@@ -1,0 +1,9 @@
+{
+  "name": "mayfield-manchester",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "bash build.sh",
+    "dev": "npm run build && npx serve dist"
+  }
+}

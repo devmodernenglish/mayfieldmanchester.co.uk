@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en-GB" class="no-js" data-weather="overcast">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mayfield Park — Manchester&rsquo;s first new public park in 100 years</title>
+<meta name="description" content="Mayfield Park is Manchester's first new public park in over 100 years — 6.5 acres, 142 trees, a daylighted river and a play yard. Open every day 05:00–21:00.">
+<link rel="preload" href="assets/fonts/bdo-grotesk-extrabold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/bdo-grotesk-medium.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<script>document.documentElement.className = document.documentElement.className.replace('no-js','js');</script>
+</head>
+<body>
+
+<!--
+  MAYFIELD V2 — Mayfield Park.  Figma: desktop 465:7928, mobile 465:11918.
+  Interior hero page: video header with a five-day weather strip, an intro, a
+  depth-stack gallery, the ratings deck on white, press coverage, then park info
+  + a native <details> FAQ. NOTE: the Park titles are Stratos Bold in Figma;
+  V2 self-hosts only BDO, so they fall back to ExtraBold until Stratos is added.
+-->
+
+<!-- ================================================= NAV + MENU (4 panels) -->
+<nav class="nav" id="nav" aria-label="Primary">
+  <div class="nav__bar">
+    <span class="nav__temp t-caps"><span id="navTemp"></span><span class="wx-icon"></span><span class="wx-word" hidden></span></span>
+    <a class="nav__mark" href="index.html" aria-label="Mayfield">
+      <svg xmlns="http://www.w3.org/2000/svg" focusable="false" viewBox="0 0 755.361 116.64" fill="currentColor" role="img" aria-label="Mayfield">
+        <path d="M0 116.64V0H45.12L58.08 45.12C59.36 50.24 60.5867 55.4667 61.76 60.8C63.04 66.0267 64.2667 71.7867 65.44 78.08C66.6133 71.8933 67.84 66.1333 69.12 60.8C70.4 55.4667 71.68 50.24 72.96 45.12L85.76 0H130.72V116.64H103.2V51.36C103.2 47.0933 103.2 42.72 103.2 38.24C103.307 33.76 103.413 29.0133 103.52 24C102.453 28.9067 101.28 33.7067 100 38.4C98.72 42.9867 97.4933 47.52 96.32 52L75.52 116.64H54.72L33.92 51.84C32.64 47.4667 31.4133 43.04 30.24 38.56C29.0667 33.9733 27.84 29.0667 26.56 23.84C26.7733 28.96 26.88 33.76 26.88 38.24C26.9867 42.6133 27.04 46.9867 27.04 51.36V116.64H0Z" transform="translate(0 0)"/>
+        <path d="M0 116.64L45.44 0H77.28L122.72 116.64H92.8L84.16 92.48H37.92L28.96 116.64H0ZM46.56 70.88H75.84L67.68 47.68C66.6133 44.2667 65.4933 40.8533 64.32 37.44C63.1467 33.92 62.1333 30.1867 61.28 26.24C60.4267 30.1867 59.4133 33.92 58.24 37.44C57.0667 40.8533 55.8933 44.2667 54.72 47.68L46.56 70.88Z" transform="translate(132.97 0)"/>
+        <path d="M42.88 116.64V73.6L0 0H32.64L41.44 17.44C43.8934 21.92 46.4533 26.72 49.12 31.84C51.7867 36.96 54.5067 42.6667 57.28 48.96C60.0533 42.6667 62.72 37.0667 65.28 32.16C67.9467 27.1467 70.5067 22.24 72.96 17.44L81.92 0H113.6L70.88 73.6V116.64H42.88Z" transform="translate(222.797 0)"/>
+        <path d="M0 116.64V0H85.92V22.4H28.16V47.84H76.96V70.4H28.16V116.64H0Z" transform="translate(337.519 0)"/>
+        <path d="M28.16 116.64H0V0H28.16V116.64Z" transform="translate(427.837 0)"/>
+        <path d="M0 116.64V0H86.24V22.08H28.16V46.4H79.04V68.16H28.16V94.24H91.2V116.64H0Z" transform="translate(465.812 0)"/>
+        <path d="M0 116.64V0H28.16V94.24H81.76V116.64H0Z" transform="translate(561.756 0)"/>
+        <path d="M0 116.64V0H48.48C61.0666 0 71.68 2.4 80.32 7.2C88.96 11.8933 95.52 18.6133 100 27.36C104.587 36 106.88 46.2933 106.88 58.24C106.88 70.1867 104.587 80.5333 100 89.28C95.52 98.0267 88.96 104.8 80.32 109.6C71.68 114.293 61.0666 116.64 48.48 116.64H0ZM28.16 94.08H47.84C57.12 94.08 64.5333 91.1467 70.08 85.28C75.6266 79.3067 78.4 70.2933 78.4 58.24C78.4 46.08 75.5733 37.12 69.92 31.36C64.3733 25.4933 57.0133 22.56 47.84 22.56H28.16V94.08Z" transform="translate(648.481 0)"/>
+      </svg>
+    </a>
+    <button class="nav__toggle t-caps" type="button" id="navToggle" aria-expanded="false" aria-controls="navMenu">
+      <span class="nav__toggle-open">Menu</span><span class="nav__toggle-close">Close</span>
+    </button>
+  </div>
+
+  <ul class="nav__menu" id="navMenu">
+    <li><a class="mpanel" href="index.html">
+      <video class="mpanel__media" muted loop playsinline preload="none" poster="assets/videos/poster.jpg">
+        <source src="assets/videos/mayfield-homepage-720.webm" type="video/webm">
+        <source src="assets/videos/mayfield-homepage-720.mp4"  type="video/mp4">
+      </video>
+      <span class="mpanel__label">Home</span>
+    </a></li>
+    <li><a class="mpanel" href="park.html" aria-current="page">
+      <video class="mpanel__media" muted loop playsinline preload="none" poster="assets/videos/destinations-poster.jpg">
+        <source src="assets/videos/destinations-720.webm" type="video/webm">
+        <source src="assets/videos/destinations-720.mp4"  type="video/mp4">
+      </video>
+      <span class="mpanel__label">Park</span>
+    </a></li>
+    <li><a class="mpanel" href="republic.html">
+      <video class="mpanel__media" muted loop playsinline preload="none" poster="assets/videos/poster.jpg">
+        <source src="assets/videos/mayfield-homepage-720.webm" type="video/webm">
+        <source src="assets/videos/mayfield-homepage-720.mp4"  type="video/mp4">
+      </video>
+      <span class="mpanel__label">Work</span>
+    </a></li>
+    <li><a class="mpanel" href="spaces.html">
+      <video class="mpanel__media" muted loop playsinline preload="none" poster="assets/videos/destinations-poster.jpg">
+        <source src="assets/videos/destinations-720.webm" type="video/webm">
+        <source src="assets/videos/destinations-720.mp4"  type="video/mp4">
+      </video>
+      <span class="mpanel__label">Visit</span>
+    </a></li>
+  </ul>
+</nav>
+
+<main id="content">
+
+  <!-- The waving flag rides the left margin. Decorative, desktop only. -->
+  <div class="flag" aria-hidden="true">
+    <img src="assets/deco/flag-loop.gif" alt="" width="120" height="120" loading="lazy" decoding="async">
+  </div>
+
+  <!-- ================================================ HERO  [figma 465:7959] -->
+  <header class="phero phero--park">
+    <div class="phero__media">
+      <video autoplay muted loop playsinline preload="metadata" poster="assets/videos/destinations-poster.jpg" aria-label="Mayfield Park">
+        <source src="assets/videos/destinations-720.webm" type="video/webm">
+        <source src="assets/videos/destinations-720.mp4"  type="video/mp4">
+      </video>
+    </div>
+
+    <div class="initial-nav">
+      <div class="initial-nav__row t-caps">
+        <span>Scroll</span>
+        <button type="button" data-menu-open>Menu</button>
+      </div>
+    </div>
+
+    <div class="phero__inner">
+      <h1 class="t-title">A place for all</h1>
+      <p class="phero__sub t-caps">Open every day 05:00 &ndash; 21:00</p>
+    </div>
+
+    <!-- Five-day forecast. Placeholder data — wire to the weather Function. -->
+    <ul class="wxstrip t-caps">
+      <li class="wxday"><span>Tue</span><span class="wxday__icon" style="--wx:url(assets/icons/weather-cloudy.svg)"></span><span>18&deg;</span></li>
+      <li class="wxday"><span>Wed</span><span class="wxday__icon" style="--wx:url(assets/icons/weather-clear.svg)"></span><span>21&deg;</span></li>
+      <li class="wxday"><span>Thu</span><span class="wxday__icon" style="--wx:url(assets/icons/weather-rain.svg)"></span><span>16&deg;</span></li>
+      <li class="wxday"><span>Fri</span><span class="wxday__icon" style="--wx:url(assets/icons/weather-clear.svg)"></span><span>20&deg;</span></li>
+      <li class="wxday"><span>Sat</span><span class="wxday__icon" style="--wx:url(assets/icons/weather-frost.svg)"></span><span>9&deg;</span></li>
+    </ul>
+  </header>
+
+  <!-- ================================================ INTRO  [figma 465:7929] -->
+  <section class="intro">
+    <h2 class="intro__title">Mayfield Park is a place for all, whether you&rsquo;re here to relax, play, or explore</h2>
+    <div class="intro__body">
+      <p class="t-body">A public 6.5-acre park, with 142 trees, 120,000 shrubs and plants. The park features a
+        kids&rsquo; play yard with 6 slides woven around the newly daylighted River Medlock &ndash; one of
+        Manchester&rsquo;s founding rivers. Made possible by the Mayfield Partnership.</p>
+    </div>
+  </section>
+
+  <!-- ============================================== GALLERY  [figma 496:18061] -->
+  <section class="gallery" id="parkGallery" aria-label="Mayfield Park gallery">
+    <div class="gallery__stage">
+      <figure class="gallery__slide"><img src="assets/park/gallery-1.jpg" alt="Mayfield Park" loading="lazy" decoding="async"></figure>
+      <figure class="gallery__slide"><img src="assets/park/gallery-2.jpg" alt="Mayfield Park" loading="lazy" decoding="async"></figure>
+      <figure class="gallery__slide"><img src="assets/park/gallery-3.jpg" alt="Mayfield Park" loading="lazy" decoding="async"></figure>
+      <figure class="gallery__slide"><img src="assets/park/gallery-4.jpg" alt="Mayfield Park" loading="lazy" decoding="async"></figure>
+      <figure class="gallery__slide"><img src="assets/park/gallery-5.jpg" alt="Mayfield Park" loading="lazy" decoding="async"></figure>
+    </div>
+    <div class="gallery__nav">
+      <button type="button" data-gal="prev">Prev</button>
+      <span class="gallery__count" aria-live="polite">1/5</span>
+      <button type="button" data-gal="next">Next</button>
+    </div>
+  </section>
+
+  <!-- ======================================= RATINGS (power, on white)  [505:18519]
+       The same rating + quote deck as the homepage, repainted on white via
+       .power--plain. motion.js wires the deck and the live Google rating. -->
+  <section class="power power--plain" id="power">
+    <div class="power__rating" id="powerRating">
+      <span class="power__google">Google</span>
+      <span class="power__score" id="powerScore"></span>
+      <span class="power__stars" id="powerStars" role="img" aria-label="">
+        <svg viewBox="0 0 108 20" aria-hidden="true" focusable="false">
+          <defs>
+            <path id="pmStar" d="M10 1.2l2.7 5.5 6 .9-4.35 4.24 1.03 5.99L10 15.02l-5.38 2.83 1.03-5.99L1.3 7.62l6-.87z"/>
+            <clipPath id="pmFill"><rect id="pmFillRect" x="0" y="0" width="0" height="20"/></clipPath>
+          </defs>
+          <g fill="none" stroke="currentColor" stroke-width="1.4">
+            <use href="#pmStar" x="0"/><use href="#pmStar" x="22"/><use href="#pmStar" x="44"/><use href="#pmStar" x="66"/><use href="#pmStar" x="88"/>
+          </g>
+          <g fill="currentColor" clip-path="url(#pmFill)">
+            <use href="#pmStar" x="0"/><use href="#pmStar" x="22"/><use href="#pmStar" x="44"/><use href="#pmStar" x="66"/><use href="#pmStar" x="88"/>
+          </g>
+        </svg>
+      </span>
+    </div>
+
+    <h2 class="power__title t-title">The power of Mayfield</h2>
+
+    <div class="power__deck" id="powerDeck">
+      <figure class="power__quote is-on">
+        <blockquote>I really like the fact that this was a brownfield site, a printing
+          works, it was a railway siding and you&rsquo;ve got the river running through it,
+          and it&rsquo;s combined all that to make something that people obviously love</blockquote>
+        <figcaption>Monty Don, Horticulturalist and BBC presenter</figcaption>
+      </figure>
+      <figure class="power__quote">
+        <blockquote>[Second quote &mdash; awaiting copy.]</blockquote>
+        <figcaption>[Name, role]</figcaption>
+      </figure>
+      <figure class="power__quote">
+        <blockquote>[Third quote &mdash; awaiting copy.]</blockquote>
+        <figcaption>[Name, role]</figcaption>
+      </figure>
+    </div>
+
+    <div class="power__nav t-caps">
+      <button type="button" data-power="prev">Prev</button>
+      <span class="power__count" id="powerCount" aria-live="polite">1/3</span>
+      <button type="button" data-power="next">Next</button>
+    </div>
+  </section>
+
+  <!-- ================================================ PRESS  [figma 517:20584] -->
+  <section class="press" aria-label="Mayfield in the press">
+    <article class="press__card">
+      <div class="press__img"><img src="assets/park/press-1.jpg" alt="" loading="lazy" decoding="async"></div>
+      <p class="press__pub">Manchester&rsquo;s finest</p>
+      <div class="press__body">
+        <h3 class="press__title">Chelsea Flower Show garden to take root at Mayfield</h3>
+        <a class="btn" href="#" rel="noopener">Read article</a>
+      </div>
+    </article>
+    <article class="press__card">
+      <div class="press__img"><img src="assets/park/press-2.jpg" alt="" loading="lazy" decoding="async"></div>
+      <p class="press__pub">Manchester Evening News</p>
+      <div class="press__body">
+        <h3 class="press__title">The stunning 6.5-acre Manchester park with its very own pie shop you simply need to visit</h3>
+        <a class="btn" href="#" rel="noopener">Read article</a>
+      </div>
+    </article>
+    <article class="press__card">
+      <div class="press__img"><img src="assets/park/press-3.jpg" alt="" loading="lazy" decoding="async"></div>
+      <p class="press__pub">Pro Landscaper Magazine</p>
+      <div class="press__body">
+        <h3 class="press__title">Nature inspired artwork brightens up Mayfield Park</h3>
+        <a class="btn" href="#" rel="noopener">Read article</a>
+      </div>
+    </article>
+    <div class="press__cta"><a class="btn btn--block" href="#" rel="noopener">See all press</a></div>
+  </section>
+
+  <!-- ========================================== PARK INFO + FAQ  [figma 465:7935] -->
+  <section class="parkinfo">
+    <div class="parkinfo__head">
+      <h2 class="parkinfo__title">Park info</h2>
+      <p class="t-body">Boardman Gate Entrance, Mayfield Park, Baring Street, Manchester M1 2PY</p>
+      <a class="btn" href="https://www.google.com/maps/search/?api=1&amp;query=Mayfield+Park+Baring+Street+Manchester+M1+2PY" rel="noopener">View on Google Maps</a>
+    </div>
+
+    <img class="parkinfo__map" src="assets/park/map.jpg" alt="Map showing Mayfield Park, Baring Street, Manchester" loading="lazy" decoding="async">
+
+    <!-- FAQ. Native <details> so it opens with no JS. Answer copy is placeholder
+         pending the real text. -->
+    <div class="faq">
+      <details class="faq__item">
+        <summary><span class="faq__q">How big is the park and what kind of spaces are there?</span>
+          <span class="faq__toggle"><span class="faq__plus"></span>Read answer</span></summary>
+        <p class="faq__a">Mayfield Park is a public 6.5-acre space with 142 trees, 120,000 shrubs and plants, a children&rsquo;s play yard and the daylighted River Medlock running through it. [Full answer copy to follow.]</p>
+      </details>
+      <details class="faq__item">
+        <summary><span class="faq__q">What facilities are available at the park?</span>
+          <span class="faq__toggle"><span class="faq__plus"></span>Read answer</span></summary>
+        <p class="faq__a">[Answer copy to follow.]</p>
+      </details>
+      <details class="faq__item">
+        <summary><span class="faq__q">Can I bring my dog?</span>
+          <span class="faq__toggle"><span class="faq__plus"></span>Read answer</span></summary>
+        <p class="faq__a">[Answer copy to follow.]</p>
+      </details>
+      <details class="faq__item">
+        <summary><span class="faq__q">Can I smoke in the park?</span>
+          <span class="faq__toggle"><span class="faq__plus"></span>Read answer</span></summary>
+        <p class="faq__a">[Answer copy to follow.]</p>
+      </details>
+      <details class="faq__item">
+        <summary><span class="faq__q">Can I picnic in the park?</span>
+          <span class="faq__toggle"><span class="faq__plus"></span>Read answer</span></summary>
+        <p class="faq__a">[Answer copy to follow.]</p>
+      </details>
+      <details class="faq__item">
+        <summary><span class="faq__q">Will the park be open at night?</span>
+          <span class="faq__toggle"><span class="faq__plus"></span>Read answer</span></summary>
+        <p class="faq__a">The park is open every day from 05:00 to 21:00. [Full answer copy to follow.]</p>
+      </details>
+      <details class="faq__item">
+        <summary><span class="faq__q">Is photography allowed in the park?</span>
+          <span class="faq__toggle"><span class="faq__plus"></span>Read answer</span></summary>
+        <p class="faq__a">[Answer copy to follow.]</p>
+      </details>
+      <details class="faq__item">
+        <summary><span class="faq__q">What sustainability measures have been integrated into the park?</span>
+          <span class="faq__toggle"><span class="faq__plus"></span>Read answer</span></summary>
+        <p class="faq__a">[Answer copy to follow.]</p>
+      </details>
+      <details class="faq__item">
+        <summary><span class="faq__q">Who will manage the park?</span>
+          <span class="faq__toggle"><span class="faq__plus"></span>Read answer</span></summary>
+        <p class="faq__a">[Answer copy to follow.]</p>
+      </details>
+      <details class="faq__item">
+        <summary><span class="faq__q">What&rsquo;s happening around the edges of the park?</span>
+          <span class="faq__toggle"><span class="faq__plus"></span>Read answer</span></summary>
+        <p class="faq__a">[Answer copy to follow.]</p>
+      </details>
+      <details class="faq__item">
+        <summary><span class="faq__q">Will the park remain open when construction on the other buildings begins?</span>
+          <span class="faq__toggle"><span class="faq__plus"></span>Read answer</span></summary>
+        <p class="faq__a">[Answer copy to follow.]</p>
+      </details>
+      <details class="faq__item">
+        <summary><span class="faq__q">What will happen to Escape to Freight Island / Depot Mayfield / Warehouse Project?</span>
+          <span class="faq__toggle"><span class="faq__plus"></span>Read answer</span></summary>
+        <p class="faq__a">[Answer copy to follow.]</p>
+      </details>
+
+      <p class="faq__legal">Mayfield Park is private land. There are no public rights of way over it. The public is
+        however currently permitted by the owner to have non-vehicular access over such routes as the owner may
+        designate from time to time subject to complying with any terms of access that the owner may impose from
+        time to time. Mayfield Development (General Partner) Limited</p>
+    </div>
+  </section>
+
+  <!-- ============================================= INSTAGRAM  [230:3831] -->
+  <section class="insta" id="insta">
+    <div class="insta__text">
+      <div class="insta__head">
+        <p class="t-caps">#mayfieldmcr</p>
+        <h2 class="insta__lens">The lens of Mayfield</h2>
+      </div>
+      <p class="insta__blurb t-body">Follow Mayfield to get the latest updates on what&rsquo;s
+        on in the district and share your photos with the hashtag #MayfieldMCR</p>
+    </div>
+    <div class="insta__grid">
+      <img src="assets/img/insta-1.png" alt="" loading="lazy" decoding="async">
+      <img src="assets/img/insta-2.png" alt="" loading="lazy" decoding="async">
+      <img src="assets/img/insta-3.png" alt="" loading="lazy" decoding="async">
+      <img src="assets/img/insta-4.png" alt="" loading="lazy" decoding="async">
+      <img src="assets/img/insta-5.png" alt="" loading="lazy" decoding="async">
+      <img src="assets/img/insta-6.png" alt="" loading="lazy" decoding="async">
+    </div>
+    <div class="insta__cta">
+      <a class="btn btn--block" href="https://www.instagram.com/mayfieldmanchester/" rel="noopener">@mayfieldmanchester</a>
+    </div>
+  </section>
+
+  <!-- ================================================ FOOTER  [261:8674] -->
+  <footer class="foot">
+    <div class="foot__top">
+      <p class="foot__stamp">
+        <span class="foot__stamp-a">&copy;Mayfield 2026</span>
+        <span class="foot__stamp-b">Manchester&rsquo;s<br>Green Revolution</span>
+      </p>
+      <nav class="foot__links t-caps-l" aria-label="Footer">
+        <div class="foot__col">
+          <a href="index.html">Home</a>
+          <a href="contact.html">Contact</a>
+        </div>
+        <div class="foot__col">
+          <a href="spaces.html">What&rsquo;s here</a>
+          <a href="park.html">Mayfield park</a>
+          <a href="republic.html">Republic</a>
+        </div>
+        <div class="foot__col">
+          <a href="https://www.instagram.com/mayfieldmanchester/" rel="noopener">Instagram</a>
+          <a href="#newsletter">Newsletter</a>
+        </div>
+        <div class="foot__col">
+          <a href="#terms">Terms and conditions</a>
+          <a href="#privacy">Privacy policy</a>
+        </div>
+      </nav>
+    </div>
+
+    <div class="foot__base">
+      <div class="foot__logos">
+        <img src="assets/icons/logo-mcc.svg"     alt="Manchester City Council" width="133" height="25">
+        <img src="assets/icons/logo-tfgm.svg"    alt="Transport for Greater Manchester" width="127" height="31">
+        <img src="assets/icons/logo-landsec.svg" alt="Landsec" width="43" height="51">
+        <img src="assets/icons/logo-lcr.svg"     alt="LCR" width="61" height="21">
+      </div>
+      <div class="foot__legal t-foot">
+        <p>&copy;Mayfield 2026. All Rights Reserved</p>
+        <p>Site by <a href="https://modernenglish.co.uk" rel="noopener">Modern English</a></p>
+      </div>
+    </div>
+  </footer>
+
+</main>
+
+<script src="js/motion.js"></script>
+</body>
+</html>

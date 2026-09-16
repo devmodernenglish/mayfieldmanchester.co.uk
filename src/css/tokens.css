@@ -1,0 +1,265 @@
+/* ==========================================================================
+   One clock for the whole menu.
+
+   --menu-p is 0 closed, 1 open, and EVERYTHING about the menu is derived from
+   it: the panel's height, the wordmark's scale, its distance from the panel's
+   bottom edge, the links' opacity. Registering it makes it animatable, so a
+   single transition drives the lot.
+
+   This is the fix for the mark and the panel edge outrunning each other. They
+   were two transitions being tuned against one another, which can only ever
+   be approximately right — too slow and the logo fell out of the green, too
+   fast and it left a void of green beneath it. Derived from one value they
+   cannot drift, because the mark's position is defined BY the edge.
+   ========================================================================== */
+@property --menu-p {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+/* ---- BDO Grotesk --------------------------------------------------------
+   Self-hosted, and licensed to be: SIL Open Font License v1.1, commercial use
+   allowed (assets/fonts/OFL.txt). The design uses exactly two weights, so
+   exactly two are shipped — 49KB each as woff2.
+
+   `font-display: swap` on purpose. V1 learned this the hard way: the Adobe
+   kit serves font-display:auto, which blanks text for up to 3s on a slow
+   connection and cost 610ms of the mobile score. Self-hosting means the
+   setting is ours to make, and same-origin means no third-party handshake
+   in the critical path at all.
+   -------------------------------------------------------------------------- */
+@font-face {
+  font-family: "BDO Grotesk";
+  src: url("../assets/fonts/bdo-grotesk-medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "BDO Grotesk";
+  src: url("../assets/fonts/bdo-grotesk-extrabold.woff2") format("woff2");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ==========================================================================
+   MAYFIELD V2 — TOKENS
+   From Figma "Mayfield Design" (93kuA4ZRlxM378LbOxiZ1E), pages Desktop
+   (261:8641), Mobile (281:15867) and Components (335:19743).
+
+   A clean break from V1: no zone theming, no green/yellow duality. One acid
+   green, black and white, and a single grotesque doing all the work.
+   ========================================================================== */
+
+:root {
+  /* ---- Colour ----------------------------------------------------------
+     The accent is NOT a fixed brand green. Per the walkthrough (11:32): the
+     site colour is driven by live WEATHER, not by date — "if it's cloudy we
+     go for green, sunny an orange, raining a blue, snowing or frosty an ice
+     teal" — plus a night mode that ignores weather and takes over once the
+     sun sets. That is why the Figma style is literally named
+     "Weather/Overcast" rather than anything brand-ish.
+
+     So the accent is a single token repointed by [data-weather] on <html>,
+     and the homepage inherits it ("this will get carried over to the home
+     page as well, and notice it's green at the top"). Values are the Figma
+     variables, read off the five park frames. */
+  --c-overcast: #a6ff27;
+  --c-sunny:    #ffb700;
+  --c-rain:     #69e3ff;
+  --c-frost:    #69ffe1;
+  --c-night:    #121e3e;
+
+  /* [figma Republic #E5FF00] the Republic sub-brand runs its own acid yellow,
+     separate from the weather accent — it is a fixed colour, not weather-driven. */
+  --c-republic: #e5ff00;
+
+  --c-ink:   #000000;
+  --c-paper: #ffffff;
+
+  /* [figma Grey #EFEFEF] the fill behind a form field. Tokenised, not inlined,
+     so night mode can repoint it — a fixed light grey would glow against the
+     navy paper once the sun sets. The field's text stays --c-ink, which night
+     already flips to white. */
+  --c-field: #efefef;
+
+  /* Type that sits ON the video is always white — it is legible because of
+     the footage behind it, not because of the theme. Keeping it separate from
+     --c-paper is what stops night mode turning the hero wordmark dark navy
+     against dark footage. */
+  --c-on-media: #ffffff;
+
+  /* [figma "Secondary colour"] a white wash laid over whichever weather
+     colour is live — it has to work on all five, so it is an alpha, not a
+     mixed hex. */
+  --c-wash: rgb(255 255 255 / 0.2);
+
+  --c-accent: var(--c-overcast);   /* fallback: overcast (pre-resolve is white) */
+
+  /* ---- Type ------------------------------------------------------------
+     The design specifies BDO GROTESK at two weights: Medium 500 for every
+     piece of UI and body copy, ExtraBold 800 for every headline.
+
+     BDO Grotesk is self-hosted above, so this is the real thing rather than a
+     substitute. The fallbacks are metric-adjacent grotesques for the swap
+     period only. */
+  --f-sans: "BDO Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  /* [figma Republic titles = Garamond Premier Pro, roman + italic] Republic's
+     display type is an elegant serif V2 does not self-host. Until a woff2 is
+     added this falls back through the platform serifs — the roman/italic mix
+     still reads, just not in the exact face.
+     TODO: self-host Garamond Premier Pro (or licensed equivalent) before launch. */
+  --f-serif: "Garamond Premier Pro", "EB Garamond", Garamond, "Times New Roman", Georgia, serif;
+
+  --w-medium: 500;
+  --w-xbold:  800;
+
+  /* Mobile-first sizes. [figma Global/Title/Title 40, Body 18, Caps 15] */
+  --t-title:  40px;  /* section headlines — xbold, lh 1, -4% */
+  --t-panel:  44px;  /* video-panel wordmark + marquee — xbold, lh .8, -4% */
+  --t-lens:   40px;  /* "The lens of Mayfield" */
+  --t-body:   18px;  /* body copy — medium, lh 1.1 */
+  --t-over:   13px;  /* [figma Caps/Overline 13] a form field's label — medium, uppercase */
+  --t-caps:   15px;  /* buttons, nav, labels — medium, lh 1, uppercase */
+  --t-caps-l: 18px;  /* menu links */
+  --t-ui:     14px;  /* temp readout */
+  --t-mark:   16px;  /* MAYFIELD in the 36px nav bar — xbold */
+  --t-legal:  12px;  /* [figma Global/Body/Body 12] the menu foot pair */
+  --t-foot:   11px;  /* copyright — medium, lh 1.4 */
+  --t-stamp:  54px;  /* the rotated ©Mayfield 2026 slab */
+
+  /* Tracking is a PERCENTAGE in Figma (-4%, -5%), so it must be em here —
+     these sizes range from 16px to 100px and a px value would drift. */
+  --ls-title: -0.04em;
+  --ls-tight: -0.05em;
+
+  --lh-flat:  1;     /* headlines and caps */
+  --lh-body:  1.1;
+  --lh-crush: 0.8;   /* the big display slabs */
+  --lh-foot:  1.4;
+
+  /* ---- Space ------------------------------------------------------------ */
+  --s-1:  2px;   /* [figma] the Instagram grid gutter */
+  --s-2:  4px;
+  --s-3:  10px;
+  --s-4:  12px;
+  --s-5:  16px;
+  --s-6:  20px;
+  --s-7:  24px;
+  --s-8:  30px;  /* mobile page gutter */
+  --s-9:  40px;
+  --s-10: 60px;
+  --s-11: 80px;
+
+  --gutter: var(--s-8);
+
+  /* ---- Chrome ----------------------------------------------------------- */
+  --nav-h:      36px;  /* [figma 214:2280] the persistent bar */
+  --nav-init-h: 48px;  /* [figma 214:2433] the landing bar, 12px of it green */
+  --nav-band:   12px;  /* the green strip above the hero video */
+
+  /* The window's footprint. Shared, because the hero's shrink keyframes have
+     to land on exactly the same box the fixed window occupies. */
+  --win-w: 245px;
+  --win-h: 400px;
+
+  --radius-btn:   70px;
+  --radius-panel: 0px;
+  --radius-field: 20px;  /* [figma 255:4767] the grey field box */
+  --radius-arrow: 10px;  /* [figma 255:4790] the white chevron well inside it */
+
+  --border-btn: 2px;   /* [figma] buttons are a 2px black stroke, never filled */
+
+  /* ---- Motion ----------------------------------------------------------- */
+  --dur-marquee: 12s;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  /* A slower ease-in-out for the menu. The panel travels a whole viewport, so
+     the standard curve's fast start reads as a snap rather than a wipe. */
+  --ease-menu: cubic-bezier(0.76, 0, 0.24, 1);
+  /* One duration, both directions. Asymmetric timings were a symptom of the
+     two elements being animated separately; they are one thing now. */
+  --dur-menu: 0.86s;
+
+  /* The wordmark's scale while the panel is closed: the nav wordmark's width
+     over its full open width. Written by motion.js because it depends on the
+     viewport — everything else about the menu is pure CSS. */
+  --seat-s: 0.09;
+
+  /* How far the wordmark rides above the panel's bottom edge. 11px when the
+     panel is just the nav bar — which is what puts an 88px wordmark exactly
+     where the bar's one sits — travelling to --mark-inset-open when it is the
+     full screen. On the same clock, so it is exact at both ends.
+
+     Open, mobile has to clear the legal row that sits beneath the wordmark;
+     up, that pair is the fourth link column instead, so 16px is enough. */
+  --mark-inset-open: 42px;
+  --mark-inset: calc(11px + (var(--mark-inset-open) - 11px) * var(--menu-p));
+}
+
+/* The clock itself. Everything menu-related reads from this one value. */
+:root { --menu-p: 0; transition: --menu-p var(--dur-menu) var(--ease-menu); }
+:root.menu-open { --menu-p: 1; }
+
+/* Desktop scale. [figma Global/Title/Title 58, Body 22] */
+@media (min-width: 1024px) {
+  :root {
+    --t-title:  58px;
+    --t-panel:  60px;
+    --t-lens:   58px;
+    --t-body:   22px;
+    --t-stamp: clamp(64px, 7.6vw, 100px);
+    --gutter:   var(--s-10);
+    --win-w:    340px;
+    --win-h:    480px;
+    --mark-inset-open: 16px;
+  }
+}
+
+/* Weather states. Set data-weather on <html>; motion.js will drive it from a
+   forecast feed later, and it can be forced for QA with ?weather=sunny. */
+[data-weather="overcast"] { --c-accent: var(--c-overcast); }
+[data-weather="sunny"]    { --c-accent: var(--c-sunny); }
+[data-weather="rain"]     { --c-accent: var(--c-rain); }
+[data-weather="frost"]    { --c-accent: var(--c-frost); }
+
+/* The Republic is a sub-brand that fixes the accent to its own yellow, ignoring
+   the live weather — so its nav bar, initial-nav band, Instagram bed and footer
+   base are all yellow. Higher specificity than [data-weather] so it always wins. */
+html[data-brand="republic"] { --c-accent: var(--c-republic); }
+
+/* Until the weather lands, sit on white rather than the overcast green. Every
+   reload otherwise painted green and then snapped to the real colour, which
+   read as a glitch rather than a transition. White makes no claim about the
+   weather, so there is nothing to correct when the real colour arrives.
+
+   Scoped three ways on purpose:
+   - .js only — with scripting off, wx-ready never lands, and the green from
+     the markup's data-weather="overcast" must stand as the permanent state.
+   - :not(.wx-ready) — wx-ready is added on EVERY outcome (success, bad
+     response, network failure, 3s backstop), so a failed lookup falls back to
+     that same green rather than stranding the site on white.
+   - Higher specificity (0,2,1) than [data-weather] (0,1,0), so it wins while
+     unresolved and yields the moment wx-ready is added.
+
+   Every consumer of --c-accent is a background, so white cannot hide text. */
+html.js:not(.wx-ready) { --c-accent: #ffffff; }
+
+/* Night ignores the weather entirely and inverts the page: "once the sun
+   sets we'll turn the site into this night mode, where everything will be
+   very dark, and the text is white on black or very dark blue." */
+[data-mode="night"] {
+  --c-ink:   #ffffff;
+  --c-paper: var(--c-night);
+  --c-accent: var(--c-night);
+  --c-wash:  rgb(255 255 255 / 0.12);
+  /* A light-grey field would be a lantern on the navy page; a faint white wash
+     reads as the same "recessed input" against the dark instead. */
+  --c-field: rgb(255 255 255 / 0.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-marquee: 0s; }
+}

@@ -1,0 +1,11 @@
+# Build output
+dist/
+
+# Node dependencies
+node_modules/
+
+# OS / Editor files
+.DS_Store
+*.log
+.vscode/
+.idea/

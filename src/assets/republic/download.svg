@@ -1,0 +1,10 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="54" height="52" viewBox="0 0 54 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="download">
+<mask id="path-1-outside-1_0_15" maskUnits="userSpaceOnUse" x="0" y="0" width="54" height="52" fill="black">
+<rect fill="white" width="54" height="52"/>
+<path d="M2 0H54V52H2V0Z"/>
+</mask>
+<path d="M2 52H4V0H2H0V52H2Z" fill="black" mask="url(#path-1-outside-1_0_15)"/>
+<path id="Union" d="M20 33H36V31H38V35H18V31H20V33ZM29 27.5859L34.293 22.293L35.707 23.707L28 31.4141L20.293 23.707L21.707 22.293L27 27.5859V17H29V27.5859Z" fill="black"/>
+</g>
+</svg>
