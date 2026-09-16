@@ -108,11 +108,12 @@
   --f-sans: "BDO Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
 
   /* [figma Republic titles = Garamond Premier Pro, roman + italic] Republic's
-     display type is an elegant serif V2 does not self-host. Until a woff2 is
-     added this falls back through the platform serifs — the roman/italic mix
-     still reads, just not in the exact face.
-     TODO: self-host Garamond Premier Pro (or licensed equivalent) before launch. */
-  --f-serif: "Garamond Premier Pro", "EB Garamond", Garamond, "Times New Roman", Georgia, serif;
+     display serif, now served by Adobe Fonts kit anw5ghn (loaded on
+     republic.html). The family name MUST be the Typekit SLUG
+     `garamond-premier-pro`, not the display name "Garamond Premier Pro", which
+     silently falls back. Kit provides roman + italic at 400 and 700. Platform
+     serifs remain as the fallback while the kit CSS loads. */
+  --f-serif: "garamond-premier-pro", "EB Garamond", Garamond, "Times New Roman", Georgia, serif;
 
   --w-medium: 500;
   --w-xbold:  800;

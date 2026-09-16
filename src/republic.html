@@ -7,6 +7,11 @@
 <meta name="description" content="The Republic is Mayfield's first office building — a sustainable, future-focused workspace set within Manchester's first new public park in 100 years.">
 <link rel="preload" href="assets/fonts/bdo-grotesk-extrabold.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/bdo-grotesk-medium.woff2" as="font" type="font/woff2" crossorigin>
+<!-- Republic display serif = Garamond Premier Pro, Adobe Fonts kit anw5ghn.
+     Loaded async (preload -> stylesheet) so the kit's cross-origin @import never
+     blocks render; the platform-serif fallback shows until it swaps in. -->
+<link rel="preload" href="https://use.typekit.net/anw5ghn.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://use.typekit.net/anw5ghn.css"></noscript>
 <link rel="stylesheet" href="css/tokens.css">
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/components.css">
@@ -87,9 +92,9 @@
         <button type="button" data-menu-open>Menu</button>
       </div>
     </div>
-    <img class="rhero__logo" src="assets/logos/republic.svg" alt="The Republic" width="138" height="47">
+    <span class="rhero__logo" role="img" aria-label="The Republic"></span>
     <div class="rhero__portrait">
-      <img src="assets/republic/portrait.jpg" alt="The Republic at Mayfield" decoding="async">
+      <img src="assets/republic/work-should.png" alt="Work should give more than it takes" decoding="async">
     </div>
   </header>
 
@@ -98,7 +103,7 @@
     <p class="rband__lead">The <img class="rband__inline" src="assets/logos/republic-dark.svg" alt="Republic"> is a place
       where a unique and extraordinary community of people and businesses come to work, create, innovate, pioneer,
       experience and connect <em>differently</em>.</p>
-    <a class="btn" href="#brochure">Download the brochure</a>
+    <a class="btn btn--brochure" href="#brochure"><span>Download the brochure</span><span class="btn__dl" aria-hidden="true"><span class="btn__dl-track"><span class="btn__arrow"></span><span class="btn__arrow"></span></span></span></a>
   </section>
 
   <!-- ============================== TITLE BLOCK (over feature image)  [465:7877] -->
@@ -135,19 +140,19 @@
   <!-- ============================================ BENEFITS  [figma 505:20004] -->
   <section class="rbenefits" aria-label="On your doorstep">
     <div class="rbenefit">
-      <img src="assets/republic/ben-1.jpg" alt="" loading="lazy" decoding="async">
+      <img src="assets/republic/ben-1.png" alt="" loading="lazy" decoding="async">
       <p>Direct access to MCR City Centre&rsquo;s most diverse green space</p>
     </div>
     <div class="rbenefit">
-      <img src="assets/republic/ben-2.jpg" alt="" loading="lazy" decoding="async">
+      <img src="assets/republic/ben-2.png" alt="" loading="lazy" decoding="async">
       <p>Bespoke courts for the UK&rsquo;s fastest growing sport, coming soon</p>
     </div>
     <div class="rbenefit">
-      <img src="assets/republic/ben-3.jpg" alt="" loading="lazy" decoding="async">
+      <img src="assets/republic/ben-3.png" alt="" loading="lazy" decoding="async">
       <p>A blossoming nightlife with dedicated arts &amp; entertainment spaces</p>
     </div>
     <div class="rbenefit">
-      <img src="assets/republic/ben-4.jpg" alt="" loading="lazy" decoding="async">
+      <img src="assets/republic/ben-4.png" alt="" loading="lazy" decoding="async">
       <p>A unique mix of places to eat, drink, meet and relax</p>
     </div>
   </section>
@@ -216,9 +221,9 @@
       <figure class="gallery__slide"><img src="assets/republic/gallery-5.jpg" alt="" loading="lazy" decoding="async"></figure>
     </div>
     <div class="gallery__nav">
-      <button type="button" data-gal="prev">Prev</button>
+      <button type="button" data-gal="prev">PREV</button>
       <span class="gallery__count" aria-live="polite">1/5</span>
-      <button type="button" data-gal="next">Next</button>
+      <button type="button" data-gal="next">NEXT</button>
     </div>
   </section>
 
@@ -259,9 +264,9 @@
   <section class="rcta" id="brochure">
     <div class="rcta__card">
       <img class="rband__logo" src="assets/logos/republic-dark.svg" alt="The Republic" width="138" height="47">
-      <p class="rband__text t-body">For detailed floorplans, building features and options, download the brochure or
+      <p class="rband__text">For detailed floorplans, building features and options, download the brochure or
         contact our team.</p>
-      <a class="btn" href="#" rel="noopener">Download the brochure</a>
+      <a class="btn btn--brochure" href="#" rel="noopener"><span>Download the brochure</span><span class="btn__dl" aria-hidden="true"><span class="btn__dl-track"><span class="btn__arrow"></span><span class="btn__arrow"></span></span></span></a>
     </div>
   </section>
 
