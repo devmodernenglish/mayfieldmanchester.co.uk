@@ -49,9 +49,11 @@ PY
 python3 - <<'PY'
 import glob, re
 for p in glob.glob('dist/*.html'):
-    s = open(p).read()
-    s = re.sub(r'(assets/img/(?:insta|home)-\d+)\.png', r'\1.jpg', s)
-    open(p, 'w').write(s)
+    with open(p, 'r') as f:
+        s = f.read()
+    s = re.sub(r'((?:/|\./)?assets/img/(?:insta|home)-\d+)\.png', r'\1.jpg', s)
+    with open(p, 'w') as f:
+        f.write(s)
 PY
 
 find dist -name '.DS_Store' -delete
