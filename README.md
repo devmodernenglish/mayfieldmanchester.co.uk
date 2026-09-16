@@ -1,4 +1,4 @@
-# Mayfield V2
+# Mayfield V3
 
 A clean-sheet build from the new **Mayfield Design** Figma file
 (`93kuA4ZRlxM378LbOxiZ1E`), pages **Desktop** (`261:8641`), **Mobile**
@@ -28,13 +28,13 @@ anything brand-ish, and it "gets carried over to the home page as well".
 So the accent is one token repointed by `[data-weather]` on `<html>`, with
 `[data-mode="night"]` inverting the page. Values are the Figma variables:
 
-| State | Token | Value |
-|---|---|---|
+| State              | Token          | Value     |
+| ------------------ | -------------- | --------- |
 | Overcast (default) | `--c-overcast` | `#a6ff27` |
-| Sunny | `--c-sunny` | `#ffb700` |
-| Rain | `--c-rain` | `#69e3ff` |
-| Frost | `--c-frost` | `#69ffe1` |
-| Night | `--c-night` | `#121e3e` |
+| Sunny              | `--c-sunny`    | `#ffb700` |
+| Rain               | `--c-rain`     | `#69e3ff` |
+| Frost              | `--c-frost`    | `#69ffe1` |
+| Night              | `--c-night`    | `#121e3e` |
 
 Review any of them with `?weather=sunny|rain|frost|overcast` and
 `?mode=night` — a manual override always beats the live reading, so a state
@@ -61,13 +61,13 @@ on a colour the design chose, never on a failure state.
 
 The mapping, and the three judgement calls in it:
 
-| Condition types | State |
-|---|---|
-| `CLEAR`, `MOSTLY_CLEAR` | sunny |
+| Condition types                                     | State    |
+| --------------------------------------------------- | -------- |
+| `CLEAR`, `MOSTLY_CLEAR`                             | sunny    |
 | `PARTLY_CLOUDY`, `MOSTLY_CLOUDY`, `CLOUDY`, `WINDY` | overcast |
-| all 12 rain types **+ 5 thunderstorm + 2 hail** | rain |
-| all 14 snow types **+ `RAIN_AND_SNOW`** | frost |
-| anything unlisted | overcast |
+| all 12 rain types **+ 5 thunderstorm + 2 hail**     | rain     |
+| all 14 snow types **+ `RAIN_AND_SNOW`**             | frost    |
+| anything unlisted                                   | overcast |
 
 - **Thunder and hail read as rain.** The palette has no fifth colour for them
   and blue is the honest reading of that sky.
@@ -153,7 +153,7 @@ the third-party chain that cost V1 1,530ms of render-blocking time on mobile,
 and the swap behaviour is ours to set rather than Adobe's.
 
 Note the Park page uses a second face — **Stratos** Bold 700 for its titles
-(`Park/Title 36/48/80/120`). Stratos *is* in the Adobe kit, so that page will
+(`Park/Title 36/48/80/120`). Stratos _is_ in the Adobe kit, so that page will
 need either the kit back or a self-hosted cut.
 
 ## The window
@@ -194,11 +194,11 @@ section is the last one whose top edge has risen past `window.bottom - DIP`.
 Two earlier rules were wrong about this and are worth recording, because both
 are plausible and both feel wrong on the page:
 
-| Rule | Switches at | Reads as |
-|---|---|---|
-| Nearest the viewport middle | section top hits centre | swaps while the previous section still fills the screen |
-| 100px scrolled into the panel | `sectionTop + 100` | fires ~790px too late — the box is deep in the new section before the word catches up |
-| **Box dips in** (current) | `sectionTop − window.bottom` | the word turns over exactly as the panel touches the new section |
+| Rule                          | Switches at                  | Reads as                                                                              |
+| ----------------------------- | ---------------------------- | ------------------------------------------------------------------------------------- |
+| Nearest the viewport middle   | section top hits centre      | swaps while the previous section still fills the screen                               |
+| 100px scrolled into the panel | `sectionTop + 100`           | fires ~790px too late — the box is deep in the new section before the word catches up |
+| **Box dips in** (current)     | `sectionTop − window.bottom` | the word turns over exactly as the panel touches the new section                      |
 
 `DIP` is the commitment before the swap: 0 is first contact, raise it to make
 the box travel further in first. Measured at 1102×897: the panel sits
@@ -221,9 +221,18 @@ handover between two.
 Everything derives from a single registered custom property:
 
 ```css
-@property --menu-p { syntax: "<number>"; inherits: true; initial-value: 0; }
-:root            { --menu-p: 0; transition: --menu-p var(--dur-menu) var(--ease-menu); }
-:root.menu-open  { --menu-p: 1; }
+@property --menu-p {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+:root {
+  --menu-p: 0;
+  transition: --menu-p var(--dur-menu) var(--ease-menu);
+}
+:root.menu-open {
+  --menu-p: 1;
+}
 ```
 
 The box height, the wordmark's scale, its inset from the bottom edge and the
@@ -234,7 +243,7 @@ the edge.
 **This replaced three earlier attempts, and the failure mode is worth
 recording.** The first versions had the bar and the menu as separate elements
 with the wordmark duplicated between them, animated by separate transitions
-that were *tuned* against each other. That can only ever be approximately
+that were _tuned_ against each other. That can only ever be approximately
 right, and it failed in both directions: matched durations let the retracting
 green edge overtake the mark and drop it onto the white page; making the mark
 faster left a void of green beneath it. Tuning two clocks cannot fix a problem
@@ -242,9 +251,9 @@ that is structural. Deriving one from the other can.
 
 Measured across a full open, the gap between the wordmark and the green edge:
 
-| Box height | 36 | 148 | 547 | 822 | 897 |
-|---|---|---|---|---|---|
-| Mark width | 88 | 206 | 627 | 917 | 996 |
+| Box height  | 36   | 148  | 547  | 822  | 897  |
+| ----------- | ---- | ---- | ---- | ---- | ---- |
+| Mark width  | 88   | 206  | 627  | 917  | 996  |
 | Gap to edge | 11.0 | 11.6 | 14.0 | 15.6 | 16.0 |
 
 The only movement in that gap is the deliberate `--mark-inset` interpolation
