@@ -130,16 +130,18 @@
 
   /* When the section changes.
 
-     The trigger is the WINDOW BOX, not the viewport. The word and the video
-     change at the moment the box dips into the next section — i.e. when that
-     section's top edge rises past the bottom edge of the fixed panel. Two
-     earlier rules were wrong about this: "nearest the viewport middle"
-     swapped while the previous section still filled the screen, and "100px
-     scrolled into the panel" measured from the viewport top, which fires far
-     later than the box actually touching anything.
+     The trigger is the WORD'S OWN HORIZONTAL LINE, not the window box. The word
+     and the video rotate to the next section at the moment the word sits on the
+     same line as the START (top edge) of the incoming section — i.e. when that
+     section's top edge rises to the vertical centre of the word. Earlier rules
+     were wrong about this: "nearest the viewport middle" swapped while the
+     previous section still filled the screen; "100px scrolled into the panel"
+     measured from the viewport top; and using the panel's BOTTOM edge fired the
+     swap as soon as the section first touched the foot of the window (~240px
+     too early), long before the word met it.
 
-     DIP is how far the box must be into the next section before it counts.
-     0 is first contact; raise it for more commitment before the swap. */
+     DIP nudges the line: 0 fires exactly on the word's centre; raise it to make
+     the section commit a little further past the word before the swap. */
   const DIP = 0;
 
   /* What the panel says before you have entered any section. */
@@ -150,12 +152,14 @@
   if (track && zones.length && wordBox) {
     let current = "";
     let currentVideo = "";
+    let remeasureTrack = () => {};   /* set by the scroll-jacked marquee below */
 
     const pick = () => {
-      /* Measured from the live element so it stays right across breakpoints
-         — the panel is 245x400 on mobile and 340x480 up. */
-      const wr = win.getBoundingClientRect();
-      const edge = wr.bottom - DIP;
+      /* The word's horizontal centre-line, measured live so it stays right
+         across breakpoints (the panel is 245x400 on mobile, 340x480 up). The
+         swap fires when the next section's top edge reaches this line. */
+      const wb = wordBox.getBoundingClientRect();
+      const edge = wb.top + wb.height / 2 - DIP;
 
       /* No default to zones[0]. Until the box has dipped into the FIRST
          section, the panel still reads MAYFIELD — which is what the hero's
@@ -181,6 +185,7 @@
           s.textContent = word;
           return s;
         }));
+        remeasureTrack();   /* the word changed, so the loop period changed */
       }
 
       /* Each section gets its own cut of footage. Declared per zone so the
@@ -201,6 +206,58 @@
     addEventListener("scroll", pick, { passive: true });
     addEventListener("resize", pick);
     pick();
+
+    /* ---- Scroll-jacked marquee -----------------------------------------
+       The section word no longer runs at a constant speed. Its horizontal
+       travel is DRIVEN BY THE SCROLL GESTURE: scrolling down cycles it
+       left -> right, scrolling up right -> left. A smoothed velocity eases
+       every change of direction so a flick never snaps, and the travel decays
+       to rest when you stop scrolling. The CSS @keyframes marquee stays as the
+       no-JS fallback (`.js .window__track` disables it); with JS on we own the
+       transform here. Skipped for prefers-reduced-motion — the word sits still.
+       -------------------------------------------------------------------- */
+    const reduceMQ = matchMedia("(prefers-reduced-motion: reduce)");
+    if (!reduceMQ.matches) {
+      track.style.willChange = "transform";
+
+      let rw = 0;                 /* width of one seamless repeat (px) */
+      remeasureTrack = () => { rw = track.scrollWidth / 2; };
+
+      let x = 0;                  /* current translateX, kept within (-rw, 0] */
+      let v = 0;                  /* eased velocity actually applied (px/frame) */
+      let want = 0;               /* velocity the gesture is asking for */
+      let lastY = window.scrollY;
+
+      const GAIN  = 0.11;         /* word travel per px scrolled — subtle */
+      const VMAX  = 6;            /* cap so a hard flick stays gentle */
+      const DECAY = 0.86;         /* the ask fades once scrolling stops */
+      const EASE  = 0.08;         /* how softly v chases the ask (dir. easing) */
+
+      addEventListener("scroll", () => {
+        const y = window.scrollY;
+        /* Reversed: scrolling down cycles the word right->left, up left->right. */
+        want = Math.max(-VMAX, Math.min(VMAX, (lastY - y) * GAIN));
+        lastY = y;
+      }, { passive: true });
+
+      const frame = () => {
+        requestAnimationFrame(frame);
+        if (wordBox.classList.contains("is-intro")) {   /* intro word: still, centred */
+          if (x) { x = 0; track.style.transform = ""; }
+          v = want = 0;
+          return;
+        }
+        if (!rw) remeasureTrack();
+        want *= DECAY;                       /* gesture fades when you stop */
+        v += (want - v) * EASE;              /* ease into every direction change */
+        x += v;
+        if (rw) { x %= rw; if (x > 0) x -= rw; }   /* keep in (-rw, 0], seamless */
+        track.style.transform = `translate3d(${x.toFixed(2)}px,0,0)`;
+      };
+      remeasureTrack();
+      addEventListener("resize", remeasureTrack);
+      frame();
+    }
   }
 
   /* ---- 3. Menu ----------------------------------------------------------
@@ -557,30 +614,146 @@
     });
   }
 
-  /* ---- 7. Park gallery — depth-stack carousel ---------------------------
-     The active image is front and centre; the next two recede behind it,
-     smaller and darker. Positions are data-pos on each slide, paged by
-     Prev/Next. With no JS the CSS :first-child shows the first image, so this
-     only enhances. */
+  /* ---- 7. Gallery — 3D dropping stack -----------------------------------
+     Transposed from paulkalkbrenner.net's `dropping-stack`: the active image is
+     front and centre; the rest recede UP and BACK in Z (perspective shrinks
+     them), each a step higher with a lower z-index, darkening as they drop away.
+     Paged by Prev/Next, by clicking the front card, or by dragging it. With no
+     JS the CSS `:first-child` shows the first image, so this only enhances.
+
+     VISIBLE is how many cards read in the stack; deeper ones sit hidden behind
+     the front (opacity 0) so a long set never turns into a thick slab. */
+  const VISIBLE = 4;
   document.querySelectorAll(".gallery").forEach((gallery) => {
     const slides = [...gallery.querySelectorAll(".gallery__slide")];
     const count = gallery.querySelector(".gallery__count");
     const n = slides.length;
     if (!n) return;
+
+    gallery.classList.add("is-live");
     let active = 0;
-    const layout = () => {
-      slides.forEach((s, i) => {
-        const o = (i - active + n) % n;
-        s.dataset.pos = o <= 2 ? String(o) : "off";
-      });
+    let busy = false;
+
+    const depthOf = (s) => (slides.indexOf(s) - active + n) % n;
+
+    /* Place one slide at a given stack depth (0 = front). */
+    const place = (s, d) => {
+      const shown = d < VISIBLE;
+      s.style.setProperty("--d", d);
+      s.style.zIndex = String(999 - d);
+      s.style.setProperty("--dim", shown ? Math.min(d * 0.16, 0.6).toFixed(2) : "0");
+      s.style.opacity = shown ? "1" : "0";
+      s.classList.toggle("is-shown", shown);
+      s.classList.toggle("is-front", d === 0);
+      /* Only the front card takes the pointer; the rest never intercept it. */
+      s.style.pointerEvents = d === 0 ? "auto" : "none";
+      s.setAttribute("aria-hidden", d === 0 ? "false" : "true");
+    };
+
+    const layout = (except) => {
+      slides.forEach((s) => { if (s !== except) place(s, depthOf(s)); });
       if (count) count.textContent = `${active + 1}/${n}`;
     };
+
+    /* Commit styles to a slide with the transition suppressed — used for the
+       invisible reset of a dropped card and the off-screen start of an
+       incoming one, so neither of those jumps is ever animated on screen. */
+    const snap = (s, fn) => {
+      const prev = s.style.transition;
+      s.style.transition = "none";
+      fn();
+      void s.offsetWidth;
+      s.style.transition = prev;
+    };
+
+    /* Fire once the slide's transform transition ends (with a timeout backstop
+       so a dropped frame can never leave the gallery locked). */
+    const afterMove = (s, cb) => {
+      let done = false;
+      const fin = () => { if (done) return; done = true; s.removeEventListener("transitionend", te); cb(); };
+      const te = (e) => { if (e.propertyName === "transform") fin(); };
+      s.addEventListener("transitionend", te);
+      setTimeout(fin, 900);
+    };
+
+    /* NEXT — the front card FALLS straight down and off, fading as it goes (the
+       signature drop from the reference: front -> translateY 230% + fade). The
+       rest of the stack steps forward one depth and a new card fades in at the
+       back. When the fall ends the card is snapped, invisibly, to the back. */
+    const next = () => {
+      if (busy) return; busy = true;
+      const out = slides[active];
+      out.style.zIndex = "2000";
+      out.classList.add("is-dropping");
+      active = (active + 1) % n;
+      layout(out);
+      afterMove(out, () => {
+        out.classList.remove("is-dropping");
+        out.style.zIndex = "";
+        out.style.transform = "";
+        snap(out, () => place(out, depthOf(out)));   /* back of the stack, hidden */
+        busy = false;
+      });
+    };
+
+    /* PREV — a card DROPS IN from the top to become the new front (mirror of the
+       fall): it starts off-screen above and eases down into the front slot while
+       the stack steps back one depth. */
+    const prev = () => {
+      if (busy) return; busy = true;
+      active = (active - 1 + n) % n;
+      const inc = slides[active];
+      snap(inc, () => {
+        place(inc, 0);
+        inc.style.zIndex = "2000";
+        inc.style.opacity = "0";
+        inc.style.transform = "translate(-50%, -50%) translateY(-230%)";
+      });
+      inc.style.transform = "";        /* -> CSS front position, animated */
+      inc.style.opacity = "1";
+      layout(inc);
+      afterMove(inc, () => { inc.style.zIndex = ""; place(inc, 0); busy = false; });
+    };
+
+    const go = (dir) => (dir > 0 ? next() : prev());
+
     gallery.querySelectorAll("[data-gal]").forEach((b) =>
-      b.addEventListener("click", () => {
-        active = (active + (b.dataset.gal === "next" ? 1 : -1) + n) % n;
-        layout();
-      })
+      b.addEventListener("click", () => go(b.dataset.gal === "next" ? 1 : -1))
     );
+
+    /* Drag / click the front card. A short travel is a click (advance); a real
+       drag pages on release once it passes the threshold, direction from the
+       drag vector (up/left = next, down/right = prev). Pointer Events so mouse
+       and touch share one path; the front card is the only one with
+       pointer-events, so a pointerdown on the stack is always on it. */
+    const DRAG_MIN = 40;
+    let dragging = false, sx = 0, sy = 0, moved = 0;
+    const stage = gallery.querySelector(".gallery__stage");
+    if (stage) {
+      stage.addEventListener("pointerdown", (e) => {
+        if (busy) return;
+        dragging = true; moved = 0; sx = e.clientX; sy = e.clientY;
+        gallery.classList.add("is-dragging");
+        stage.setPointerCapture?.(e.pointerId);
+      });
+      stage.addEventListener("pointermove", (e) => {
+        if (!dragging) return;
+        moved = Math.max(moved, Math.hypot(e.clientX - sx, e.clientY - sy));
+      });
+      const end = (e) => {
+        if (!dragging) return;
+        dragging = false;
+        gallery.classList.remove("is-dragging");
+        const dx = e.clientX - sx, dy = e.clientY - sy;
+        if (moved < 8) { next(); return; }                 /* a click = advance */
+        if (moved < DRAG_MIN) return;                       /* too small to count */
+        const primary = Math.abs(dx) > Math.abs(dy) ? dx : dy;
+        go(primary < 0 ? 1 : -1);                           /* up/left = next */
+      };
+      stage.addEventListener("pointerup", end);
+      stage.addEventListener("pointercancel", () => { dragging = false; gallery.classList.remove("is-dragging"); });
+    }
+
     layout();
   });
 
@@ -588,13 +761,102 @@
      Each floor row carries a data-render; pointing at it fades the left image
      to that render. Enhancement only — the table reads fine without it, and
      the default render stands with no JS. */
-  const floorsImg = document.querySelector(".floors__img img");
-  if (floorsImg) {
-    document.querySelectorAll(".floor[data-render]").forEach((row) => {
-      const src = row.dataset.render;
-      const swap = () => { if (floorsImg.getAttribute("src") !== src) floorsImg.src = src; };
-      row.addEventListener("pointerenter", swap);
-      row.addEventListener("focusin", swap);
+  const floorsBox = document.querySelector(".floors__img");
+  if (floorsBox && floorsBox.querySelector("img")) {
+    const rows = [...document.querySelectorAll(".floor[data-render]")];
+    /* Preload the distinct renders so a swap never waits on the network. */
+    [...new Set(rows.map((r) => r.dataset.render))].forEach((s) => { const i = new Image(); i.src = s; });
+    /* Two stacked layers that cross-fade, so the render dissolves rather than
+       hard-cutting (which read as jumpy). */
+    const a = floorsBox.querySelector("img");
+    const b = a.cloneNode(false);
+    b.removeAttribute("alt");
+    b.style.opacity = "0";
+    floorsBox.appendChild(b);
+    let front = a, cur = a.getAttribute("src");
+    const swap = (src) => {
+      if (!src || src === cur) return;
+      cur = src;
+      const back = front === a ? b : a;
+      const leaving = front;                 /* captured — reveal must NOT read the live `front` */
+      back.src = src;
+      const reveal = () => {
+        if (cur !== src) return;             /* a newer hover superseded this swap */
+        back.style.opacity = "1";
+        leaving.style.opacity = "0";
+        front = back;
+      };
+      /* decode() resolves once (even when cached), so the fade fires exactly
+         once — the old onload+complete pair double-fired and blanked both layers. */
+      if (back.decode) back.decode().then(reveal, reveal);
+      else back.onload = reveal;
+    };
+    rows.forEach((row) => {
+      row.addEventListener("pointerenter", () => swap(row.dataset.render));
+      row.addEventListener("focusin", () => swap(row.dataset.render));
     });
   }
+
+  /* ---- 10. Location list — the map follows the cursor with a swing -------
+     Transposed from hellohello.is: hovering a row reveals its image, which then
+     TRAILS the pointer (a lerp lag) and ROTATES from its own horizontal velocity
+     so it swings like it hangs off the cursor. Desktop + fine-pointer only; the
+     CSS keeps the map hidden otherwise. */
+  const finePointer = matchMedia("(min-width: 1024px) and (hover: hover)");
+  if (finePointer.matches && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    document.querySelectorAll(".rlocations").forEach((list) => {
+      const rows = [...list.querySelectorAll(".rloc")];
+      if (!rows.length) return;
+      let active = null, tx = 0, ty = 0, x = 0, y = 0, px = 0, rot = 0, running = false;
+
+      const aim = (e) => { const r = list.getBoundingClientRect(); tx = e.clientX - r.left; ty = e.clientY - r.top; };
+      list.addEventListener("pointermove", aim);
+
+      rows.forEach((row) => {
+        const map = row.querySelector(".rloc__map");
+        if (!map) return;
+        row.addEventListener("pointerenter", (e) => {
+          aim(e);
+          if (!active) { x = tx; y = ty; px = x; rot = 0; }   /* snap on first entry, no fly-in */
+          if (active && active !== map) active.classList.remove("is-on");
+          active = map; map.classList.add("is-on");
+          if (!running) { running = true; requestAnimationFrame(frame); }
+        });
+      });
+      list.addEventListener("pointerleave", () => {
+        if (active) active.classList.remove("is-on");
+        active = null;
+      });
+
+      function frame() {
+        if (!active) { running = false; return; }   /* idle out when nothing is hovered */
+        requestAnimationFrame(frame);
+        px = x;
+        x += (tx - x) * 0.16;                         /* trailing follow */
+        y += (ty - y) * 0.16;
+        const target = Math.max(-22, Math.min(22, (x - px) * 1.4));   /* swing from h-velocity */
+        rot += (target - rot) * 0.12;
+        active.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) translate(-50%, -50%) rotate(${rot.toFixed(2)}deg)`;
+      }
+    });
+  }
+
+  /* ---- 9. FAQ accordion — control at the foot of each row ---------------
+     Native <details> could neither put the control under the answer nor animate
+     the open/close height, so this is a light accordion: the button toggles
+     `.is-open` and the CSS grid-rows trick animates both directions. Fully
+     progressive — with no JS the panels are open (CSS), so every answer reads. */
+  document.querySelectorAll(".faq").forEach((faq, fi) => {
+    faq.querySelectorAll(".faq__item").forEach((item, i) => {
+      const btn = item.querySelector(".faq__toggle");
+      const panel = item.querySelector(".faq__panel");
+      if (!btn || !panel) return;
+      panel.id = panel.id || `faqp-${fi}-${i}`;
+      btn.setAttribute("aria-controls", panel.id);
+      btn.addEventListener("click", () => {
+        const open = item.classList.toggle("is-open");
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+      });
+    });
+  });
 })();

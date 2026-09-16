@@ -230,7 +230,11 @@
   height: 100svh;
   min-height: 560px;
   padding-block-start: var(--nav-band);
-  background: var(--c-ink);
+  /* Paper, not ink: as the scroll-jacked video shrinks into the centre window
+     the hero fills the viewport, so its background is what shows AROUND the
+     shrinking panel. That reveal should be the page's paper (white by day, navy
+     at night — same as <body>), not a black plate. */
+  background: var(--c-paper);
   isolation: isolate;
 }
 
@@ -334,6 +338,10 @@
 }
 @keyframes window-scroll { to { transform: translateX(-50%); } }
 
+/* With JS on, motion.js §2 drives the track as a scroll-jacked transform, so
+   the constant animation above is the no-JS fallback only. */
+.js .window__track { animation: none; }
+
 /* The intro state — the word the hero's wordmark became. It holds still and
    centred; only the section words travel. */
 .window__word.is-intro .window__track {
@@ -424,6 +432,55 @@
 .btn:focus-visible { background: var(--c-ink); color: var(--c-accent); }
 
 .btn--block { display: flex; width: 100%; }
+
+/* Brochure / download button — the design-system variant. [figma 465:7873]
+   A rectangle (4px), not a pill: 2px black stroke on the Republic yellow, the
+   label at left and a divided 52px download cell flush to the right edge. The
+   divider + arrow live in download.svg, painted as a mask so they invert with
+   the label on hover. */
+.btn--brochure {
+  gap: var(--s-8);
+  padding: 0 0 0 20px;
+  min-height: 52px;
+  border-radius: 4px;
+  background: var(--c-republic);
+  color: var(--c-ink);
+  overflow: hidden;
+}
+/* No colour change on hover — only the arrow animates. This override is needed
+   because the generic .btn:hover inverts. */
+.btn--brochure:hover,
+.btn--brochure:focus-visible { background: var(--c-republic); color: var(--c-ink); }
+
+/* The download cell: a static divider on the left, and a clipped column holding
+   two identical arrows. On hover the column slides up one cell so the arrow
+   shoots up and out while its duplicate rises into place. */
+.btn__dl {
+  align-self: stretch;
+  flex: 0 0 auto;
+  width: 52px;
+  margin-inline-start: auto;
+  border-inline-start: 2px solid currentColor;
+  overflow: hidden;
+  position: relative;
+}
+.btn__dl-track {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  height: 200%;                    /* two arrow cells tall */
+  display: grid;
+  grid-template-rows: 1fr 1fr;     /* each row = one cell height */
+  transition: transform 0.42s cubic-bezier(0.5, 0, 0.2, 1);
+}
+.btn--brochure:hover .btn__dl-track,
+.btn--brochure:focus-visible .btn__dl-track { transform: translateY(-50%); }
+.btn__arrow {
+  background-color: currentColor;
+  -webkit-mask: url("../assets/republic/download-arrow.svg") center / 54px 52px no-repeat;
+          mask: url("../assets/republic/download-arrow.svg") center / 54px 52px no-repeat;
+}
+@media (prefers-reduced-motion: reduce) { .btn__dl-track { transition: none; } }
 
 /* --------------------------------------------------------------------------
    8. Instagram                                    [figma 230:3831 / 281:15356]
@@ -600,6 +657,7 @@
   .js .hero__mark,
   .js .hero,
   .js .window,
+  .js .window__word,
   .js .nav {
     animation-timing-function: linear;
     animation-fill-mode: both;
@@ -631,11 +689,20 @@
   .js .hero__mark { animation-name: mark-shrink; animation-range: 0 100svh; }
   @keyframes mark-shrink { from { scale: 1; } to { scale: 0.26; } }
 
-  /* The handover. The animated hero fades out exactly as the fixed window
-     fades in, over the last 5% of the runway, so there is no frame where
-     both or neither is visible. */
+  /* The handover. The animated hero (video + its SVG wordmark) fades out as the
+     fixed window video fades in, over the last 8% of the runway. */
   .js .hero   { animation-name: hero-out;   animation-range: 92svh 100svh; }
   .js .window { animation-name: window-in;  animation-range: 92svh 100svh; }
+
+  /* The window's INTRO word waits until the hero has fully gone, then resolves
+     in on its own. The hero's SVG wordmark and this t-slab word are different
+     renderings of MAYFIELD, so crossfading them over each other ghosted into a
+     doubled, offset wordmark. Instead the hero mark carries the word down
+     through the shrink, leaves at 100svh, and this takes over just after — one
+     wordmark on screen at a time. (Section words are exempt: once JS drops
+     `.is-intro` this rule stops matching and the scroll-jacked marquee owns it.) */
+  .js .window__word.is-intro { animation-name: introword-in; animation-range: 100svh 103svh; }
+  @keyframes introword-in { from { opacity: 0; } to { opacity: 1; } }
 
   /* The bar gets a much longer runway than the handover itself — 55svh rather
      than the last 8% — and an ease-out curve so it decelerates into place.
@@ -1186,8 +1253,27 @@ select.field__control { cursor: pointer; }
    image simply shows — the `:first-child` fallback below is overridden the
    moment the script assigns every slide a `data-pos`.
    -------------------------------------------------------------------------- */
-.gallery { position: relative; padding: var(--s-11) var(--gutter); background: var(--c-paper); color: var(--c-ink); }
-.gallery__stage { position: relative; height: 420px; }
+/* overflow:hidden clips the dropped card at the section's own edges so it can
+   never reappear over the section below; the gradient well fades it out before
+   the clip, so the cut is never visible. Top padding leaves room for the
+   receding cards to peek without being clipped. */
+.gallery { position: relative; overflow: hidden; padding: 120px var(--gutter) var(--s-11); background: var(--c-paper); color: var(--c-ink); }
+
+/* The stage is a 3D scene. The cards recede INTO it on the Z axis — perspective
+   shrinks them, so there is no `scale()`; that is what gives the real depth the
+   flat version lacked. Transposed from paulkalkbrenner.net's `dropping-stack`
+   (perspective ~100em on the list, preserve-3d, each card stepped up in Y and
+   back in Z with a descending z-index) — rebuilt here in vanilla CSS + JS, no
+   GSAP. `--rise`/`--recede` are the per-card step; JS sets each card's `--d`
+   (0 = front), z-index, dim and opacity. */
+.gallery__stage {
+  position: relative;
+  height: 360px;
+  perspective: 1600px;
+  perspective-origin: 50% 42%;
+  --rise: 104px;
+  --recede: 440px;
+}
 .gallery__slide {
   position: absolute;
   inset-block-start: 50%;
@@ -1195,42 +1281,86 @@ select.field__control { cursor: pointer; }
   margin: 0;
   width: 240px;
   height: 320px;
-  transform: translate(-50%, -50%);
-  transition: transform 0.5s var(--ease), opacity 0.5s var(--ease);
+  transform-style: preserve-3d;
+  --d: 0;
+  transform:
+    translate(-50%, -50%)
+    translateY(calc(var(--d) * var(--rise) * -1))
+    translateZ(calc(var(--d) * var(--recede) * -1));
+  transition: transform 0.6s var(--ease), opacity 0.6s var(--ease);
   opacity: 0;
-  visibility: hidden;
+  z-index: 0;
+  will-change: transform, opacity;
 }
 .gallery__slide img { width: 100%; height: 100%; object-fit: cover; }
+/* Cards darken as they drop back, so the stack reads even over busy imagery. */
 .gallery__slide::after {
   content: "";
   position: absolute;
   inset: 0;
   background: rgb(0 0 0 / var(--dim, 0));
-  transition: background 0.5s var(--ease);
+  transition: background 0.6s var(--ease);
 }
 /* No-JS fallback: the first image, front and centre. */
-.gallery__slide:first-child { opacity: 1; visibility: visible; z-index: 3; }
-/* Once JS assigns positions, every managed slide starts hidden (this overrides
-   the :first-child fallback), then 0/1/2 re-show the front three. */
-.gallery__slide[data-pos] { opacity: 0; visibility: hidden; z-index: 0; }
-.gallery__slide[data-pos="0"] { opacity: 1; visibility: visible; z-index: 3; transform: translate(-50%, -50%) scale(1); --dim: 0; }
-.gallery__slide[data-pos="1"] { opacity: 1; visibility: visible; z-index: 2; transform: translate(-50%, -62%) scale(0.82); --dim: 0.45; }
-.gallery__slide[data-pos="2"] { opacity: 1; visibility: visible; z-index: 1; transform: translate(-50%, -72%) scale(0.66); --dim: 0.65; }
+.gallery__slide:first-child { opacity: 1; z-index: 3; }
+/* Once JS takes over it adds this to every slide; it then sets --d/z-index/
+   opacity per card, so the fallback front card no longer forces itself on. */
+.gallery.is-live .gallery__slide:first-child { opacity: 0; }
+.gallery.is-live .gallery__slide { opacity: 0; }
+.gallery.is-live .gallery__slide.is-shown { opacity: 1; }
+/* The front card is the grab handle for the drag. */
+.gallery.is-live .gallery__slide.is-front { cursor: grab; }
+.gallery.is-live.is-dragging .gallery__slide.is-front { cursor: grabbing; }
 
+/* NEXT drops the front card straight down and off, fading as it falls (its
+   reset to the back happens under snap() in motion.js with the transition
+   suppressed, so it is never seen). Ease-in so it accelerates like a fall; PREV
+   is the mirror, eased in from above by the JS. */
+.gallery.is-live .gallery__slide.is-dropping {
+  transform: translate(-50%, -50%) translateY(230%);
+  opacity: 0;
+  z-index: 2000;
+  transition: transform 0.6s cubic-bezier(0.45, 0.05, 0.85, 0.4), opacity 0.44s ease 0.14s;
+}
+
+/* The card falls into a soft "well" at the foot of the gallery: a gradient that
+   fades the card out to the page as it drops (paper-on-paper, so it is invisible
+   until a card passes through). With the card also blurring, it reads as
+   dropping into a faded, out-of-focus void rather than over the section below.
+   The upper half is fully transparent so it never touches the front card. */
+.gallery::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  height: 42%;
+  background: linear-gradient(to bottom, transparent 0%, transparent 58%, var(--c-paper) 96%);
+  pointer-events: none;
+  z-index: 2100;
+}
+
+/* Nav flanks the stack, VERTICALLY CENTRED on the gallery: the count far left,
+   Prev/Next far right (Figma 496:18061). The row lets pointer events through so
+   it never blocks dragging the card in the middle; only the controls catch them. */
 .gallery__nav {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline: var(--gutter);
+  transform: translateY(-50%);
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: var(--s-8);
-  padding-block-start: var(--s-8);
+  gap: var(--s-6);
   font-size: var(--t-caps);
   text-transform: uppercase;
+  z-index: 5;
+  pointer-events: none;
 }
+.gallery__nav > * { pointer-events: auto; }
 .gallery__nav button { cursor: pointer; }
-.gallery__count { min-width: 4ch; text-align: center; }
+.gallery__count { order: -1; margin-inline-end: auto; min-width: 4ch; }
 
 @media (min-width: 1024px) {
-  .gallery__stage { height: 560px; }
+  .gallery__stage { height: 520px; --rise: 120px; --recede: 560px; }
   .gallery__slide { width: 360px; height: 480px; }
 }
 
@@ -1277,22 +1407,61 @@ select.field__control { cursor: pointer; }
 .parkinfo__title { font-weight: var(--w-xbold); font-size: clamp(44px, 9vw, 80px); line-height: var(--lh-crush); letter-spacing: -0.02em; text-transform: uppercase; }
 .parkinfo__map { width: min(100%, 816px); height: auto; border-radius: var(--radius-field); }
 
-.faq { width: min(100%, 640px); display: flex; flex-direction: column; gap: var(--s-8); padding-block-start: var(--s-9); text-align: left; }
-.faq__item { border-block-end: 1px solid rgb(0 0 0 / 0.12); padding-block-end: var(--s-8); }
-[data-mode="night"] .faq__item { border-block-end-color: rgb(255 255 255 / 0.18); }
-.faq__item summary { list-style: none; cursor: pointer; display: flex; flex-direction: column; gap: var(--s-5); }
-.faq__item summary::-webkit-details-marker { display: none; }
-.faq__q { font-weight: var(--w-xbold); font-size: 26px; line-height: var(--lh-crush); letter-spacing: -0.02em; text-transform: uppercase; }
-.faq__toggle { display: inline-flex; align-items: center; gap: var(--s-2); font-size: var(--t-caps); text-transform: uppercase; }
-.faq__plus {
-  width: 10px; height: 10px; flex: 0 0 auto;
-  background-color: currentColor;
-  -webkit-mask: url("../assets/icons/plus.svg") center / contain no-repeat;
-          mask: url("../assets/icons/plus.svg") center / contain no-repeat;
-  transition: transform 0.2s var(--ease);
+.faq { width: min(100%, 640px); display: flex; flex-direction: column; gap: 60px; padding-block-start: var(--s-9); text-align: left; }
+/* Each row: question (always shown) -> collapsible answer panel -> the toggle,
+   pinned at the BOTTOM of the row, under the answer. */
+.faq__item { display: flex; flex-direction: column; }
+.faq__q { margin: 0; font-weight: var(--w-xbold); font-size: 26px; line-height: var(--lh-crush); letter-spacing: -0.02em; text-transform: uppercase; }
+
+/* The panel animates its height via the grid 0fr -> 1fr trick (the inner clips),
+   so open AND close are one smooth physical transition. Open by default so the
+   answers are readable with no JS; the .js branch collapses them until opened. */
+.faq__panel { display: grid; grid-template-rows: 1fr; transition: grid-template-rows 0.45s var(--ease); }
+.faq__panel-inner { overflow: hidden; min-height: 0; }
+.js .faq__item:not(.is-open) .faq__panel { grid-template-rows: 0fr; }
+.faq__a { margin-block: var(--s-6) 0; font-size: var(--t-body); max-width: 60ch; transition: opacity 0.4s var(--ease); }
+.js .faq__item:not(.is-open) .faq__a { opacity: 0; }
+
+/* The toggle sits at the bottom of the row. Its + is two bars so it can morph to
+   a − (the vertical bar retracts) when open. No-JS: no toggle, answers just show. */
+.faq__toggle {
+  order: 3;
+  align-self: flex-start;
+  margin-block-start: var(--s-6);   /* space between the title/answer and the toggle */
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-3);
+  cursor: pointer;
+  font-size: var(--t-caps);
+  text-transform: uppercase;
 }
-.faq__item[open] .faq__plus { transform: rotate(45deg); }
-.faq__a { margin-block-start: var(--s-6); font-size: var(--t-body); max-width: 60ch; }
+.no-js .faq__toggle { display: none; }
+.faq__plus { position: relative; width: 11px; height: 11px; flex: 0 0 auto; transition: transform 0.3s var(--ease); }
+.faq__plus::before, .faq__plus::after {
+  content: "";
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  translate: -50% -50%;
+  background-color: currentColor;
+}
+.faq__plus::before { width: 100%; height: 1.5px; }   /* horizontal bar (stays — the −) */
+.faq__plus::after  { width: 1.5px; height: 100%; transition: scale 0.3s var(--ease), opacity 0.3s var(--ease); }  /* vertical bar */
+
+/* Hover (closed only): the + spins a smooth quarter-turn. */
+.faq__item:not(.is-open) .faq__toggle:hover .faq__plus,
+.faq__item:not(.is-open) .faq__toggle:focus-visible .faq__plus { transform: rotate(90deg); }
+
+/* Open: vertical bar retracts to leave a −, and the label swaps to Hide answer. */
+.faq__item.is-open .faq__plus::after { scale: 0 1; opacity: 0; }
+.faq__label--hide { display: none; }
+.faq__item.is-open .faq__label--read { display: none; }
+.faq__item.is-open .faq__label--hide { display: inline; }
+
+@media (prefers-reduced-motion: reduce) {
+  .faq__panel { transition: none; }
+  .faq__plus, .faq__plus::after, .faq__a { transition: none; }
+}
 .faq__legal { font-size: var(--t-legal); line-height: var(--lh-body); opacity: 0.5; }
 
 @media (min-width: 1024px) {
@@ -1321,7 +1490,19 @@ select.field__control { cursor: pointer; }
 }
 .rhero__bg { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
 .rhero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: rgb(0 0 0 / 0.28); }
-.rhero__logo { position: absolute; inset-block-start: calc(var(--nav-init-h) + var(--s-5)); inset-inline-start: 50%; transform: translateX(-50%); width: 138px; z-index: 1; }
+/* Recoloured to the Republic acid yellow via a mask (the SVG is shared with the
+   Spaces cards, so its own fill is left alone). */
+.rhero__logo {
+  position: absolute;
+  inset-block-start: calc(var(--nav-init-h) + var(--s-5));
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
+  width: 138px; height: 47px;
+  z-index: 1;
+  background-color: var(--c-republic);
+  -webkit-mask: url("../assets/logos/republic.svg") center / contain no-repeat;
+          mask: url("../assets/logos/republic.svg") center / contain no-repeat;
+}
 .rhero__portrait { width: min(74vw, 420px); aspect-ratio: 517 / 591; }
 .rhero__portrait img { width: 100%; height: 100%; object-fit: cover; }
 
@@ -1342,14 +1523,16 @@ select.field__control { cursor: pointer; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--s-8);
+  gap: var(--s-9);              /* [figma] 40px between lead, button, logo */
   padding: var(--s-11) var(--gutter);
   background: var(--c-paper);
   color: var(--c-ink);
   text-align: center;
 }
+@media (min-width: 1024px) { .rband { padding-block: 140px; } }   /* the intro band's generous vertical space */
 .rband__logo { width: 138px; height: auto; }
-.rband__lead { max-width: 22ch; font-family: var(--f-serif); font-weight: 400; font-size: clamp(30px, 5vw, 56px); line-height: 1.05; letter-spacing: -0.02em; }
+/* [figma Hero 48] Garamond 48px, lh 1.0, tracking -4%. */
+.rband__lead { max-width: 30ch; font-family: var(--f-serif); font-weight: 400; font-size: clamp(30px, 4vw, 48px); line-height: 1; letter-spacing: -0.04em; }
 .rband__text { max-width: 60ch; }
 
 /* -- 27. Location list                                    [figma 465:7886] */
@@ -1359,14 +1542,14 @@ select.field__control { cursor: pointer; }
   align-items: baseline;
   justify-content: space-between;
   gap: var(--s-6);
-  padding: var(--s-8) var(--gutter) var(--s-7);
+  padding: var(--s-8) var(--s-8) var(--s-7);   /* [figma] rows inset 30px, not the 60px gutter */
   border-block-start: 2px solid currentColor;
   transition: background 0.2s var(--ease);
 }
 .rlocations > .rloc:last-child { border-block-end: 2px solid currentColor; }
 .rloc:hover { background: var(--c-republic); }
-.rloc__name { font-family: var(--f-serif); font-weight: 400; font-size: clamp(28px, 5vw, 42px); line-height: 1; letter-spacing: -0.05em; text-transform: uppercase; }
-.rloc__time { font-size: var(--t-body); white-space: nowrap; }
+.rloc__name { font-family: var(--f-serif); font-weight: 400; font-size: clamp(28px, 5vw, 42px); line-height: 1; letter-spacing: -0.08em; text-transform: uppercase; }
+.rloc__time { font-size: var(--t-caps-l); white-space: nowrap; }   /* [figma Body 18] */
 
 /* -- 28. Benefit stats — a row of figures                 [figma 505:19992] */
 .rstats {
@@ -1396,10 +1579,10 @@ select.field__control { cursor: pointer; }
 }
 .bpanel__img { aspect-ratio: 4 / 3; }
 .bpanel__img img { width: 100%; height: 100%; object-fit: cover; }
-.bpanel__text { display: flex; flex-direction: column; justify-content: space-between; gap: var(--s-9); padding: var(--s-8); }
-.bpanel__title { font-family: var(--f-serif); font-weight: 400; font-size: clamp(44px, 9vw, 80px); line-height: 1; letter-spacing: -0.06em; text-transform: uppercase; }
+.bpanel__text { display: flex; flex-direction: column; justify-content: space-between; gap: var(--s-9); padding: var(--s-9); }   /* [figma] 40px column padding */
+.bpanel__title { font-family: var(--f-serif); font-weight: 400; font-size: clamp(44px, 9vw, 80px); line-height: 1; letter-spacing: -0.08em; text-transform: uppercase; }  /* [figma Title 80] -8% */
 .bpanel__title em { font-style: italic; }
-.bpanel__tags { display: flex; flex-wrap: wrap; gap: var(--s-6); font-size: var(--t-caps); text-transform: uppercase; margin-block-end: var(--s-5); }
+.bpanel__tags { display: flex; flex-wrap: wrap; gap: var(--s-7); font-size: var(--t-caps); text-transform: uppercase; margin-block-end: var(--s-6); }   /* [figma] tags gap 24, desc gap 20 */
 @media (min-width: 1024px) {
   .bpanel { flex-direction: row; align-items: stretch; border-width: 8px; border-radius: 50px; }
   .bpanel > * { flex: 1 1 0; min-width: 0; }
@@ -1437,6 +1620,7 @@ select.field__control { cursor: pointer; }
   .floors { flex-direction: row; }
   .floors__img { flex: 1 1 0; aspect-ratio: auto; }
   .floors__table { flex: 1 1 0; align-self: center; }
+  .floors__head, .floor { grid-template-columns: 170px 1fr 100px; }   /* [figma] Floor 170 / Size 1fr / Capacity 100 */
 }
 
 /* --------------------------------------------------------------------------
@@ -1457,16 +1641,20 @@ select.field__control { cursor: pointer; }
   font-family: var(--f-serif);
   font-weight: 400;
   font-size: clamp(46px, 11vw, 100px);
-  line-height: 0.92;
-  letter-spacing: -0.02em;   /* design is -8%; eased for the fallback serif */
+  line-height: 1;              /* [figma Title 100] lh 1.0 */
+  letter-spacing: -0.08em;     /* [figma] Garamond titles track -8% */
   text-transform: uppercase;
   display: flex;
   flex-direction: column;
 }
-.rtitle em { font-style: italic; text-transform: none; }
-.rtitle > span:nth-child(1) { text-align: right; }
-.rtitle > span:nth-child(2) { text-align: center; }
-.rtitle > span:nth-child(3) { text-align: right; }
+.rtitle { align-items: flex-start; }
+.rtitle em { font-style: italic; }
+/* [figma 465:7900] Each line cascades further to the right — a staircase, not a
+   right/centre zigzag. Indents approximate the Figma left offsets (~11/34/44%). */
+.rtitle > span { width: fit-content; }
+.rtitle > span:nth-child(1) { margin-inline-start: 11%; }
+.rtitle > span:nth-child(2) { margin-inline-start: 34%; }
+.rtitle > span:nth-child(3) { margin-inline-start: 45%; }
 
 /* The acid-yellow title laid over the feature photo. */
 .rtitle-sec--image {
@@ -1482,9 +1670,11 @@ select.field__control { cursor: pointer; }
 .rtitle-sec--image::after { content: ""; position: absolute; inset: 0; z-index: -1; background: rgb(0 0 0 / 0.12); }
 @media (min-width: 1024px) { .rtitle-sec--image { min-height: 640px; } }
 
-/* A centred paragraph between sections. [figma hero paragraph] */
-.rpara { padding: 0 var(--gutter) var(--s-11); background: var(--c-paper); color: var(--c-ink); }
-.rpara p { width: min(100%, 600px); margin-inline: auto; text-align: center; font-size: var(--t-body); line-height: var(--lh-body); }
+/* [figma 465:7892] The between-section paragraph is a LEFT-aligned 600px block
+   inset from the left, NOT centred — padding t100 / b150 / x100 on desktop. */
+.rpara { padding: var(--s-9) var(--gutter) var(--s-10); background: var(--c-paper); color: var(--c-ink); }
+.rpara p { width: min(100%, 600px); text-align: left; font-size: var(--t-body); line-height: var(--lh-body); }
+@media (min-width: 1024px) { .rpara { padding: 100px 100px 150px; } }
 
 /* -- Location list — hover reveals a per-row green-duotone map -------------
    The map is a photo multiplied down over the Republic yellow, so it reads as
@@ -1495,30 +1685,38 @@ select.field__control { cursor: pointer; }
 .rloc:hover { background: transparent; }   /* the reveal is the image, not a row wash */
 .rloc__map { display: none; }
 @media (min-width: 1024px) {
+  /* The map now FOLLOWS the cursor with a subtle swing (motion.js §10 drives the
+     transform): it lerps toward the pointer and rotates from its own horizontal
+     velocity, so it trails and swings like it is hanging from the cursor.
+     transform-origin at the top edge makes it a pendulum. */
   .rloc__map {
     display: block;
     position: absolute;
-    inset-block-start: 50%;
-    inset-inline-start: 50%;
-    transform: translate(-50%, -50%) scale(0.96);
+    inset-block-start: 0;
+    inset-inline-start: 0;
     width: 240px;
     height: 320px;
     background: var(--c-republic);
     isolation: isolate;
+    transform-origin: 50% 50%;   /* rotate around the cursor so it stays centred */
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+    transition: opacity 0.35s var(--ease);   /* JS owns the transform */
     z-index: 3;
+    will-change: transform;
   }
   .rloc__map img { width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; }
-  .rloc:hover .rloc__map,
-  .rloc:focus-within .rloc__map { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  .rloc__map.is-on { opacity: 1; }
 }
 
-/* -- Floors — the left render swaps as motion.js sets its src on row hover -- */
-.floors__img img { transition: opacity 0.25s var(--ease); }
-.floor { transition: background 0.15s var(--ease); }
-.floor:hover { background: var(--c-republic); }
+/* -- Floors — the left render cross-fades as motion.js swaps layers on hover -- */
+.floors__img img { transition: opacity 0.4s ease; }
+/* The yellow appears immediately on hover but DECAYS out over 300ms — sweeping
+   the rows leaves a trailing gradient of fading-yellow rows. The direction split
+   is the transition-on-the-target-state trick: the base rule governs the return
+   to white (slow), the :hover rule governs the arrival (instant). */
+.floor { transition: background 300ms ease-out; }
+.floor:hover { background: var(--c-republic); transition-duration: 0ms; }
 
 @media (prefers-reduced-motion: reduce) {
   .rloc__map { transition: none; }
@@ -1544,8 +1742,10 @@ select.field__control { cursor: pointer; }
 }
 .rbenefit { display: flex; flex-direction: column; gap: var(--s-5); align-items: center; text-align: center; }
 .rbenefit img { width: 100%; aspect-ratio: 1; object-fit: cover; }
-.rbenefit p { font-size: var(--t-caps); line-height: var(--lh-body); max-width: 24ch; }
-@media (min-width: 1024px) { .rbenefits { grid-template-columns: repeat(4, 1fr); gap: var(--s-9); } }
+/* [figma 55:3789] captions are Halyard Text Regular 15/1.4 in near-black green
+   (halyard-text is in the same Adobe kit already loaded on this page). */
+.rbenefit p { font-family: "halyard-text", var(--f-sans, sans-serif); font-weight: 400; font-size: var(--t-caps); line-height: 1.4; color: #061202; max-width: 24ch; }
+@media (min-width: 1024px) { .rbenefits { grid-template-columns: repeat(4, 1fr); gap: var(--s-7) 48px; } }   /* [figma] 24px row / 48px col */
 
 /* Brochure CTA — a rounded yellow card rather than a full-bleed band. [465:7915] */
 .rcta { padding: var(--s-10) var(--gutter); background: var(--c-paper); }
@@ -1560,5 +1760,13 @@ select.field__control { cursor: pointer; }
   border-radius: 40px;
   text-align: center;
 }
-.rcta__card .rband__text { max-width: 46ch; }
+/* [figma 465:7917] the CTA lead is Garamond 48, not body copy. */
+.rcta__card .rband__text {
+  max-width: 46ch;
+  font-family: var(--f-serif);
+  font-weight: 400;
+  font-size: clamp(28px, 4vw, 48px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
 @media (min-width: 1024px) { .rcta__card { border-radius: 80px; padding: var(--s-11); } }

@@ -5,10 +5,16 @@ cd "$(dirname "$0")"
 
 rm -rf dist && mkdir -p dist
 
-# Copy HTML, CSS, JS, and non-image assets from src/ to dist/
+# Copy HTML, CSS, JS, and non-image assets from src/ to dist/.
+# NB: use cp, not rsync — the Cloudflare Pages build image has no rsync, so the
+# old `rsync ... || true` silently dropped every non-img asset (fonts, logos,
+# republic/, videos/, …) from the deploy while masking the failure.
 cp ./src/*.html dist/ 2>/dev/null || true
 cp -R src/css src/js dist/ 2>/dev/null || true
-rsync -a --exclude '.DS_Store' --exclude 'img/*' src/assets/ dist/assets/ 2>/dev/null || true
+mkdir -p dist/assets
+# Everything under src/assets EXCEPT img/ (Pillow regenerates img/ as jpg below).
+find src/assets -mindepth 1 -maxdepth 1 ! -name img -exec cp -R {} dist/assets/ \;
+find dist/assets -name '.DS_Store' -delete
 mkdir -p dist/assets/img
 
 # ---- Imagery ---------------------------------------------------------------
