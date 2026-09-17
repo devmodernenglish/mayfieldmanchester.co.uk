@@ -860,36 +860,48 @@
     });
   });
 
-  /* ---- 11. Benefit panels — fan-stack scale-down -----------------------
-     The cards pin (CSS position:sticky). As each later card scrolls up to cover
-     the one before, that covered card scales down a touch, so the pile fans out
-     like a filing system. [design ref 2026-09-17] The transform is on the sticky
-     element itself (not an ancestor), so it does not break the pin. */
+  /* ---- 11. Benefit panels — pinned stacking deck -----------------------
+     The .bpanels section is a tall scroll runway; its .bpanels__pin wrapper is
+     sticky, so it stays put while the user scrolls through the runway. Over that
+     distance each card slides up from below and stacks, the earlier ones scaling
+     back (-STEP) and lifting (-PEEK) as later cards land on top. Once all are
+     stacked (progress 1) the sticky pin releases and the whole deck scrolls away
+     as one. Technique from sohub.digital (GSAP pin) rebuilt in vanilla JS.
+     [design ref 2026-09-17] */
   (() => {
-    const cards = Array.from(document.querySelectorAll(".bpanels > .bpanel"));
-    if (reduced || cards.length < 2) return;
-    const STEP = 0.05;                 // scale lost per fully-stacked card behind
+    const section = document.querySelector(".bpanels");
+    const pin = section && section.querySelector(".bpanels__pin");
+    const cards = pin ? Array.from(pin.querySelectorAll(".bpanel")) : [];
+    if (reduced || !section || cards.length < 2) return;
+    const N = cards.length;
     const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-    cards.forEach((c) => { c.style.transformOrigin = "center top"; c.style.willChange = "transform"; });
-    let tops = cards.map(() => 0);
-    const measure = () => { tops = cards.map((c) => parseFloat(getComputedStyle(c).top) || 0); };
+    const STEP = 0.05;                                 // scale lost per card in front
+    cards.forEach((c, i) => { c.style.zIndex = String(i); c.style.willChange = "transform"; });
     let raf = 0;
     const update = () => {
       raf = 0;
-      const ramp = window.innerHeight * 0.6;   // distance over which a later card "arrives"
-      for (let i = 0; i < cards.length; i++) {
-        let covered = 0;
-        for (let j = i + 1; j < cards.length; j++) {
-          const rt = cards[j].getBoundingClientRect().top;
-          covered += clamp((ramp - (rt - tops[j])) / ramp, 0, 1);
-        }
-        cards[i].style.transform = covered ? `scale(${(1 - covered * STEP).toFixed(4)})` : "";
+      const vh = window.innerHeight;
+      const total = section.offsetHeight - vh;         // scrollable runway
+      const P = total > 0 ? clamp(-section.getBoundingClientRect().top / total, 0, 1) : 0;
+      const TOP = vh < 800 ? 48 : 60;                  // [figma] first card sits this far
+      const PEEK = vh < 800 ? 34 : 44;                 // from the section top; peek per card
+      const ENTER = vh;                                // how far below a card starts
+      // "fill" runs 1 → N across the runway: the first card is already present (anchored
+      // near the top, per Figma) when the section pins — no empty lead-in — and each
+      // later card then slides up and lands a little lower, the earlier ones scaling back.
+      const F = P * (N - 1) + 1;
+      for (let i = 0; i < N; i++) {
+        const enter  = clamp(F - i, 0, 1);                 // 0→1 as card i arrives
+        const recede = clamp(F - (i + 1), 0, N - 1 - i);   // later cards now on top of i
+        const restTop = TOP + i * PEEK;                    // back card highest, front lowest
+        const ty = (1 - enter) * ENTER + enter * restTop;
+        const scale = 1 - recede * STEP;
+        cards[i].style.transform = `translateY(${ty.toFixed(1)}px) scale(${scale.toFixed(4)})`;
       }
     };
     const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
-    measure();
     addEventListener("scroll", onScroll, { passive: true });
-    addEventListener("resize", () => { measure(); onScroll(); });
+    addEventListener("resize", onScroll);
     update();
   })();
 })();
