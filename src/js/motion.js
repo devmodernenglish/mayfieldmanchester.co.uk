@@ -859,4 +859,37 @@
       });
     });
   });
+
+  /* ---- 11. Benefit panels — fan-stack scale-down -----------------------
+     The cards pin (CSS position:sticky). As each later card scrolls up to cover
+     the one before, that covered card scales down a touch, so the pile fans out
+     like a filing system. [design ref 2026-09-17] The transform is on the sticky
+     element itself (not an ancestor), so it does not break the pin. */
+  (() => {
+    const cards = Array.from(document.querySelectorAll(".bpanels > .bpanel"));
+    if (reduced || cards.length < 2) return;
+    const STEP = 0.05;                 // scale lost per fully-stacked card behind
+    const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+    cards.forEach((c) => { c.style.transformOrigin = "center top"; c.style.willChange = "transform"; });
+    let tops = cards.map(() => 0);
+    const measure = () => { tops = cards.map((c) => parseFloat(getComputedStyle(c).top) || 0); };
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const ramp = window.innerHeight * 0.6;   // distance over which a later card "arrives"
+      for (let i = 0; i < cards.length; i++) {
+        let covered = 0;
+        for (let j = i + 1; j < cards.length; j++) {
+          const rt = cards[j].getBoundingClientRect().top;
+          covered += clamp((ramp - (rt - tops[j])) / ramp, 0, 1);
+        }
+        cards[i].style.transform = covered ? `scale(${(1 - covered * STEP).toFixed(4)})` : "";
+      }
+    };
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
+    measure();
+    addEventListener("scroll", onScroll, { passive: true });
+    addEventListener("resize", () => { measure(); onScroll(); });
+    update();
+  })();
 })();
