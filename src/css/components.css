@@ -204,14 +204,18 @@
 
 .initial-nav__row {
   position: absolute;
-  inset-block-start: var(--nav-band);
+  inset-block-start: var(--nav-band);   /* [figma 465:7789] row sits below the 12px colour band */
   inset-inline: 0;
-  height: calc(var(--nav-init-h) - var(--nav-band));
+  height: calc(var(--nav-init-h) - var(--nav-band));   /* 36px row */
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  padding-inline: var(--s-3);
+  padding: 9px var(--s-3) 0;             /* [figma] text 9px below the band, 10px each side */
 }
+/* The Menu <button> has a UA text-transform:none that beats the row's inherited
+   uppercase (the Scroll <span> inherits fine), so "Menu" rendered mixed-case while
+   Scroll was CAPS. Force Caps 15 to match both words and the sticky nav's toggle. */
+.initial-nav__row button { text-transform: uppercase; }
 
 /* --------------------------------------------------------------------------
    3. Hero                                          [figma 261:8642 / 281:15868]
@@ -733,6 +737,13 @@
   .window { opacity: 1; }
   .nav { transform: none; }
 }
+
+/* Menu open → force the bar on-screen even at the top of the page. The scroll-
+   timeline `nav-in` animation (fill-mode:both) otherwise holds the bar at
+   translateY(-100%) until 45svh, so opening from the hero's initial-nav "Menu"
+   expanded the menu off-screen and locked the page. Killing the animation lets the
+   transform take effect. Placed after the @supports block so it wins the cascade. */
+.menu-open .nav { animation: none; transform: none; opacity: 1; }
 
 /* --------------------------------------------------------------------------
    12. Link hover — the directional rule
@@ -1583,11 +1594,17 @@ select.field__control { cursor: pointer; }
 .rstat__label { font-size: var(--t-caps); text-transform: uppercase; }
 @media (min-width: 1024px) { .rstats { grid-template-columns: repeat(4, 1fr); } }
 
-/* -- 29. Benefit panel — a yellow split card              [figma 214:2088] */
-.bpanels { display: flex; flex-direction: column; gap: var(--s-9); padding: var(--s-10) var(--gutter); background: var(--c-paper); }
-/* Mobile base = Figma mobile panel [281:16286]: 335x571, 4px border, 30px radius,
-   fixed 270 image band, text pad 20/20/30, Garamond 42 title, 12px tags (gap
-   4/24), 15px body, desc gap 12. Desktop values are restored in the @media below. */
+/* -- 29. Benefit panels — pinned stacking deck   [figma 214:2088 / motion.js §11]
+   The section is a tall scroll runway; the .bpanels__pin wrapper pins (sticky) while
+   the cards slide up from below and stack — each card behind scaled -0.05 and lifted
+   a little — then, once stacked, the whole pinned deck releases and scrolls away as
+   ONE. Technique reverse-engineered from sohub.digital's GSAP pin, rebuilt here in
+   vanilla CSS + JS (motion.js drives the per-card transform from scroll progress). */
+.bpanels { background: var(--c-paper); }
+/* Fallback (no JS / reduced motion): the cards just stack in normal flow. */
+.bpanels__pin { display: flex; flex-direction: column; align-items: center; gap: var(--s-9); padding: var(--s-10) var(--gutter); }
+
+/* Mobile card = Figma mobile panel [281:16286]: portrait, image top / text bottom. */
 .bpanel {
   display: flex;
   flex-direction: column;
@@ -1596,14 +1613,9 @@ select.field__control { cursor: pointer; }
   border-radius: 30px;
   background: var(--c-republic);
   color: var(--c-ink);
+  width: min(calc(100vw - 2 * var(--gutter)), 500px);
   min-height: 571px;
-  position: sticky;                 /* the pile-up runs on mobile too */
 }
-/* Sticky stack (mobile): each card pins a little lower than the last, so a sliver
-   of each earlier card peeks above the next as they scroll into a pile. */
-.bpanels > .bpanel:nth-child(1) { top: 40px; }
-.bpanels > .bpanel:nth-child(2) { top: 70px; }
-.bpanels > .bpanel:nth-child(3) { top: 100px; }
 .bpanel__img { height: 270px; flex: 0 0 auto; }
 .bpanel__img img { width: 100%; height: 100%; object-fit: cover; }
 .bpanel__text { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-between; gap: var(--s-6); padding: var(--s-6) var(--s-6) var(--s-8); }
@@ -1612,30 +1624,37 @@ select.field__control { cursor: pointer; }
 .bpanel__title em { font-style: italic; }
 .bpanel__tags { display: flex; flex-wrap: wrap; gap: 4px var(--s-7); font-size: 12px; text-transform: uppercase; }
 .bpanel__text .t-body { font-size: 15px; }
+
+/* Pin behaviour: runway + sticky wrapper + absolutely-stacked cards (JS drives them). */
+.js .bpanels { position: relative; height: 300vh; }
+.js .bpanels__pin { position: sticky; top: 0; height: 100svh; display: block; padding: 0; overflow: hidden; }
+.js .bpanel { position: absolute; top: 0; left: 0; right: 0; margin-inline: auto; transform-origin: center top; will-change: transform; }
+
 @media (min-width: 1024px) {
-  /* Desktop: horizontal card — image left / text right [figma 465:7895]. Mobile stays
-     the portrait card; the fan-stack scale-down (motion.js) runs on both. */
-  .bpanels { align-items: center; }
+  /* Desktop card: horizontal — image left / text right [figma 465:7895]. */
   .bpanel {
     flex-direction: row;
     align-items: stretch;
-    width: min(100%, 1120px);
+    width: min(calc(100vw - 2 * var(--gutter)), 1120px);
     height: 560px;
-    min-height: 0;                               /* undo the mobile 571 floor */
+    min-height: 0;
     border-width: 8px;
     border-radius: 50px;
-    position: sticky;
   }
   .bpanel > * { flex: 1 1 0; min-width: 0; }
-  .bpanel__img { height: auto; }                 /* fill the row (undo mobile 270 band) */
+  .bpanel__img { height: auto; }
   .bpanel__text { padding: var(--s-9); gap: var(--s-9); }
   .bpanel__text > div { gap: var(--s-6); }
   .bpanel__title { font-size: clamp(44px, 9vw, 80px); }   /* [figma Title 80] */
   .bpanel__tags { gap: var(--s-7); font-size: var(--t-caps); }   /* [figma Caps 15] */
   .bpanel__text .t-body { font-size: var(--t-body); }             /* [figma Body 22] */
-  .bpanels > .bpanel:nth-child(1) { top: 74px; }
-  .bpanels > .bpanel:nth-child(2) { top: 112px; }
-  .bpanels > .bpanel:nth-child(3) { top: 150px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* No pin/scroll animation — cards fall back to readable normal flow. */
+  .js .bpanels { height: auto; }
+  .js .bpanels__pin { position: static; height: auto; display: flex; flex-direction: column; align-items: center; gap: var(--s-9); padding: var(--s-10) var(--gutter); overflow: visible; }
+  .js .bpanel { position: static; transform: none; }
 }
 
 /* -- 30. Floors — image + schedule table                  [figma 465:7910] */
