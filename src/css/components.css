@@ -395,6 +395,13 @@
 
 .benefit__body { display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-6); }
 
+/* Mobile only: the white text blocks pass IN FRONT of the cascading video window
+   so it slides BEHIND them (keeping the copy readable), while the image plates stay
+   behind it. Desktop keeps the window on top of everything. [user 2026-09-17] */
+@media (max-width: 1023px) {
+  .benefit { z-index: 51; }          /* above .window (50), below the nav (60) */
+}
+
 @media (min-width: 1024px) {
   /* The Figma component is 480px tall, but it does NOT sit flush against the
      plates above and below it: img1 ends at 1640 and the benefit starts at
@@ -1083,19 +1090,23 @@ select.field__control { cursor: pointer; }
 .flag { display: none; }
 
 @media (min-width: 1024px) {
+  /* Sits fixed at the bottom-left of the viewport (sticky, bottom) while scrolling,
+     then — because the element lives in the flow just before .insta — it un-sticks and
+     parks just above the "#mayfieldmcr / The lens of Mayfield" row rather than riding
+     on over the footer. height:0 so it takes no flow space; the img hangs up from the
+     sticky line. [user 2026-09-17] */
   .flag {
-    display: block;   /* the media query set sticky/height but never re-enabled
-                         display, so the base `display:none` kept the flag hidden
-                         at every width — it had never actually shown. */
+    display: block;
     position: sticky;
-    inset-block-start: calc(var(--nav-h) + var(--s-5));
-    z-index: 15;
+    inset-block-start: auto;
+    inset-block-end: var(--s-6);       /* ~20px from the viewport bottom */
+    z-index: 55;                       /* above content + window, below the nav (60) */
     height: 0;
     pointer-events: none;
   }
   .flag img {
     position: absolute;
-    inset-block-start: 0;
+    inset-block-end: 0;                 /* hang the flag up from the sticky line */
     inset-inline-start: var(--s-3);
     width: 120px;
     height: 120px;
