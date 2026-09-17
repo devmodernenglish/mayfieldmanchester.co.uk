@@ -423,6 +423,7 @@
   font-size: var(--t-caps);
   line-height: var(--lh-flat);
   text-transform: uppercase;
+  white-space: nowrap;              /* labels never wrap (e.g. brochure btn on mobile) */
   cursor: pointer;
   transition: background 0.2s var(--ease), color 0.2s var(--ease);
 }
@@ -958,6 +959,13 @@
 
 .form { width: min(100%, 600px); display: flex; flex-direction: column; gap: var(--s-9); }
 .form__intro { text-align: center; }
+/* Mobile [figma 465:11856]: the form is just the five fields + submit. The enquiry
+   type (fixed to this page) and the intro line are desktop-only; the select stays in
+   the DOM so its default value still posts. */
+@media (max-width: 1023px) {
+  .form > .field--select,
+  .form__intro { display: none; }
+}
 /* [figma 465:8185] the block of fields tightens to 8px between boxes, inside
    the 40px rhythm of the form as a whole. 8 is off the spacing scale by
    design — this is the one place the fields read as a single stacked group. */
@@ -1268,10 +1276,10 @@ select.field__control { cursor: pointer; }
    (0 = front), z-index, dim and opacity. */
 .gallery__stage {
   position: relative;
-  height: 360px;
+  height: min(86vw, 335px);       /* [figma mobile] front card is a 335px square */
   perspective: 1600px;
   perspective-origin: 50% 42%;
-  --rise: 104px;
+  --rise: 84px;
   --recede: 440px;
 }
 .gallery__slide {
@@ -1279,8 +1287,8 @@ select.field__control { cursor: pointer; }
   inset-block-start: 50%;
   inset-inline-start: 50%;
   margin: 0;
-  width: 240px;
-  height: 320px;
+  width: min(86vw, 335px);
+  height: min(86vw, 335px);
   transform-style: preserve-3d;
   --d: 0;
   transform:
@@ -1339,21 +1347,17 @@ select.field__control { cursor: pointer; }
   z-index: 2100;
 }
 
-/* Nav flanks the stack, VERTICALLY CENTRED on the gallery: the count far left,
-   Prev/Next far right (Figma 496:18061). The row lets pointer events through so
-   it never blocks dragging the card in the middle; only the controls catch them. */
+/* Mobile [figma 517:20074-76]: the controls sit in a row BELOW the stack — count
+   far left, Prev/Next far right. On desktop they move to flank the stack, vertically
+   centred (Figma 496:18061), letting pointer events through so they never block the
+   drag in the middle. */
 .gallery__nav {
-  position: absolute;
-  inset-block-start: 50%;
-  inset-inline: var(--gutter);
-  transform: translateY(-50%);
   display: flex;
   align-items: center;
   gap: var(--s-6);
+  margin-block-start: var(--s-9);
   font-size: var(--t-caps);
   text-transform: uppercase;
-  z-index: 5;
-  pointer-events: none;
 }
 .gallery__nav > * { pointer-events: auto; }
 .gallery__nav button { cursor: pointer; }
@@ -1362,6 +1366,15 @@ select.field__control { cursor: pointer; }
 @media (min-width: 1024px) {
   .gallery__stage { height: 520px; --rise: 120px; --recede: 560px; }
   .gallery__slide { width: 360px; height: 480px; }
+  .gallery__nav {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline: var(--gutter);
+    transform: translateY(-50%);
+    margin-block-start: 0;
+    z-index: 5;
+    pointer-events: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1524,7 +1537,7 @@ select.field__control { cursor: pointer; }
   flex-direction: column;
   align-items: center;
   gap: var(--s-9);              /* [figma] 40px between lead, button, logo */
-  padding: var(--s-11) var(--gutter);
+  padding: 200px var(--gutter);  /* [figma mobile] airy 200px block padding */
   background: var(--c-paper);
   color: var(--c-ink);
   text-align: center;
@@ -1532,24 +1545,28 @@ select.field__control { cursor: pointer; }
 @media (min-width: 1024px) { .rband { padding-block: 140px; } }   /* the intro band's generous vertical space */
 .rband__logo { width: 138px; height: auto; }
 /* [figma Hero 48] Garamond 48px, lh 1.0, tracking -4%. */
-.rband__lead { max-width: 30ch; font-family: var(--f-serif); font-weight: 400; font-size: clamp(30px, 4vw, 48px); line-height: 1; letter-spacing: -0.04em; }
+.rband__lead { max-width: 30ch; font-family: var(--f-serif); font-weight: 400; font-size: clamp(40px, 4vw, 48px); line-height: 1; letter-spacing: -0.04em; }   /* [figma] Hero 40 mobile → 48 desktop */
 .rband__text { max-width: 60ch; }
 
 /* -- 27. Location list                                    [figma 465:7886] */
 .rlocations { background: var(--c-paper); color: var(--c-ink); }
+/* Mobile [figma 330:16898]: a 110px green-duotone map thumbnail on the left, then
+   the name (Garamond 30) above the walk-time (12) — the desktop cursor-follow map
+   is restored in the @media below. */
 .rloc {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--s-6);
-  padding: var(--s-8) var(--s-8) var(--s-7);   /* [figma] rows inset 30px, not the 60px gutter */
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  grid-template-rows: auto 1fr auto;
+  column-gap: 10px;
+  padding: 10px;
   border-block-start: 2px solid currentColor;
   transition: background 0.2s var(--ease);
 }
 .rlocations > .rloc:last-child { border-block-end: 2px solid currentColor; }
-.rloc:hover { background: var(--c-republic); }
-.rloc__name { font-family: var(--f-serif); font-weight: 400; font-size: clamp(28px, 5vw, 42px); line-height: 1; letter-spacing: -0.08em; text-transform: uppercase; }
-.rloc__time { font-size: var(--t-caps-l); white-space: nowrap; }   /* [figma Body 18] */
+.rloc__map { grid-column: 1; grid-row: 1 / 4; align-self: center; width: 110px; height: 110px; overflow: hidden; background: var(--c-republic); }
+.rloc__map img { width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; }
+.rloc__name { grid-column: 2; grid-row: 1; font-family: var(--f-serif); font-weight: 400; font-size: 30px; line-height: 1; letter-spacing: -0.08em; text-transform: uppercase; }
+.rloc__time { grid-column: 2; grid-row: 3; align-self: end; font-size: 12px; line-height: 1.1; white-space: nowrap; }   /* [figma Body 12] */
 
 /* -- 28. Benefit stats — a row of figures                 [figma 505:19992] */
 .rstats {
@@ -1568,25 +1585,57 @@ select.field__control { cursor: pointer; }
 
 /* -- 29. Benefit panel — a yellow split card              [figma 214:2088] */
 .bpanels { display: flex; flex-direction: column; gap: var(--s-9); padding: var(--s-10) var(--gutter); background: var(--c-paper); }
+/* Mobile base = Figma mobile panel [281:16286]: 335x571, 4px border, 30px radius,
+   fixed 270 image band, text pad 20/20/30, Garamond 42 title, 12px tags (gap
+   4/24), 15px body, desc gap 12. Desktop values are restored in the @media below. */
 .bpanel {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border: 6px solid var(--c-paper);
-  border-radius: 40px;
+  border: 4px solid var(--c-paper);
+  border-radius: 30px;
   background: var(--c-republic);
   color: var(--c-ink);
+  min-height: 571px;
+  position: sticky;                 /* the pile-up runs on mobile too */
 }
-.bpanel__img { aspect-ratio: 4 / 3; }
+/* Sticky stack (mobile): each card pins a little lower than the last, so a sliver
+   of each earlier card peeks above the next as they scroll into a pile. */
+.bpanels > .bpanel:nth-child(1) { top: 40px; }
+.bpanels > .bpanel:nth-child(2) { top: 70px; }
+.bpanels > .bpanel:nth-child(3) { top: 100px; }
+.bpanel__img { height: 270px; flex: 0 0 auto; }
 .bpanel__img img { width: 100%; height: 100%; object-fit: cover; }
-.bpanel__text { display: flex; flex-direction: column; justify-content: space-between; gap: var(--s-9); padding: var(--s-9); }   /* [figma] 40px column padding */
-.bpanel__title { font-family: var(--f-serif); font-weight: 400; font-size: clamp(44px, 9vw, 80px); line-height: 1; letter-spacing: -0.08em; text-transform: uppercase; }  /* [figma Title 80] -8% */
+.bpanel__text { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-between; gap: var(--s-6); padding: var(--s-6) var(--s-6) var(--s-8); }
+.bpanel__text > div { display: flex; flex-direction: column; gap: var(--s-4); }
+.bpanel__title { font-family: var(--f-serif); font-weight: 400; font-size: 42px; line-height: 1; letter-spacing: -0.08em; text-transform: uppercase; }
 .bpanel__title em { font-style: italic; }
-.bpanel__tags { display: flex; flex-wrap: wrap; gap: var(--s-7); font-size: var(--t-caps); text-transform: uppercase; margin-block-end: var(--s-6); }   /* [figma] tags gap 24, desc gap 20 */
+.bpanel__tags { display: flex; flex-wrap: wrap; gap: 4px var(--s-7); font-size: 12px; text-transform: uppercase; }
+.bpanel__text .t-body { font-size: 15px; }
 @media (min-width: 1024px) {
-  .bpanel { flex-direction: row; align-items: stretch; border-width: 8px; border-radius: 50px; }
+  /* Desktop: horizontal card — image left / text right [figma 465:7895]. Mobile stays
+     the portrait card; the fan-stack scale-down (motion.js) runs on both. */
+  .bpanels { align-items: center; }
+  .bpanel {
+    flex-direction: row;
+    align-items: stretch;
+    width: min(100%, 1120px);
+    height: 560px;
+    min-height: 0;                               /* undo the mobile 571 floor */
+    border-width: 8px;
+    border-radius: 50px;
+    position: sticky;
+  }
   .bpanel > * { flex: 1 1 0; min-width: 0; }
-  .bpanel__img { aspect-ratio: auto; }
+  .bpanel__img { height: auto; }                 /* fill the row (undo mobile 270 band) */
+  .bpanel__text { padding: var(--s-9); gap: var(--s-9); }
+  .bpanel__text > div { gap: var(--s-6); }
+  .bpanel__title { font-size: clamp(44px, 9vw, 80px); }   /* [figma Title 80] */
+  .bpanel__tags { gap: var(--s-7); font-size: var(--t-caps); }   /* [figma Caps 15] */
+  .bpanel__text .t-body { font-size: var(--t-body); }             /* [figma Body 22] */
+  .bpanels > .bpanel:nth-child(1) { top: 74px; }
+  .bpanels > .bpanel:nth-child(2) { top: 112px; }
+  .bpanels > .bpanel:nth-child(3) { top: 150px; }
 }
 
 /* -- 30. Floors — image + schedule table                  [figma 465:7910] */
@@ -1596,7 +1645,32 @@ select.field__control { cursor: pointer; }
    562x1200 portrait; the rest are ~square) can never change the box height and
    shove the page on hover. The box takes its height from its aspect-ratio
    (mobile) or from the flex row = table height (desktop); the img just covers. */
-.floors__img { aspect-ratio: 3 / 2; position: relative; overflow: hidden; }
+/* Mobile: horizontal swipe carousel of labelled floor renders [figma 465:11866].
+   Native scroll-snap — no JS. The single-render .floors__img is desktop-only. */
+.floors__carousel {
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.floors__carousel::-webkit-scrollbar { display: none; }
+.floors__slide {
+  flex: 0 0 min(92vw, 345px);
+  scroll-snap-align: start;
+  position: relative;
+  margin: 0;
+}
+.floors__slide { border-radius: 20px; overflow: hidden; }   /* clip children to the rounded corners too */
+.floors__slide img { display: block; width: 100%; height: 435px; object-fit: cover; border-radius: 20px; }
+.floors__slide figcaption {
+  position: absolute; inset-block-start: 10px; inset-inline-end: 8px;
+  padding: 6px;
+  background: #fff; color: #000;
+  font-size: 12px; line-height: 1.1; text-transform: uppercase;
+}
+.floors__img { display: none; }   /* mobile shows the carousel instead */
 .floors__img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .floors__table { padding: var(--s-9) var(--gutter); }
 .floors__head, .floor {
@@ -1618,7 +1692,8 @@ select.field__control { cursor: pointer; }
 [data-mode="night"] .floor, [data-mode="night"] .floors__list > .floor:last-child { border-color: rgb(255 255 255 / 0.3); }
 @media (min-width: 1024px) {
   .floors { flex-direction: row; }
-  .floors__img { flex: 1 1 0; aspect-ratio: auto; }
+  .floors__carousel { display: none; }                       /* desktop uses the cross-fade render */
+  .floors__img { display: block; position: relative; overflow: hidden; flex: 1 1 0; aspect-ratio: auto; }
   .floors__table { flex: 1 1 0; align-self: center; }
   .floors__head, .floor { grid-template-columns: 170px 1fr 100px; }   /* [figma] Floor 170 / Size 1fr / Capacity 100 */
 }
@@ -1640,35 +1715,52 @@ select.field__control { cursor: pointer; }
 .rtitle {
   font-family: var(--f-serif);
   font-weight: 400;
-  font-size: clamp(46px, 11vw, 100px);
-  line-height: 1;              /* [figma Title 100] lh 1.0 */
+  font-size: 50px;             /* [figma mobile Title 50] */
+  line-height: 0.8;            /* 40px steps → 3 tight lines in a 120px block */
   letter-spacing: -0.08em;     /* [figma] Garamond titles track -8% */
   text-transform: uppercase;
   display: flex;
   flex-direction: column;
 }
-.rtitle { align-items: flex-start; }
 .rtitle em { font-style: italic; }
-/* [figma 465:7900] Each line cascades further to the right — a staircase, not a
-   right/centre zigzag. Indents approximate the Figma left offsets (~11/34/44%). */
-.rtitle > span { width: fit-content; }
-.rtitle > span:nth-child(1) { margin-inline-start: 11%; }
-.rtitle > span:nth-child(2) { margin-inline-start: 34%; }
-.rtitle > span:nth-child(3) { margin-inline-start: 45%; }
+/* [figma mobile 465:11833] The title block zig-zags by POSITION: first line left,
+   last line right, any middle line centred (so 2-line titles read left/right, and a
+   lone line stays left). Each line drops 40px with a slight overlap. */
+.rtitle > span { text-align: center; }
+.rtitle > span:first-child { text-align: left; }
+.rtitle > span:last-child { text-align: right; }
+.rtitle > span:only-child { text-align: left; }
+
+/* Desktop widens into the cascading staircase [figma 465:7900]. */
+@media (min-width: 1024px) {
+  .rtitle { font-size: clamp(46px, 11vw, 100px); line-height: 1; align-items: flex-start; }
+  .rtitle > span { width: fit-content; text-align: left; }
+  .rtitle > span:nth-child(1) { margin-inline-start: 11%; }
+  .rtitle > span:nth-child(2) { margin-inline-start: 34%; }
+  .rtitle > span:nth-child(3) { margin-inline-start: 45%; }
+}
 
 /* The acid-yellow title laid over the feature photo. */
+/* Mobile [figma 465:11828]: a 10px paper gutter on the top and sides, flush to the
+   section's bottom, square corners. The gutter is a border so the <img> can keep the
+   reliable inset:0/100%/cover sizing (auto width on a replaced element breaks it). */
 .rtitle-sec--image {
   position: relative;
   isolation: isolate;
   overflow: hidden;
   display: grid;
   align-content: center;
-  min-height: 60svh;
+  min-height: 520px;
+  padding-inline: var(--s-3);        /* title sits ~20px in: 10 border + 10 padding */
+  border: 10px solid var(--c-paper);
+  border-block-end-width: 0;
   color: var(--c-republic);
 }
 .rtitle-sec__bg { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; object-fit: cover; }
 .rtitle-sec--image::after { content: ""; position: absolute; inset: 0; z-index: -1; background: rgb(0 0 0 / 0.12); }
-@media (min-width: 1024px) { .rtitle-sec--image { min-height: 640px; } }
+@media (min-width: 1024px) {
+  .rtitle-sec--image { min-height: 640px; padding-inline: var(--gutter); border-width: 0; }
+}
 
 /* [figma 465:7892] The between-section paragraph is a LEFT-aligned 600px block
    inset from the left, NOT centred — padding t100 / b150 / x100 on desktop. */
@@ -1676,15 +1768,25 @@ select.field__control { cursor: pointer; }
 .rpara p { width: min(100%, 600px); text-align: left; font-size: var(--t-body); line-height: var(--lh-body); }
 @media (min-width: 1024px) { .rpara { padding: 100px 100px 150px; } }
 
-/* -- Location list — hover reveals a per-row green-duotone map -------------
+/* -- Location list — the green-duotone map -------------------------------
    The map is a photo multiplied down over the Republic yellow, so it reads as
-   the green duotone the design uses. Desktop only: it is a hover affordance and
-   at 375px there is no room for a centred plate over the row text. */
+   the green duotone the design uses. On mobile it is a static 110px thumbnail
+   (styled in the base .rloc rules above); on desktop it becomes a cursor-
+   following hover reveal. */
 .rlocations { position: relative; isolation: isolate; }
 .rloc { position: static; }
-.rloc:hover { background: transparent; }   /* the reveal is the image, not a row wash */
-.rloc__map { display: none; }
 @media (min-width: 1024px) {
+  /* Restore the desktop row: name left, walk-time right, no inline thumbnail. */
+  .rloc {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s-6);
+    padding: var(--s-8) var(--s-8) var(--s-7);   /* [figma] rows inset 30px */
+  }
+  .rloc:hover { background: transparent; }   /* the reveal is the image, not a row wash */
+  .rloc__name { font-size: clamp(28px, 5vw, 42px); }
+  .rloc__time { font-size: var(--t-caps-l); }   /* [figma Body 18] */
   /* The map now FOLLOWS the cursor with a subtle swing (motion.js §10 drives the
      transform): it lerps toward the pointer and rotates from its own horizontal
      velocity, so it trails and swings like it is hanging from the cursor.
