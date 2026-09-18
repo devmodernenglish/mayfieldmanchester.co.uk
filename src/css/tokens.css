@@ -66,7 +66,7 @@
      and the homepage inherits it ("this will get carried over to the home
      page as well, and notice it's green at the top"). Values are the Figma
      variables, read off the five park frames. */
-  --c-overcast: #a6ff27;
+  --c-overcast: #d6ffa2;
   --c-sunny:    #ffb700;
   --c-rain:     #69e3ff;
   --c-frost:    #69ffe1;
@@ -269,6 +269,24 @@ html.js:not(.wx-ready) { --c-accent: #ffffff; }
   /* A light-grey field would be a lantern on the navy page; a faint white wash
      reads as the same "recessed input" against the dark instead. */
   --c-field: rgb(255 255 255 / 0.08);
+}
+
+/* Republic opts out of night's palette. The sub-brand is a fixed acid yellow
+   on white — it already ignores the weather (--c-accent above), and it is
+   meant to read the same after dark, so every token night repoints is handed
+   straight back to its daylight value.
+
+   Doing it here, on the tokens, covers everything downstream in one place.
+   The handful of night rules that set a literal colour rather than a token
+   carry :not([data-brand="republic"]) in components.css to match.
+
+   Two attributes on <html> = (0,2,0), which outranks [data-mode="night"]
+   (0,1,0), so this wins wherever both are set. */
+[data-mode="night"][data-brand="republic"] {
+  --c-ink:   #000000;
+  --c-paper: #ffffff;
+  --c-wash:  rgb(255 255 255 / 0.2);
+  --c-field: #efefef;
 }
 
 @media (prefers-reduced-motion: reduce) {

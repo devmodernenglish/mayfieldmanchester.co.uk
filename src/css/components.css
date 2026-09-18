@@ -167,6 +167,13 @@
   .nav__mark { width: 104px; }
   /* Four columns across the full viewport. */
   .nav__menu { flex-direction: row; }
+  /* Once the panels are side by side each one is only a quarter of the
+     viewport, so the longest label sets the size. At --t-title (58px) the four
+     labels measure 1079px against a 1024px row and the widest is cut. Fluid
+     rather than a smaller fixed size: no single value fits 1024 AND still
+     looks right at 1920, because the panel grows with the viewport and the
+     type does not. The cap keeps 58px on wide screens, where there is room. */
+  .mpanel__label { font-size: clamp(30px, 3.5vw, 58px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -660,6 +667,44 @@
 }
 .foot__logos { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px var(--s-6); }
 .foot__logos img { height: auto; }
+
+/* The partner marks are PAINTED, not placed. Each exported SVG is solid black,
+   which is invisible on the navy bar once night flips the footer — and an
+   <img> cannot be recoloured. So each one is a mask filled with currentColor,
+   the same technique as .rhero__logo and .dest__icon.
+
+   It takes --c-ink rather than a hardcoded white, so there is no night-only
+   rule to keep in sync: black on the acid bar by day, white on the navy at
+   night, and correct in any state added later. Sizes stay on the element
+   because they are the artwork's own dimensions. */
+.foot__logo {
+  display: block;
+  flex: 0 0 auto;
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat;   mask-repeat: no-repeat;
+  -webkit-mask-position: center;    mask-position: center;
+  -webkit-mask-size: contain;       mask-size: contain;
+}
+.foot__logo--mcc {
+  width: 133px; height: 25px;
+  -webkit-mask-image: url("../assets/icons/logo-mcc.svg");
+          mask-image: url("../assets/icons/logo-mcc.svg");
+}
+.foot__logo--tfgm {
+  width: 127px; height: 31px;
+  -webkit-mask-image: url("../assets/icons/logo-tfgm.svg");
+          mask-image: url("../assets/icons/logo-tfgm.svg");
+}
+.foot__logo--landsec {
+  width: 43px; height: 51px;
+  -webkit-mask-image: url("../assets/icons/logo-landsec.svg");
+          mask-image: url("../assets/icons/logo-landsec.svg");
+}
+.foot__logo--platform4 {
+  width: 62px; height: 51px;
+  -webkit-mask-image: url("../assets/icons/logo-platform-4.svg");
+          mask-image: url("../assets/icons/logo-platform-4.svg");
+}
 .foot__legal { display: flex; justify-content: space-between; gap: var(--s-6); width: 100%; }
 
 /* Mobile only. The links read first and the stamp sits to their right; DOM
@@ -1191,6 +1236,17 @@ select.field__control { cursor: pointer; }
 .phero__inner { display: flex; flex-direction: column; align-items: center; gap: var(--s-6); width: min(100%, 880px); }
 .phero__sub { text-transform: uppercase; }
 
+/* The Park wordmark standing in for a text h1. aspect-ratio comes from the
+   file's own 200x46 viewBox, so the box can never crop or letterbox the art —
+   only the width below decides how big it gets. */
+.phero__mark {
+  width: min(86vw, 660px);
+  aspect-ratio: 200 / 46;
+  background-color: currentColor;
+  -webkit-mask: url("../assets/logos/mayfield-park.svg") center / contain no-repeat;
+          mask: url("../assets/logos/mayfield-park.svg") center / contain no-repeat;
+}
+
 @media (min-width: 1024px) {
   .phero { min-height: 808px; }
 }
@@ -1502,6 +1558,103 @@ select.field__control { cursor: pointer; }
   color: var(--c-ink);
   text-align: center;
 }
+/* --------------------------------------------------------------------------
+   The Park page carries the weather colour
+   The body takes --c-accent and the content rows stop painting white over it,
+   so the page changes with the forecast like the accent everywhere else —
+   green when overcast, orange when sunny, and so on.
+
+   Painted ONCE on the body rather than re-declared per section: .intro is
+   shared with Spaces and .gallery with Republic, so repainting those classes
+   would drag the colour onto pages that should stay white. Scoping to
+   [data-page] keeps it to this page, and any row added here later inherits it
+   without being listed.
+   -------------------------------------------------------------------------- */
+[data-page="park"] body { background: var(--c-accent); }
+[data-page="park"] .intro,
+[data-page="park"] .gallery,
+[data-page="park"] .power--plain,
+[data-page="park"] .press { background: transparent; }
+
+/* The gallery's drop-well fades a falling card out INTO the page, so it has to
+   fade to whatever the page now is — left on --c-paper it reads as a white
+   smear across the colour. */
+[data-page="park"] .gallery::after {
+  background: linear-gradient(to bottom, transparent 0%, transparent 58%, var(--c-accent) 96%);
+}
+
+/* Park info sits on a 60% white scrim OVER the body colour, not on white: an
+   alpha background composites against whatever weather colour is behind it,
+   so the tint follows the forecast instead of being mixed per state. */
+[data-page="park"] .parkinfo { background: rgb(255 255 255 / 0.6); }
+/* Night repoints --c-accent to the dark navy, and 60% white over that is a
+   pale grey slab — it loses the night entirely. 10% is enough to lift the
+   block off the page without bleaching it. Both attributes sit on <html>, so
+   this is a compound selector, and its extra attribute outranks the rule
+   above without needing !important. */
+[data-mode="night"][data-page="park"] .parkinfo { background: rgb(255 255 255 / 0.1); }
+
+/* Night on Park keeps the chrome dark but hands the content rows back to
+   white. Night repoints --c-paper/--c-ink globally, which took these rows
+   navy along with the nav and the footer; here the two tokens are re-declared
+   at row level so the day values apply to the row AND everything inside it —
+   headings, body copy, button strokes — without hardcoding a colour per
+   descendant. The nav and footer sit outside these rows, so they keep the
+   night treatment, and the navy body skin still reads in the gaps between
+   rows and behind the park-info scrim. */
+[data-mode="night"][data-page="park"] .intro,
+[data-mode="night"][data-page="park"] .gallery,
+[data-mode="night"][data-page="park"] .power--plain,
+[data-mode="night"][data-page="park"] .press {
+  --c-paper: #ffffff;
+  --c-ink:   #000000;
+  background: var(--c-paper);
+  color: var(--c-ink);
+}
+/* The drop-well fades into the row it sits in, which is white again — left on
+   --c-accent it would smear navy up the foot of a white gallery. */
+[data-mode="night"][data-page="park"] .gallery::after {
+  background: linear-gradient(to bottom, transparent 0%, transparent 58%, var(--c-paper) 96%);
+}
+
+/* --------------------------------------------------------------------------
+   Night on every page EXCEPT Park: only the chrome goes dark
+   Night repoints --c-paper/--c-ink at the root, which took whole pages navy.
+   Here the two are handed back to their day values on <main>, so the content
+   reads as it does in daylight, and then back to night values on the footer —
+   which sits INSIDE <main> on all five pages, so it cannot simply be left
+   out. The nav closes before <main> opens everywhere, so it needs no rule and
+   keeps the dark treatment.
+
+   Park is excluded: it runs its own night treatment above, where the body
+   skin carries the night colour deliberately.
+
+   `color` is set alongside the tokens on both, not just the background:
+   a section that never declares its own colour inherits straight from <body>,
+   which night leaves white — that put white text on the white Contact form.
+   -------------------------------------------------------------------------- */
+[data-mode="night"]:not([data-page="park"]):not([data-brand="republic"]) main {
+  --c-paper: #ffffff;
+  --c-ink:   #000000;
+  background: var(--c-paper);
+  color: var(--c-ink);
+}
+[data-mode="night"]:not([data-page="park"]):not([data-brand="republic"]) .foot {
+  --c-paper: var(--c-night);
+  --c-ink:   #ffffff;
+  color: var(--c-ink);
+}
+/* Bands inside <main> that are painted with --c-accent stay navy, because
+   night overrides the weather colour by design. They have to keep the night
+   ink with it — the black restored above would otherwise land on navy: the
+   Contact page head and the Instagram bed both went unreadable that way. */
+[data-mode="night"]:not([data-page="park"]):not([data-brand="republic"]) .insta,
+[data-mode="night"]:not([data-page="park"]):not([data-brand="republic"]) .power,
+[data-mode="night"]:not([data-page="park"]):not([data-brand="republic"]) .page-head {
+  --c-ink: #ffffff;
+  color: var(--c-ink);
+}
+
 .parkinfo__head { display: flex; flex-direction: column; align-items: center; gap: var(--s-6); }
 .parkinfo__title { font-weight: var(--w-xbold); font-size: clamp(44px, 9vw, 80px); line-height: var(--lh-crush); letter-spacing: -0.02em; text-transform: uppercase; }
 .parkinfo__map { width: min(100%, 816px); height: auto; border-radius: var(--radius-field); }
@@ -1519,6 +1672,11 @@ select.field__control { cursor: pointer; }
 .faq__panel-inner { overflow: hidden; min-height: 0; }
 .js .faq__item:not(.is-open) .faq__panel { grid-template-rows: 0fr; }
 .faq__a { margin-block: var(--s-6) 0; font-size: var(--t-body); max-width: 60ch; transition: opacity 0.4s var(--ease); }
+/* base.css resets every ul to list-style:none, so the one answer that is a
+   list has to ask for its bullets back. It carries .faq__a too, so it fades
+   and spaces with the paragraphs around it. */
+.faq__list { list-style: disc; padding-inline-start: 1.5em; }
+.faq__list li { margin-block-start: var(--s-2); }
 .js .faq__item:not(.is-open) .faq__a { opacity: 0; }
 
 /* The toggle sits at the bottom of the row. Its + is two bars so it can morph to
@@ -1783,7 +1941,10 @@ select.field__control { cursor: pointer; }
   -webkit-mask: url("../assets/icons/person.svg") center / contain no-repeat;
           mask: url("../assets/icons/person.svg") center / contain no-repeat;
 }
-[data-mode="night"] .floor, [data-mode="night"] .floors__list > .floor:last-child { border-color: rgb(255 255 255 / 0.3); }
+/* Republic is exempt from night (see the token restore in tokens.css), so its
+   floor rules keep the daylight border too. */
+[data-mode="night"]:not([data-brand="republic"]) .floor,
+[data-mode="night"]:not([data-brand="republic"]) .floors__list > .floor:last-child { border-color: rgb(255 255 255 / 0.3); }
 @media (min-width: 1024px) {
   .floors { flex-direction: row; }
   .floors__carousel { display: none; }                       /* desktop uses the cross-fade render */
@@ -1938,6 +2099,19 @@ select.field__control { cursor: pointer; }
 }
 .rbenefit { display: flex; flex-direction: column; gap: var(--s-5); align-items: center; text-align: center; }
 .rbenefit img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+/* [figma Republic/Title/Title 24] The same Garamond display as .rtitle, one
+   step down. --f-serif, never the literal "Garamond Premier Pro": the kit
+   registers the family under its Typekit SLUG, and the display name silently
+   falls back to Times. Centring comes from .rbenefit. */
+.rbenefit h3 {
+  font-family: var(--f-serif);
+  font-weight: 400;
+  font-size: 24px;             /* [figma Title 24] */
+  line-height: 1;
+  letter-spacing: -0.08em;     /* [figma] -1.92px at 24px — Garamond tracks -8% */
+  text-transform: uppercase;
+  color: #061202;              /* near-black green, as the caption below */
+}
 /* [figma 55:3789] captions are Halyard Text Regular 15/1.4 in near-black green
    (halyard-text is in the same Adobe kit already loaded on this page). */
 .rbenefit p { font-family: "halyard-text", var(--f-sans, sans-serif); font-weight: 400; font-size: var(--t-caps); line-height: 1.4; color: #061202; max-width: 24ch; }
