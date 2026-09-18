@@ -1902,3 +1902,23 @@ select.field__control { cursor: pointer; }
   letter-spacing: -0.04em;
 }
 @media (min-width: 1024px) { .rcta__card { border-radius: 80px; padding: var(--s-11); } }
+
+/* --------------------------------------------------------------------------
+   Character reveal on scroll — SplitText-style, done in vanilla. motion.js
+   splits titles/body/paragraphs into .reveal-char spans (skipping the header,
+   footer, sticky nav, the window video span and the stacking cards) and adds
+   .is-revealed when each element scrolls into view; the chars then fade + rise
+   in, staggered by --d. [ref codepen bGEqbaQ] Progressive: no JS = plain text.
+   -------------------------------------------------------------------------- */
+.reveal-word { display: inline-block; white-space: nowrap; }   /* keep words whole; wrap only between them */
+.reveal-char {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.4em);
+  transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+  transition-delay: var(--d, 0s);
+}
+.is-revealed .reveal-char { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .reveal-char { opacity: 1; transform: none; transition: none; }
+}
