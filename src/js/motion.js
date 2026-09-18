@@ -935,4 +935,75 @@
     addEventListener("resize", onScroll);
     update();
   })();
+
+  /* ---- 12. Character reveal on scroll ----------------------------------
+     SplitText-style, vanilla. Splits titles/body/paragraphs into per-character
+     spans and reveals them (fade + rise, staggered) when each element scrolls
+     into view. Recurses only text nodes, so nested markup (the title zig-zag
+     spans, the inline Republic logo, <em> accents, links) survives. Skips the
+     header, footer, sticky nav, the window video span and the stacking cards.
+     [ref codepen bGEqbaQ — GreenSock "SplitText reveal each character"] */
+  (() => {
+    if (reduced) return;
+    /* Excludes: footer, the nav (sticky + initial), the window video span, the
+       stacking cards, the flag, the destination cards, the weather strip, and the
+       home/Republic heroes (they have their own motion). The .phero video-header
+       titles ARE included. Locations join via .rloc__name/.rloc__time. */
+    const EXCLUDE = "footer, .nav, .initial-nav, .window, .bpanel, .flag, .dest, .wxstrip, .hero, .rhero";
+    const SEL = "h1, h2, h3, h4, p, .rtitle, .rloc__name, .rloc__time";
+    const targets = [...document.querySelectorAll(SEL)].filter(
+      (el) => el.textContent.trim() && !el.dataset.reveal && !el.closest(EXCLUDE)
+    );
+    if (!targets.length) return;
+
+    const split = (el) => {
+      el.dataset.reveal = "1";
+      const original = el.textContent;
+      const count = original.replace(/\s/g, "").length || 1;
+      const per = Math.min(0.012, 0.6 / count);   /* cap total stagger ~0.6s */
+      let i = 0;
+      const walk = (node) => {
+        [...node.childNodes].forEach((child) => {
+          if (child.nodeType === 3) {
+            const frag = document.createDocumentFragment();
+            /* Split on whitespace but keep it: each word becomes a nowrap span of
+               chars, and the spaces stay as text so lines only break between words. */
+            child.textContent.split(/(\s+)/).forEach((part) => {
+              if (!part) return;
+              if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(" ")); return; }
+              const word = document.createElement("span");
+              word.className = "reveal-word";
+              for (const ch of part) {
+                const s = document.createElement("span");
+                s.className = "reveal-char";
+                s.textContent = ch;
+                s.style.setProperty("--d", (i++ * per).toFixed(3) + "s");
+                word.appendChild(s);
+              }
+              frag.appendChild(word);
+            });
+            child.replaceWith(frag);
+          } else if (child.nodeType === 1) {
+            const tag = child.tagName;
+            if (tag === "IMG" || tag === "BR" || tag === "SVG") return;
+            walk(child);
+          }
+        });
+      };
+      walk(el);
+      /* Keep the plain text as the accessible name so screen readers don't read
+         it out one character at a time. */
+      el.setAttribute("aria-label", original);
+    };
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) { e.target.classList.add("is-revealed"); io.unobserve(e.target); }
+        });
+      },
+      { rootMargin: "0px 0px -10% 0px", threshold: 0 }
+    );
+    targets.forEach((el) => { split(el); io.observe(el); });
+  })();
 })();
