@@ -300,7 +300,10 @@
   position: fixed;
   inset-block-start: 50%;
   inset-inline-start: 50%;
-  translate: -50% -50%;
+  /* --win-park is 0 for most of the page and goes negative once the window
+     has reached the last benefit panel, which leaves it behind on the page
+     instead of riding the scroll into the footer. Set by motion.js. */
+  translate: -50% calc(-50% + var(--win-park, 0px));
   /* Above the content rows (20), below the nav (60). */
   z-index: 50;
   width: var(--win-w);
@@ -315,6 +318,18 @@
 
 .window video,
 .window img { width: 100%; height: 100%; object-fit: cover; }
+
+/* The section cuts are stacked layers, crossfaded on the same beat as the
+   word. Only the live layer is opaque; JS pauses the rest once they have
+   faded, so one clip is decoding at a time even though four are loaded. */
+.window__media { position: absolute; inset: 0; }
+.window__video {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity var(--win-fade) var(--ease);
+}
+.window__video.is-live { opacity: 1; }
 
 /* The word that crosses the window as each section passes. */
 .window__word {
@@ -437,12 +452,37 @@
   text-transform: uppercase;
   white-space: nowrap;              /* labels never wrap (e.g. brochure btn on mobile) */
   cursor: pointer;
-  transition: background 0.2s var(--ease), color 0.2s var(--ease);
 }
-/* Explicit pair, never derived from currentColor — deriving a hover
-   background from the element's own colour is how a label goes invisible. */
-.btn:hover,
-.btn:focus-visible { background: var(--c-ink); color: var(--c-accent); }
+
+/* ---- The roll ------------------------------------------------------------
+   The hover for the whole button system, generalised from the brochure
+   button's download cell: the content is clipped to one cell and duplicated,
+   and on hover the pair slides up exactly one cell — so the visible copy
+   shoots up and out while its twin rises into the gap.
+
+   It replaces the old invert (ink fill, accent label). Nothing changes colour
+   on hover any more; the movement IS the feedback, which is why the colour
+   transition came off .btn above.
+
+   The label markup is built by motion.js §13 rather than written into all five
+   pages: a roll needs the label twice, and a label that lives in two places
+   in the HTML is a label that will eventually disagree with itself. Without
+   JS the button is simply a button that does not roll.
+   -------------------------------------------------------------------------- */
+.btn__roll {
+  display: block;
+  height: 1lh;                      /* exactly one cell: --t-caps at --lh-flat */
+  overflow: hidden;
+}
+.btn__roll-track {
+  display: grid;
+  grid-template-rows: 1fr 1fr;      /* each row = one cell height */
+  place-items: center;
+  height: 200%;                     /* two cells tall */
+  transition: transform var(--dur-roll) var(--ease-roll);
+}
+.btn:hover .btn__roll-track,
+.btn:focus-visible .btn__roll-track { transform: translateY(-50%); }
 
 .btn--block { display: flex; width: 100%; }
 
@@ -460,14 +500,9 @@
   color: var(--c-ink);
   overflow: hidden;
 }
-/* No colour change on hover — only the arrow animates. This override is needed
-   because the generic .btn:hover inverts. */
-.btn--brochure:hover,
-.btn--brochure:focus-visible { background: var(--c-republic); color: var(--c-ink); }
-
 /* The download cell: a static divider on the left, and a clipped column holding
-   two identical arrows. On hover the column slides up one cell so the arrow
-   shoots up and out while its duplicate rises into place. */
+   two identical arrows — the original of the roll above, kept here because this
+   button rolls only its arrow while the label stays put. */
 .btn__dl {
   align-self: stretch;
   flex: 0 0 auto;
@@ -484,7 +519,7 @@
   height: 200%;                    /* two arrow cells tall */
   display: grid;
   grid-template-rows: 1fr 1fr;     /* each row = one cell height */
-  transition: transform 0.42s cubic-bezier(0.5, 0, 0.2, 1);
+  transition: transform var(--dur-roll) var(--ease-roll);
 }
 .btn--brochure:hover .btn__dl-track,
 .btn--brochure:focus-visible .btn__dl-track { transform: translateY(-50%); }
@@ -493,7 +528,13 @@
   -webkit-mask: url("../assets/republic/download-arrow.svg") center / 54px 52px no-repeat;
           mask: url("../assets/republic/download-arrow.svg") center / 54px 52px no-repeat;
 }
-@media (prefers-reduced-motion: reduce) { .btn__dl-track { transition: none; } }
+/* Reduced motion: the roll still swaps, it just does not travel. */
+@media (prefers-reduced-motion: reduce) {
+  .btn__dl-track,
+  .btn__roll-track,
+  .dest__icon::before,
+  .dest__icon::after { transition: none; }
+}
 
 /* --------------------------------------------------------------------------
    8. Instagram                                    [figma 230:3831 / 281:15356]
@@ -1226,22 +1267,35 @@ select.field__control { cursor: pointer; }
   aspect-ratio: 1;
   display: grid;
   place-items: center;
-  padding-inline: var(--s-4);
+  /* No padding-inline. It used to set the width around a 24px icon, but the
+     box is sized by aspect-ratio against the row height now — and because the
+     roll cells below are width:100%, any inline padding narrows the mask box
+     and squashes the arrow (it rendered 16px wide inside a 44px circle). */
   border: var(--border-btn) solid currentColor;
   border-radius: var(--radius-btn);
   color: var(--c-ink);
-  transition: background 0.2s var(--ease), color 0.2s var(--ease);
+  overflow: hidden;                 /* clips the roll */
 }
-.dest__icon::before {
+/* The same roll as .btn, but an icon-only button has nothing to duplicate in
+   the DOM — so the two cells are the pseudo-elements. Both fill the content
+   box and sit in the one grid cell, which is what makes translateY(100%) move
+   exactly one cell and clear the clip no matter how big the button gets. */
+.dest__icon::before,
+.dest__icon::after {
   content: "";
-  width: 24px;
-  height: 24px;
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
   background: currentColor;
-  -webkit-mask: url("../assets/icons/arrow.svg") center / contain no-repeat;
-          mask: url("../assets/icons/arrow.svg") center / contain no-repeat;
+  -webkit-mask: url("../assets/icons/arrow.svg") center / 24px 24px no-repeat;
+          mask: url("../assets/icons/arrow.svg") center / 24px 24px no-repeat;
+  transition: transform var(--dur-roll) var(--ease-roll);
 }
-.dest__icon:hover,
-.dest__icon:focus-visible { background: var(--c-ink); color: var(--c-accent); }
+.dest__icon::after { transform: translateY(100%); }   /* waiting below */
+.dest__icon:hover::before,
+.dest__icon:focus-visible::before { transform: translateY(-100%); }
+.dest__icon:hover::after,
+.dest__icon:focus-visible::after { transform: translateY(0); }
 
 @media (min-width: 1024px) {
   .dests { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 60px var(--s-9); }
@@ -1393,7 +1447,11 @@ select.field__control { cursor: pointer; }
 
 @media (min-width: 1024px) {
   .gallery__stage { height: 520px; --rise: 120px; --recede: 560px; }
-  .gallery__slide { width: 360px; height: 480px; }
+  /* Square, like the mobile card above — the artwork is square now, so the
+     desktop card is the same 480 tall it always was and simply widens to
+     match. Keeping the height is what leaves the stage (520px), --rise and
+     --recede correct: they are all measured against a 480-tall front card. */
+  .gallery__slide { width: 480px; height: 480px; }
   .gallery__nav {
     position: absolute;
     inset-block-start: 50%;
