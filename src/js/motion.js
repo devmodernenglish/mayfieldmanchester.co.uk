@@ -2,7 +2,8 @@
    MAYFIELD V2 — MOTION
    No dependencies. Three jobs:
      1. Drive the hero down into the fixed window as the user scrolls.
-     2. Swap the window's word (WORK / EXPLORE / PLAY) per section.
+     2. Swap the window's word AND its footage (WORK / EXPLORE / PLAY) per
+        section — one decision, so the two always turn together.
      3. Menu open/close, and the weather state that colours the whole site.
 
    Rule carried over from V1: nothing is hidden in CSS that JS is responsible
@@ -28,7 +29,60 @@
   const mark   = document.getElementById("heroMark");
   const win    = document.getElementById("window");
   const nav    = document.getElementById("nav");
-  const wvideo = document.getElementById("windowVideo");
+
+  /* ---- The window's footage ---------------------------------------------
+     One <video> per section, stacked in .window__media and keyed by the same
+     word the panel shows. Swapping is a crossfade between layers, so the cut
+     changes on the same frame as the word with nothing to load first.
+
+     Declared here rather than beside the word logic because the hero handover
+     below is what first brings the window on, and that is the moment the
+     footage is allowed to start costing bandwidth. */
+  const wmedia = document.getElementById("windowMedia");
+  const layers = wmedia ? [...wmedia.querySelectorAll(".window__video")] : [];
+  let   liveLayer = layers.find((v) => v.classList.contains("is-live")) || layers[0] || null;
+
+  /* How long the outgoing layer takes to clear, straight from --win-fade so
+     the number lives in the stylesheet and not in two places. */
+  const fadeMs = () => {
+    const v = getComputedStyle(document.documentElement).getPropertyValue("--win-fade").trim();
+    return v.endsWith("ms") ? parseFloat(v) : (parseFloat(v) || 0.45) * 1000;
+  };
+
+  /* Nothing downloads until the window is actually on screen — the section
+     cuts are ~1.2MB each and are useless above the fold. Called from both
+     hero paths (JS scrub and CSS timeline), hence the latch. */
+  let warmed = false;
+  const warmWindow = () => {
+    if (warmed) return;
+    warmed = true;
+    for (const v of layers) v.preload = "auto";
+    if (liveLayer) liveLayer.play().catch(() => {});
+  };
+
+  /* Show the cut belonging to `word`. A no-op when that layer is already
+     live, or when no layer declares the word. */
+  const showCut = (word) => {
+    const next = layers.find((v) => v.dataset.video === word);
+    if (!next || next === liveLayer) return;
+    const prev = liveLayer;
+    liveLayer = next;
+
+    /* Start the incoming clip before it is visible, so the fade opens on
+       moving footage rather than on a still first frame. */
+    next.play().catch(() => {});
+    next.classList.add("is-live");
+
+    if (prev) {
+      prev.classList.remove("is-live");
+      /* Pause once it has faded out, not immediately — pausing mid-fade
+         freezes a frame in full view. Re-checked on the timeout because a
+         fast scroll back can make this layer live again before it fires. */
+      setTimeout(() => {
+        if (!prev.classList.contains("is-live")) prev.pause();
+      }, fadeMs());
+    }
+  };
 
   /* The CSS scroll timeline owns this transition wherever it exists; this JS
      path is the fallback (Firefox today). Running both would mean two things
@@ -81,10 +135,7 @@
         hero.style.opacity = over ? "0" : "1";
         hero.style.pointerEvents = over ? "none" : "";
         if (nav) nav.classList.toggle("is-live", over);
-        if (over && wvideo && wvideo.paused) {
-          wvideo.preload = "auto";
-          wvideo.play().catch(() => {});
-        }
+        if (over) warmWindow();
       }
     };
 
@@ -114,13 +165,12 @@
      section is actually behind the window, which is where the window is. */
   /* With the CSS path live, the window and nav are revealed by the timeline,
      but the window's video still needs starting once it is actually on. */
-  if (cssDrivesHero && win && wvideo) {
+  if (cssDrivesHero && win && layers.length) {
     const sentinel = document.querySelector(".runway");
     if (sentinel) {
       new IntersectionObserver(([e]) => {
         if (e.isIntersecting) return;
-        wvideo.preload = "auto";
-        wvideo.play().catch(() => {});
+        warmWindow();
       }, { threshold: 0 }).observe(sentinel);
     }
   }
@@ -151,7 +201,6 @@
 
   if (track && zones.length && wordBox) {
     let current = "";
-    let currentVideo = "";
     let remeasureTrack = () => {};   /* set by the scroll-jacked marquee below */
 
     const pick = () => {
@@ -186,20 +235,13 @@
           return s;
         }));
         remeasureTrack();   /* the word changed, so the loop period changed */
-      }
 
-      /* Each section gets its own cut of footage. Declared per zone so the
-         swap is data, not a branch — with one placeholder asset nothing
-         changes hands, which is exactly what should happen.
-
-         `best` is null in the intro state (before the box has dipped into any
-         section), so this must be guarded — unguarded it threw on the very
-         first pick() and took sections 3, 4 and 5 down with it. */
-      const src = best ? best.dataset.video : null;
-      if (wvideo && src && src !== currentVideo) {
-        currentVideo = src;
-        wvideo.src = src;
-        wvideo.play().catch(() => {});
+        /* The footage turns with the word, on this same beat. It is driven
+           from `word` rather than from `best` so the intro state is not a
+           special case: INTRO_WORD names a layer like any section does, and
+           scrolling back above the first section returns the window to the
+           hero cut on its own. */
+        showCut(word);
       }
     };
 
@@ -258,6 +300,59 @@
       addEventListener("resize", remeasureTrack);
       frame();
     }
+  }
+
+  /* ---- 2b. Parking the window -------------------------------------------
+     The window is fixed to the viewport centre, which until now meant it rode
+     the scroll all the way to the bottom of the page and floated on over the
+     Instagram bed and the footer. The last benefit panel is where it has said
+     everything it has to say, so that is where it gets left behind: once its
+     centre meets the centre of that panel, it stops travelling with the
+     gesture and scrolls away with the page like anything else.
+
+     The stop is an offset applied to the still-fixed element, NOT a switch to
+     position:absolute. Same reasoning as the hero handing over to a second
+     element rather than re-positioning itself: changing `position` under a
+     scrolling user reflows and jumps. Here the box never moves in the layout
+     at all — only its translate changes, so the whole thing stays on the
+     compositor and the handover is invisible.
+
+     The anchor is the LAST .benefit rather than a named section: "the final
+     white row" is the rule, and reading it from the DOM means re-ordering or
+     adding a section cannot leave this pointing at the wrong one. */
+  const lastBenefit = [...document.querySelectorAll(".benefit")].pop();
+
+  if (win && lastBenefit) {
+    /* Scroll position at which the panel's centre sits on the viewport's
+       centre — i.e. exactly where the window already is. Measured live so it
+       survives breakpoint changes and late-loading imagery above it. */
+    const releaseY = () => {
+      const r = lastBenefit.getBoundingClientRect();
+      return r.top + window.scrollY + r.height / 2 - window.innerHeight / 2;
+    };
+
+    let parked = 0;   /* px, <= 0. Only written when it actually changes. */
+
+    const park = () => {
+      const past = window.scrollY - releaseY();
+      const next = past > 0 ? -past : 0;
+      if (next === parked) return;
+      parked = next;
+      win.style.setProperty("--win-park", next.toFixed(1) + "px");
+    };
+
+    let parkTick = false;
+    const onParkScroll = () => {
+      if (parkTick) return;
+      parkTick = true;
+      const run = () => { park(); parkTick = false; };
+      if (document.hidden) run();
+      else requestAnimationFrame(run);
+    };
+
+    addEventListener("scroll", onParkScroll, { passive: true });
+    addEventListener("resize", onParkScroll);
+    park();
   }
 
   /* ---- 3. Menu ----------------------------------------------------------
@@ -614,7 +709,7 @@
       if (!form.checkValidity()) return;   /* native validation + native post */
       e.preventDefault();
 
-      if (submit) { submit.disabled = true; submit.textContent = "Sending…"; }
+      if (submit) { submit.disabled = true; rollLabel(submit, "Sending…"); }
       say("", false);
       status && (status.hidden = true);
 
@@ -635,12 +730,12 @@
           } else {
             const first = d && d.errors ? Object.values(d.errors)[0] : null;
             say(first || "Sorry — that didn’t send. Please try again, or email hello@mayfieldpark.com.", true);
-            if (submit) { submit.disabled = false; submit.textContent = "Submit"; }
+            if (submit) { submit.disabled = false; rollLabel(submit, "Submit"); }
           }
         })
         .catch(() => {
           say("Sorry — that didn’t send. Please email hello@mayfieldpark.com.", true);
-          if (submit) { submit.disabled = false; submit.textContent = "Submit"; }
+          if (submit) { submit.disabled = false; rollLabel(submit, "Submit"); }
         });
     });
   }
@@ -1006,4 +1101,51 @@
     );
     targets.forEach((el) => { split(el); io.observe(el); });
   })();
+
+  /* ---- 13. The button roll ----------------------------------------------
+     Every button in the system rolls on hover: the label shoots up and out
+     while an identical copy rises into the gap. The movement is CSS
+     (components.css §7); what it needs from here is the second copy.
+
+     Built rather than written into the markup because a roll needs the label
+     twice, and a label that lives in two places in five HTML files is a label
+     that will eventually disagree with itself. Buttons that already carry
+     their own structure are left alone — .btn--brochure rolls just its arrow
+     and has the two cells in the markup already — which is what the
+     firstElementChild check is for: it means "someone has composed this one
+     deliberately", not a list of class names to keep in sync.
+
+     Icon-only buttons (.dest__icon) need nothing here; with no text to copy,
+     their two cells are pseudo-elements and the whole roll is CSS. */
+  /* A function DECLARATION, not a const: it hoists, so the contact form in §6
+     can call it even though it is written further up the file. Anything that
+     changes a button's label must go through here, or it replaces the roll
+     with a bare text node and the button silently stops rolling. */
+  function rollLabel(btn, text) {
+    const label = text !== undefined ? text : btn.textContent.trim();
+    if (!label) return;
+
+    const roll  = document.createElement("span");
+    const track = document.createElement("span");
+    roll.className  = "btn__roll";
+    track.className = "btn__roll-track";
+
+    /* The second copy is decorative: it must not reach the accessible name,
+       or every button on the site reads its label twice. */
+    const original = document.createElement("span");
+    original.textContent = label;
+    const twin = document.createElement("span");
+    twin.textContent = label;
+    twin.setAttribute("aria-hidden", "true");
+
+    track.append(original, twin);
+    roll.append(track);
+    btn.replaceChildren(roll);
+  }
+
+  for (const btn of document.querySelectorAll(".btn")) {
+    if (btn.firstElementChild) continue;          /* composed by hand */
+    rollLabel(btn);
+  }
+
 })();
