@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en-GB" class="no-js" data-weather="overcast">
+<html lang="en-GB" class="no-js" data-weather="overcast" data-page="park">
 
 <head>
   <meta charset="utf-8">
@@ -64,7 +64,7 @@
             <source src="assets/videos/mayfield-header-720.webm" type="video/webm">
             <source src="assets/videos/mayfield-header-720.mp4" type="video/mp4">
           </video>
-          <span class="mpanel__label">Home</span>
+          <span class="mpanel__label">Mayfield</span>
         </a></li>
       <li><a class="mpanel" href="park.html" aria-current="page">
           <video class="mpanel__media" muted loop playsinline preload="none"
@@ -80,7 +80,7 @@
             <source src="assets/videos/mayfield-header-720.webm" type="video/webm">
             <source src="assets/videos/mayfield-header-720.mp4" type="video/mp4">
           </video>
-          <span class="mpanel__label">Work</span>
+          <span class="mpanel__label">Republic</span>
         </a></li>
       <li><a class="mpanel" href="spaces.html">
           <video class="mpanel__media" muted loop playsinline preload="none"
@@ -88,7 +88,7 @@
             <source src="assets/videos/destinations-720.webm" type="video/webm">
             <source src="assets/videos/destinations-720.mp4" type="video/mp4">
           </video>
-          <span class="mpanel__label">Visit</span>
+          <span class="mpanel__label">Experience</span>
         </a></li>
     </ul>
   </nav>
@@ -113,7 +113,12 @@
       </div>
 
       <div class="phero__inner">
-        <h1 class="t-title">A place for all</h1>
+        <!-- The lockup IS the page's h1, so the heading stays a heading and the
+           name is still in the accessible tree via .sr-only. Painted as a mask
+           rather than an <img> so it takes --c-on-media like the rest of the
+           header; the SVG's own white fill is left alone because the Spaces
+           cards use the same file. -->
+        <h1 class="phero__mark"><span class="sr-only">Mayfield Park</span></h1>
         <p class="phero__sub t-caps">Open every day 05:00 &ndash; 21:00</p>
       </div>
 
@@ -281,10 +286,9 @@
           <h3 class="faq__q">How big is the park and what kind of spaces are there?</h3>
           <div class="faq__panel">
             <div class="faq__panel-inner">
-              <p class="faq__a">Mayfield Park is a public 6.5-acre space with 142 trees, 120,000 shrubs and plants, a
-                children&rsquo;s play yard and the daylighted River Medlock running through it. [Full answer copy to
-                follow.]</p>
-            </div>
+            <p class="faq__a">The 6.5-acre park will sit at the heart of a new neighbourhood, with the uncovered River Medlock running through the middle. Different landscaped spaces each have their own character and amenities. The lawn space can be used for events, a children&rsquo;s play yard, a quiet contemplation zone, a wildscape for biodiversity, and multiple routes of walkways.</p>
+            <p class="faq__a">Mayfield Park has been designed as a &ldquo;sequence of spaces&rdquo;, the west end of the park (nearest the Baring Street entrance) is landscaped with seating areas; whereas, towards the east, the park becomes more urban with planting and increased habitat provision for wildlife.</p>
+          </div>
           </div>
           <button class="faq__toggle" type="button" aria-expanded="false"><span class="faq__plus"
               aria-hidden="true"></span><span class="faq__label faq__label--read">Read answer</span><span
@@ -294,8 +298,8 @@
           <h3 class="faq__q">What facilities are available at the park?</h3>
           <div class="faq__panel">
             <div class="faq__panel-inner">
-              <p class="faq__a">[Answer copy to follow.]</p>
-            </div>
+            <p class="faq__a">There are toilets available at Mayfield Park next to the Play Yard. These toilets are accessible for all and include a baby changing unit. There are also water refill stations available around the park. If you require any assistance, you can ask one of our security team members who will be happy to help.</p>
+          </div>
           </div>
           <button class="faq__toggle" type="button" aria-expanded="false"><span class="faq__plus"
               aria-hidden="true"></span><span class="faq__label faq__label--read">Read answer</span><span
@@ -305,8 +309,8 @@
           <h3 class="faq__q">Can I bring my dog?</h3>
           <div class="faq__panel">
             <div class="faq__panel-inner">
-              <p class="faq__a">[Answer copy to follow.]</p>
-            </div>
+            <p class="faq__a">Yes! Dogs are of course welcome in Mayfield Park. However, your furry friend must be kept under control at all times. Dogs are not permitted in the Play Yard.</p>
+          </div>
           </div>
           <button class="faq__toggle" type="button" aria-expanded="false"><span class="faq__plus"
               aria-hidden="true"></span><span class="faq__label faq__label--read">Read answer</span><span
@@ -316,8 +320,8 @@
           <h3 class="faq__q">Can I smoke in the park?</h3>
           <div class="faq__panel">
             <div class="faq__panel-inner">
-              <p class="faq__a">[Answer copy to follow.]</p>
-            </div>
+            <p class="faq__a">Since June 2023, Mayfield Park has been smokefree. Smoking and vaping in the park is prohibited.</p>
+          </div>
           </div>
           <button class="faq__toggle" type="button" aria-expanded="false"><span class="faq__plus"
               aria-hidden="true"></span><span class="faq__label faq__label--read">Read answer</span><span
@@ -327,8 +331,15 @@
           <h3 class="faq__q">Can I picnic in the park?</h3>
           <div class="faq__panel">
             <div class="faq__panel-inner">
-              <p class="faq__a">[Answer copy to follow.]</p>
-            </div>
+            <p class="faq__a">You are welcome to picnic in Mayfield Park, however please be aware, the following are prohibited:</p>
+            <ul class="faq__a faq__list">
+              <li>BBQs</li>
+              <li>Alcohol</li>
+              <li>Gazebos</li>
+              <li>Tents</li>
+              <li>Large structures</li>
+            </ul>
+          </div>
           </div>
           <button class="faq__toggle" type="button" aria-expanded="false"><span class="faq__plus"
               aria-hidden="true"></span><span class="faq__label faq__label--read">Read answer</span><span
@@ -338,8 +349,8 @@
           <h3 class="faq__q">Will the park be open at night?</h3>
           <div class="faq__panel">
             <div class="faq__panel-inner">
-              <p class="faq__a">The park is open every day from 05:00 to 21:00. [Full answer copy to follow.]</p>
-            </div>
+            <p class="faq__a">The park closes after sundown each night.</p>
+          </div>
           </div>
           <button class="faq__toggle" type="button" aria-expanded="false"><span class="faq__plus"
               aria-hidden="true"></span><span class="faq__label faq__label--read">Read answer</span><span
@@ -349,8 +360,8 @@
           <h3 class="faq__q">Is photography allowed in the park?</h3>
           <div class="faq__panel">
             <div class="faq__panel-inner">
-              <p class="faq__a">[Answer copy to follow.]</p>
-            </div>
+            <p class="faq__a">Yes, for personal use. Tag us in your Instagram posts @mayfieldmanchester! For any commercial filming and photography, please contact our Estate Management team.</p>
+          </div>
           </div>
           <button class="faq__toggle" type="button" aria-expanded="false"><span class="faq__plus"
               aria-hidden="true"></span><span class="faq__label faq__label--read">Read answer</span><span
@@ -360,8 +371,11 @@
           <h3 class="faq__q">What sustainability measures have been integrated into the park?</h3>
           <div class="faq__panel">
             <div class="faq__panel-inner">
-              <p class="faq__a">[Answer copy to follow.]</p>
-            </div>
+            <p class="faq__a">Mayfield Park is a green lung for Manchester, as the city&rsquo;s first new park in over 100 years. A diverse mix of plant and tree species have been incorporated into the landscape design, with over 300 trees planted across the neighbourhood to facilitate carbon capture. Wildflowers and wetland planting also encourage biodiversity.</p>
+            <p class="faq__a">The River Medlock has been uncovered and rejuvenated, creating a new habitat for wildlife. The park contains a number of new measures to support biodiversity, including kingfisher posts, bat bricks, and bird boxes. Many species are already returning to Mayfield, including fish and birds!</p>
+            <p class="faq__a">Whenever possible, existing materials and structures have been reused and recycled across Mayfield. The site has a unique industrial heritage that will be celebrated and revived to form a place for the future rooted in its past. The cavernous Depot building, railway arches and three bridges have been retained, and historic details such as the Mayfield Baths tiles preserved and saved for use elsewhere on site. Materials have also been sourced locally to minimise the environmental impact of the development and construction process.</p>
+            <p class="faq__a">13 wells, artefacts from the Victorian era, were unearthed throughout the construction process. Three of these are still functional and will be used to irrigate the plants and trees throughout the park, each pumping up to 20 cubic metres of water per day. The largest of these was used to supply the former Britannia Brewery, which was based on the east of the site in the late 19th and early 20th Century.</p>
+          </div>
           </div>
           <button class="faq__toggle" type="button" aria-expanded="false"><span class="faq__plus"
               aria-hidden="true"></span><span class="faq__label faq__label--read">Read answer</span><span
@@ -371,8 +385,8 @@
           <h3 class="faq__q">Who will manage the park?</h3>
           <div class="faq__panel">
             <div class="faq__panel-inner">
-              <p class="faq__a">[Answer copy to follow.]</p>
-            </div>
+            <p class="faq__a">Initially, the Mayfield Partnership will take responsibility for the overall management of the park, with specialist contractors appointed to maintain it daily.</p>
+          </div>
           </div>
           <button class="faq__toggle" type="button" aria-expanded="false"><span class="faq__plus"
               aria-hidden="true"></span><span class="faq__label faq__label--read">Read answer</span><span
@@ -382,8 +396,8 @@
           <h3 class="faq__q">What&rsquo;s happening around the edges of the park?</h3>
           <div class="faq__panel">
             <div class="faq__panel-inner">
-              <p class="faq__a">[Answer copy to follow.]</p>
-            </div>
+            <p class="faq__a">The park sits within the wider Mayfield neighbourhood. In the future there will be new homes, offices, retail and leisure space around the 6.5 acre park.</p>
+          </div>
           </div>
           <button class="faq__toggle" type="button" aria-expanded="false"><span class="faq__plus"
               aria-hidden="true"></span><span class="faq__label faq__label--read">Read answer</span><span
@@ -393,8 +407,8 @@
           <h3 class="faq__q">Will the park remain open when construction on the other buildings begins?</h3>
           <div class="faq__panel">
             <div class="faq__panel-inner">
-              <p class="faq__a">[Answer copy to follow.]</p>
-            </div>
+            <p class="faq__a">Yes, the park has been designed so that progress on the wider neighbourhood can continue with minimal disruption to activities within the park. The health and safety of visitors is of highest priority and clear procedures and protocols will be in place to ensure any construction works are at a safe distance.</p>
+          </div>
           </div>
           <button class="faq__toggle" type="button" aria-expanded="false"><span class="faq__plus"
               aria-hidden="true"></span><span class="faq__label faq__label--read">Read answer</span><span
@@ -404,8 +418,8 @@
           <h3 class="faq__q">What will happen to Escape to Freight Island / Depot Mayfield / Warehouse Project?</h3>
           <div class="faq__panel">
             <div class="faq__panel-inner">
-              <p class="faq__a">[Answer copy to follow.]</p>
-            </div>
+            <p class="faq__a">Depot Mayfield will continue to host a wide range of events and activations including Escape to Freight Island and the Warehouse Project. In the long term a more permanent reuse of the former train station/Depot building(s) will be decided as part of the final phase of the 10-year development of Mayfield.</p>
+          </div>
           </div>
           <button class="faq__toggle" type="button" aria-expanded="false"><span class="faq__plus"
               aria-hidden="true"></span><span class="faq__label faq__label--read">Read answer</span><span
@@ -480,10 +494,10 @@
 
       <div class="foot__base">
         <div class="foot__logos">
-          <img src="assets/icons/logo-mcc.svg" alt="Manchester City Council" width="133" height="25">
-          <img src="assets/icons/logo-tfgm.svg" alt="Transport for Greater Manchester" width="127" height="31">
-          <img src="assets/icons/logo-landsec.svg" alt="Landsec" width="43" height="51">
-          <img src="assets/icons/logo-platform-4.svg" alt="Platform 4" width="62" height="51">
+          <span class="foot__logo foot__logo--mcc" role="img" aria-label="Manchester City Council"></span>
+          <span class="foot__logo foot__logo--tfgm" role="img" aria-label="Transport for Greater Manchester"></span>
+          <span class="foot__logo foot__logo--landsec" role="img" aria-label="Landsec"></span>
+          <span class="foot__logo foot__logo--platform4" role="img" aria-label="Platform 4"></span>
         </div>
         <div class="foot__legal t-foot">
           <p>&copy;Mayfield 2026. All Rights Reserved</p>
