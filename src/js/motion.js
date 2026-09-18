@@ -556,6 +556,37 @@
     setInterval(tick, 30000);
   }
 
+  /* ---- 5b. Five-day forecast strip (park page) --------------------------
+     Fills the .wxstrip from /api/weather?days=N. The markup ships with a static
+     placeholder so the strip reads fine with no JS or when the API is
+     unavailable; this overwrites each row's day, icon and high once live data
+     arrives, and quietly leaves the placeholder if not. */
+  (() => {
+    const strip = document.querySelector(".wxstrip");
+    if (!strip) return;
+    const rows = [...strip.querySelectorAll(".wxday")];
+    if (!rows.length) return;
+    fetch(`api/weather?days=${rows.length}`, { headers: { accept: "application/json" } })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!d || !Array.isArray(d.days) || !d.days.length) return;
+        rows.forEach((row, i) => {
+          const f = d.days[i];
+          if (!f) return;
+          const spans = row.querySelectorAll("span");
+          if (spans[0] && f.day) spans[0].textContent = f.day;
+          const icon = row.querySelector(".wxday__icon");
+          if (icon && f.icon) {
+            const href = new URL(`assets/icons/weather-${f.icon}.svg`, document.baseURI).href;
+            icon.style.setProperty("--wx", `url("${href}")`);
+          }
+          const temp = spans[spans.length - 1];
+          if (temp && typeof f.high === "number") temp.textContent = `${f.high}°`;
+        });
+      })
+      .catch(() => {});
+  })();
+
   /* ---- 6. Contact form --------------------------------------------------
      Progressive enhancement, nothing more. The form already posts to
      /v2/api/contact and validates natively with scripting off; this keeps the
