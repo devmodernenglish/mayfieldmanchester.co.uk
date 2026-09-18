@@ -17,6 +17,13 @@ find src/assets -mindepth 1 -maxdepth 1 ! -name img -exec cp -R {} dist/assets/ 
 find dist/assets -name '.DS_Store' -delete
 mkdir -p dist/assets/img
 
+# Images already optimised in src/ (the home plates are authored as jpg now)
+# are copied straight through. The Pillow pass below only regenerates the PNG
+# sources, so without this they were excluded from the deploy entirely — img/
+# is skipped by the copy above on the assumption that everything in it is a
+# PNG waiting to be converted.
+cp src/assets/img/*.jpg dist/assets/img/ 2>/dev/null || true
+
 # ---- Imagery ---------------------------------------------------------------
 python3 - <<'PY'
 from PIL import Image

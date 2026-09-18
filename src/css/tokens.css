@@ -176,6 +176,16 @@
 
   /* ---- Motion ----------------------------------------------------------- */
   --dur-marquee: 12s;
+  /* The button roll — the hover on every button in the system: the label or
+     icon shoots up and out while an identical copy rises into place. Stated
+     once here because .btn, .dest__icon and the brochure cell all run it and
+     they have to leave together. */
+  --dur-roll: 0.42s;
+  --ease-roll: cubic-bezier(0.5, 0, 0.2, 1);
+  /* The crossfade between section cuts in the window. Read by motion.js to
+     know when the outgoing layer is clear and can be paused, so this is the
+     one place the duration is stated. */
+  --win-fade: 0.45s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
   /* A slower ease-in-out for the menu. The panel travels a whole viewport, so
      the standard curve's fast start reads as a snap rather than a wipe. */
