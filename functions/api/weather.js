@@ -119,6 +119,41 @@ export async function onRequest({ env, request }) {
 
   const key = env && env.GOOGLE_WEATHER_KEY;
 
+  /* ---- 5-day forecast (the park page's weather strip) ------------------
+     ?days=N returns an array of { day, icon, high, low } from the Weather API's
+     forecast endpoint — same key and location as the current reading. The page
+     leaves its placeholder markup in place if this is unavailable, so the strip
+     never looks broken. */
+  const daysParam = parseInt(q.get("days") || "0", 10);
+  if (daysParam > 0) {
+    if (!key) return json({ days: null, source: "default", reason: "no GOOGLE_WEATHER_KEY set" }, 60);
+    const n = Math.min(Math.max(daysParam, 1), 10);
+    const furl =
+      "https://weather.googleapis.com/v1/forecast/days:lookup" +
+      `?key=${encodeURIComponent(key)}&location.latitude=${LAT}&location.longitude=${LON}` +
+      `&days=${n}&unitsSystem=METRIC`;
+    const WD = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    try {
+      const res = await fetch(furl, { cf: { cacheTtl: TTL, cacheEverything: true } });
+      if (!res.ok) throw new Error(`forecast api ${res.status}`);
+      const data = await res.json();
+      const out = ((data && data.forecastDays) || []).map((fd) => {
+        const dd = fd.displayDate || {};
+        const dow = typeof dd.year === "number"
+          ? WD[new Date(Date.UTC(dd.year, dd.month - 1, dd.day)).getUTCDay()]
+          : null;
+        const type =
+          fd?.daytimeForecast?.weatherCondition?.type ??
+          fd?.nighttimeForecast?.weatherCondition?.type ?? null;
+        const state = STATES.get(type) || "overcast";
+        return { day: dow, state, icon: GLYPH[state] || "cloudy", high: celsius(fd.maxTemperature), low: celsius(fd.minTemperature) };
+      });
+      return json({ days: out, source: "google" }, TTL);
+    } catch (err) {
+      return json({ days: null, source: "fallback", reason: String(err.message || err) }, 60);
+    }
+  }
+
   /* No key configured: hand back the default so the page still renders in
      the brand's own colour rather than failing to a fallback it never chose. */
   if (!key) {
