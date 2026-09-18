@@ -424,6 +424,7 @@
    7. Button                                              [figma 214:2637]
    A 2px black stroke, fully rounded, never filled. Inverts on hover.
    -------------------------------------------------------------------------- */
+.btn[hidden] { display: none; }   /* honour the hidden attribute despite .btn's display */
 .btn {
   display: inline-flex;
   align-items: center;

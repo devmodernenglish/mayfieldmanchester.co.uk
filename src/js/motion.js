@@ -945,8 +945,12 @@
      [ref codepen bGEqbaQ — GreenSock "SplitText reveal each character"] */
   (() => {
     if (reduced) return;
-    const EXCLUDE = "header, footer, .nav, .window, .bpanel, .flag";
-    const SEL = "h1, h2, h3, h4, p, .rtitle";
+    /* Excludes: footer, the nav (sticky + initial), the window video span, the
+       stacking cards, the flag, the destination cards, the weather strip, and the
+       home/Republic heroes (they have their own motion). The .phero video-header
+       titles ARE included. Locations join via .rloc__name/.rloc__time. */
+    const EXCLUDE = "footer, .nav, .initial-nav, .window, .bpanel, .flag, .dest, .wxstrip, .hero, .rhero";
+    const SEL = "h1, h2, h3, h4, p, .rtitle, .rloc__name, .rloc__time";
     const targets = [...document.querySelectorAll(SEL)].filter(
       (el) => el.textContent.trim() && !el.dataset.reveal && !el.closest(EXCLUDE)
     );
