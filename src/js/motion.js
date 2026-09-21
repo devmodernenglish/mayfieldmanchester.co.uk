@@ -346,7 +346,7 @@
 
   /* ---- 5. Link hover ---- */
   // Delegated pointerover (bubbles) instead of per-link pointerenter/leave, which can strand a drawn rule.
-  const LINKS = ".nav__links a, .foot__links a, .foot__legal a, .insta__text a";
+  const LINKS = ".nav__links a, .foot__links a, .foot__legal a, .insta__text a, .ragent__person a";
   const links = document.querySelectorAll(LINKS);
 
   if (links.length) {

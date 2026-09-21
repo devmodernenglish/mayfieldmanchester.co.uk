@@ -1185,10 +1185,14 @@ select.field__control { cursor: pointer; }
 .gallery__nav > * { pointer-events: auto; }
 .gallery__nav button { cursor: pointer; }
 .gallery__count { order: -1; margin-inline-end: auto; min-width: 4ch; }
+/* Republic: tighter gap from the paragraph above; peeking cards need ~50px */
+#repGallery { padding-block-start: 90px; }
 
 @media (min-width: 1024px) {
   /* 624px card = 480 x 1.3; stage, --rise, --recede and top room scale together */
   .gallery { padding-block-start: 156px; }
+  #repGallery { padding-block-start: 60px; }
+  .rpara:has(+ #repGallery) { padding-block-end: 60px; }
   .gallery__stage { height: 676px; --rise: 156px; --recede: 728px; }
   .gallery__slide { width: 624px; height: 624px; }
   .gallery__nav {
@@ -1692,6 +1696,38 @@ a.rbenefit:hover img, a.rbenefit:focus-visible img { transform: scale(1.04); }
 /* [figma 55:3789] Halyard Text 15/1.4, same Adobe kit */
 .rbenefit p { font-family: "halyard-text", var(--f-sans, sans-serif); font-weight: 400; font-size: var(--t-caps); line-height: 1.4; color: #061202; max-width: 24ch; }
 @media (min-width: 1024px) { .rbenefits { grid-template-columns: repeat(4, 1fr); gap: var(--s-7) 48px; } }   /* [figma] 24px row / 48px col */
+
+/* Leasing agents: benefit-card type, logo first */
+.ragents {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--s-10);
+  padding: 0 var(--gutter) var(--s-11);
+  background: var(--c-paper);
+  color: #061202;
+}
+.ragent { display: flex; flex-direction: column; align-items: center; gap: var(--s-6); text-align: center; }
+/* Masks take the text colour, like the footer logos */
+.ragent__logo {
+  height: 56px;
+  background-color: currentColor;
+  -webkit-mask: var(--logo) center / contain no-repeat;
+          mask: var(--logo) center / contain no-repeat;
+}
+.ragent__logo--landsec { width: 47px;  --logo: url("../assets/icons/logo-landsec.svg"); }
+.ragent__logo--obi     { width: 56px;  --logo: url("../assets/logos/obi.svg"); }
+.ragent__logo--savills { width: 166px; --logo: url("../assets/logos/savills.png"); }
+.ragent__person { display: flex; flex-direction: column; align-items: center; gap: var(--s-3); }
+.ragent__person h3 {
+  font-family: var(--f-serif);
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: -0.08em;
+  text-transform: uppercase;
+}
+.ragent__person p { font-family: "halyard-text", var(--f-sans, sans-serif); font-size: var(--t-caps); line-height: 1.4; }
+@media (min-width: 1024px) { .ragents { grid-template-columns: repeat(3, 1fr); gap: 48px; align-items: start; } }
 
 /* Brochure CTA card [figma 465:7915] */
 .rcta { padding: var(--s-10) var(--gutter); background: var(--c-paper); }
