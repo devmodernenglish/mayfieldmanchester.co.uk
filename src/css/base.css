@@ -1,7 +1,4 @@
-/* ==========================================================================
-   MAYFIELD V2 — BASE
-   Reset, document defaults and the type classes the design names.
-   ========================================================================== */
+/* Base: reset, document defaults, type classes. */
 
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -15,9 +12,7 @@ body {
   font-weight: var(--w-medium);
   font-size: var(--t-body);
   line-height: var(--lh-body);
-  /* The design is edge-to-edge black/white/acid with no horizontal movement;
-     `clip` rather than `hidden` so it never becomes a scroll container and
-     breaks the sticky panels. */
+  /* clip, not hidden: hidden makes a scroll container and breaks sticky panels */
   overflow-x: clip;
 }
 
@@ -34,8 +29,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 
 :focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
 
-/* A plain `hidden` attribute loses to any display rule, and the weather badge
-   toggles between an icon and a word using it. */
+/* Make [hidden] beat component display rules. */
 [hidden] { display: none !important; }
 
 .sr-only {
@@ -44,9 +38,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   clip-path: inset(50%); white-space: nowrap;
 }
 
-/* ---- Type ----------------------------------------------------------------
-   Named after the Figma styles so the mapping stays obvious.
-   -------------------------------------------------------------------------- */
+/* ---- Type (named after the Figma styles) ---------------------------------- */
 
 /* [figma Global/Title/Title 58 | Title 40] */
 .t-title {
@@ -57,7 +49,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   text-transform: uppercase;
 }
 
-/* The display slabs — video panel, marquee, footer stamp. Crushed leading. */
+/* Display slabs: video panel, marquee, footer stamp. */
 .t-slab {
   font-weight: var(--w-xbold);
   line-height: var(--lh-crush);
@@ -68,21 +60,21 @@ ul { margin: 0; padding: 0; list-style: none; }
 /* [figma Global/Body/Body 22 | Body 18] */
 .t-body { font-size: var(--t-body); line-height: var(--lh-body); }
 
-/* [figma Global/Caps/Caps 15] — every button, nav item and label. */
+/* [figma Global/Caps/Caps 15] buttons, nav, labels */
 .t-caps {
   font-size: var(--t-caps);
   line-height: var(--lh-flat);
   text-transform: uppercase;
 }
 
-/* [figma Global/Caps/Caps 18] — the menu overlay links. */
+/* [figma Global/Caps/Caps 18] menu links */
 .t-caps-l {
   font-size: var(--t-caps-l);
   line-height: var(--lh-flat);
   text-transform: uppercase;
 }
 
-/* [figma Global/Caps/Overline 13] — a form field's label. */
+/* [figma Global/Caps/Overline 13] form field label */
 .t-over {
   font-size: var(--t-over);
   line-height: var(--lh-body);

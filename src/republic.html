@@ -10,9 +10,7 @@
     content="The Republic is Mayfield's first office building — a sustainable, future-focused workspace set within Manchester's first new public park in 100 years.">
   <link rel="preload" href="assets/fonts/bdo-grotesk-extrabold.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/bdo-grotesk-medium.woff2" as="font" type="font/woff2" crossorigin>
-  <!-- Republic display serif = Garamond Premier Pro, Adobe Fonts kit anw5ghn.
-     Loaded async (preload -> stylesheet) so the kit's cross-origin @import never
-     blocks render; the platform-serif fallback shows until it swaps in. -->
+  <!-- Garamond Premier Pro via Adobe Fonts kit anw5ghn, loaded async. -->
   <link rel="preload" href="https://use.typekit.net/anw5ghn.css" as="style"
     onload="this.onload=null;this.rel='stylesheet'">
   <noscript>
@@ -26,14 +24,7 @@
 
 <body>
 
-  <!--
-  MAYFIELD V2 — The Republic.  Figma: desktop 465:7870, mobile 465:11823.
-  Sub-brand: acid yellow (--c-republic) + a Garamond display (--f-serif, on a
-  platform-serif fallback until a woff2 is self-hosted). Real copy + imagery from
-  the client walkthrough. Two hover interactions from it: the location list
-  reveals a green-duotone map per row, and hovering a floor swaps the building
-  render. Floor renders are the 6 component variants; floors cycle through them.
--->
+  <!-- Republic page. Figma: desktop 465:7870, mobile 465:11823 -->
 
   <!-- ================================================= NAV + MENU (4 panels) -->
   <nav class="nav" id="nav" aria-label="Primary">
@@ -107,8 +98,7 @@
 
     <!-- ================================================ HERO  [figma 465:7922] -->
     <header class="rhero phero">
-      <!-- The still it replaces is now the poster, so the first paint and the
-         no-autoplay fallback are the frame the page was designed around. -->
+      <!-- Poster is the original hero still. -->
       <video class="rhero__bg" autoplay muted loop playsinline preload="metadata" poster="assets/republic/hero.jpg"
         aria-label="The Republic at Mayfield">
         <source src="assets/videos/republic-header.mp4" type="video/mp4">
@@ -158,8 +148,7 @@
         as part of everything growing at Mayfield.</p>
     </section>
 
-    <!-- =========================================== LOCATION LIST  [figma 465:7886]
-       Each row hides a green-duotone map that reveals, centred, on hover. -->
+    <!-- =========================================== LOCATION LIST  [figma 465:7886] -->
     <section class="rlocations" aria-label="Getting here">
       <div class="rloc"><span class="rloc__name">MCR Piccadilly</span>
         <span class="rloc__map"><img src="assets/republic/loc-piccadilly.jpg" alt="" loading="lazy"></span>
@@ -301,8 +290,7 @@
         touching distance.</p>
     </section>
 
-    <!-- ================================================ FLOORS  [figma 465:7910]
-       Hovering a floor swaps the render on the left (motion.js reads data-render). -->
+    <!-- ================================================ FLOORS  [figma 465:7910] hover swaps the render via data-render -->
     <section class="floors" aria-label="Floor availability">
       <!-- Mobile: a swipeable carousel of labelled floor renders [figma 465:11866] -->
       <div class="floors__carousel" aria-label="Floor renders">

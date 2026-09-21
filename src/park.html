@@ -18,13 +18,7 @@
 
 <body>
 
-  <!--
-  MAYFIELD V2 — Mayfield Park.  Figma: desktop 465:7928, mobile 465:11918.
-  Interior hero page: video header with a five-day weather strip, an intro, a
-  depth-stack gallery, the ratings deck on white, press coverage, then park info
-  + a native <details> FAQ. NOTE: the Park titles are Stratos Bold in Figma;
-  V2 self-hosts only BDO, so they fall back to ExtraBold until Stratos is added.
--->
+  <!-- Park page. Figma: desktop 465:7928, mobile 465:11918. Titles are Stratos Bold in Figma (not self-hosted yet). -->
 
   <!-- ================================================= NAV + MENU (4 panels) -->
   <nav class="nav" id="nav" aria-label="Primary">
@@ -100,9 +94,7 @@
     <!-- ================================================ HERO  [figma 465:7959] -->
     <header class="phero phero--park">
       <div class="phero__media">
-        <!-- Background footage, set up like the Republic hero. The poster is the
-           video's own first frame, so the first paint (and the no-autoplay
-           fallback) hands over to playback without a jump. -->
+        <!-- Poster is the video's first frame. -->
         <video autoplay muted loop playsinline preload="metadata" poster="assets/park/park-header-poster.jpg"
           aria-label="Mayfield Park">
           <source src="assets/videos/park-header.mp4" type="video/mp4">
@@ -117,16 +109,12 @@
       </div>
 
       <div class="phero__inner">
-        <!-- The lockup IS the page's h1, so the heading stays a heading and the
-           name is still in the accessible tree via .sr-only. Painted as a mask
-           rather than an <img> so it takes --c-on-media like the rest of the
-           header; the SVG's own white fill is left alone because the Spaces
-           cards use the same file. -->
+        <!-- Lockup is the h1, painted as a mask so it takes --c-on-media. -->
         <h1 class="phero__mark"><span class="sr-only">Mayfield Park</span></h1>
         <p class="phero__sub t-caps">Open every day 05:00 &ndash; 21:00</p>
       </div>
 
-      <!-- Five-day forecast. Placeholder is the fallback; motion.js §5b fills it live from /api/weather?days=5. -->
+      <!-- Five-day forecast; motion.js §5b fills it from /api/weather?days=5. -->
       <ul class="wxstrip t-caps">
         <li class="wxday"><span>Tue</span><span class="wxday__icon"
             style="--wx:url(assets/icons/weather-cloudy.svg)"></span><span>18&deg;</span></li>
@@ -177,9 +165,7 @@
       </div>
     </section>
 
-    <!-- ======================================= RATINGS (power, on white)  [505:18519]
-       The same rating + quote deck as the homepage, repainted on white via
-       .power--plain. motion.js wires the deck and the live Google rating. -->
+    <!-- ======================================= RATINGS (power, on white)  [505:18519] -->
     <section class="power power--plain" id="power">
       <div class="power__rating" id="powerRating">
         <span class="power__google">Google</span>
@@ -283,8 +269,7 @@
       <img class="parkinfo__map" src="assets/park/map.png" alt="Map showing Mayfield Park, Baring Street, Manchester"
         loading="lazy" decoding="async">
 
-      <!-- FAQ. Native <details> so it opens with no JS. Answer copy is placeholder
-         pending the real text. -->
+      <!-- FAQ answers are placeholder copy. -->
       <div class="faq">
         <div class="faq__item">
           <h3 class="faq__q">How big is the park and what kind of spaces are there?</h3>
