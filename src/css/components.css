@@ -1697,6 +1697,25 @@ a.rbenefit:hover img, a.rbenefit:focus-visible img { transform: scale(1.04); }
 .rbenefit p { font-family: "halyard-text", var(--f-sans, sans-serif); font-weight: 400; font-size: var(--t-caps); line-height: 1.4; color: #061202; max-width: 24ch; }
 @media (min-width: 1024px) { .rbenefits { grid-template-columns: repeat(4, 1fr); gap: var(--s-7) 48px; } }   /* [figma] 24px row / 48px col */
 
+/* Building spec: icon, title, optional note; benefit-card type on the yellow */
+.rspecs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--s-10) var(--s-6);
+  padding: var(--s-11) var(--gutter);
+  background: var(--c-republic);
+  color: #061202;
+}
+.rspec { display: flex; flex-direction: column; align-items: center; gap: var(--s-4); text-align: center; }
+.rspec img { width: 56px; height: 56px; margin-bottom: var(--s-3); }
+.rspec h3 { max-width: 16ch; font-family: var(--f-serif); font-weight: 400; font-size: 24px; line-height: 1; letter-spacing: -0.04em; }
+.rspec p { max-width: 34ch; font-family: "halyard-text", var(--f-sans, sans-serif); font-weight: 400; font-size: var(--t-caps); line-height: 1.4; }
+@media (min-width: 1024px) {
+  .rspecs { grid-template-columns: repeat(4, 1fr); gap: var(--s-11) 48px; padding-block: 140px; }
+  .rspec img { width: 72px; height: 72px; }
+  .rspec h3 { font-size: 32px; }
+}
+
 /* Leasing agents: benefit-card type, logo first */
 .ragents {
   display: grid;
