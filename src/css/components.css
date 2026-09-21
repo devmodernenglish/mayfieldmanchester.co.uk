@@ -1217,7 +1217,7 @@ select.field__control { cursor: pointer; }
 .press__cta { grid-column: 1 / -1; padding-block-start: var(--s-6); }
 
 @media (min-width: 1024px) {
-  .press { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 60px var(--s-9); }
+  .press { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 60px var(--s-9); }
 }
 
 /* ---- 24. Park info + FAQ [figma 465:7935 / 261:10184] ---- */
