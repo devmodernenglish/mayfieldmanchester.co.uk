@@ -1185,10 +1185,14 @@ select.field__control { cursor: pointer; }
 .gallery__nav > * { pointer-events: auto; }
 .gallery__nav button { cursor: pointer; }
 .gallery__count { order: -1; margin-inline-end: auto; min-width: 4ch; }
+/* Republic: tighter gap from the paragraph above; peeking cards need ~50px */
+#repGallery { padding-block-start: 90px; }
 
 @media (min-width: 1024px) {
   /* 624px card = 480 x 1.3; stage, --rise, --recede and top room scale together */
   .gallery { padding-block-start: 156px; }
+  #repGallery { padding-block-start: 60px; }
+  .rpara:has(+ #repGallery) { padding-block-end: 60px; }
   .gallery__stage { height: 676px; --rise: 156px; --recede: 728px; }
   .gallery__slide { width: 624px; height: 624px; }
   .gallery__nav {
