@@ -11,6 +11,7 @@ rm -rf dist && mkdir -p dist
 # republic/, videos/, …) from the deploy while masking the failure.
 cp ./src/*.html dist/ 2>/dev/null || true
 cp -R src/css src/js dist/ 2>/dev/null || true
+cp src/favicon.ico dist/ 2>/dev/null || true   # browsers ask for /favicon.ico unprompted
 mkdir -p dist/assets
 # Everything under src/assets EXCEPT img/ (Pillow regenerates img/ as jpg below).
 find src/assets -mindepth 1 -maxdepth 1 ! -name img -exec cp -R {} dist/assets/ \;
