@@ -1148,4 +1148,36 @@
     rollLabel(btn);
   }
 
+  /* ---- 14. Animated favicon — the Republic flag waving in the tab --------
+     Only Firefox animates a GIF favicon; Chrome, Edge and Safari show frame
+     one. So the page steps the icon itself: one 64px sprite strip (20 frames
+     cut from flag-loop.gif, a stretch whose last frame runs back into its
+     first), sliced into data URLs once, then swapped into the icon <link> at
+     the source's pace. The static flag-32.png in <head> stays as the
+     fallback, and is all that shows with reduced motion. Safari ignores
+     favicon changes after load, so it keeps the still. Background tabs get
+     their timers throttled by the browser, which only slows the wave. */
+  const iconLink = document.querySelector('link[rel="icon"][data-anim]');
+  if (iconLink && !reduced) {
+    const SIZE = 64, FRAMES = 20, STEP_MS = 80;
+    const sprite = new Image();
+    sprite.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = canvas.height = SIZE;
+      const ctx = canvas.getContext("2d");
+      const urls = [];
+      for (let i = 0; i < FRAMES; i++) {
+        ctx.clearRect(0, 0, SIZE, SIZE);
+        ctx.drawImage(sprite, i * SIZE, 0, SIZE, SIZE, 0, 0, SIZE, SIZE);
+        urls.push(canvas.toDataURL("image/png"));
+      }
+      let f = 0;
+      setInterval(() => {
+        f = (f + 1) % FRAMES;
+        iconLink.href = urls[f];
+      }, STEP_MS);
+    };
+    sprite.src = iconLink.dataset.anim;
+  }
+
 })();
