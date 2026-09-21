@@ -6,7 +6,6 @@ const FROM_DEFAULT  = "Mayfield <noreply@web.republicofmayfield.com>";
 
 /* Required fields and labels; message is optional. */
 const REQUIRED = {
-  enquiry: "Enquiry type",
   name: "Contact name",
   email: "Email",
   company: "Company name",
@@ -108,14 +107,16 @@ export async function onRequestPost({ env, request }) {
   const to   = (env && env.CONTACT_TO)   || TO_DEFAULT;
   const from = (env && env.CONTACT_FROM) || FROM_DEFAULT;
 
-  const subject = `Website enquiry — ${v.enquiry} — ${v.name}`;
+  const subject = `Website enquiry — ${v.name}, ${v.company}`;
+  /* Which form it came from (Contact or Republic). */
+  const source = new URL(request.headers.get("referer") || "https://unknown/").pathname;
   const lines = [
-    ["Enquiry type", v.enquiry],
     ["Name", v.name],
     ["Email", v.email],
     ["Company", v.company],
     ["Employees", v.employees],
     ["Message", message || "—"],
+    ["Sent from", source],
   ];
   const text = lines.map(([k, val]) => `${k}: ${val}`).join("\n");
   const html =
