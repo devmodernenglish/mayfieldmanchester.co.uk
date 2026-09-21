@@ -15,3 +15,6 @@ node_modules/
 
 # Source masters (client originals) kept out of src/ so they never deploy
 originals/
+
+# Local secrets for wrangler pages dev
+.dev.vars
