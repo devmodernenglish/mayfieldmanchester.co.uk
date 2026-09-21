@@ -12,3 +12,6 @@ node_modules/
 
 # Cloudflare Wrangler local cache
 .wrangler/
+
+# Source masters (client originals) kept out of src/ so they never deploy
+originals/

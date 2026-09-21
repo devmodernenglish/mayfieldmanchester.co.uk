@@ -1314,6 +1314,9 @@ select.field__control { cursor: pointer; }
 
 .dest__body { display: flex; flex-direction: column; gap: var(--s-6); padding-block-start: var(--s-6); }
 .dest__blurb { font-size: var(--t-caps); line-height: var(--lh-body); }
+/* Inline links in a blurb (links are undecorated site-wide, so mark them). */
+.dest__blurb a { text-decoration: underline; text-underline-offset: 0.15em; }
+.dest__blurb a:hover { text-decoration-thickness: 2px; }
 .dest__actions { display: flex; gap: var(--s-3); align-items: stretch; }
 
 /* The square arrow button. Mirrors .btn's invert-on-hover, but holds a 1:1 box
@@ -1347,6 +1350,10 @@ select.field__control { cursor: pointer; }
           mask: url("../assets/icons/arrow.svg") center / 24px 24px no-repeat;
   transition: transform var(--dur-roll) var(--ease-roll);
 }
+/* With no .btn beside it (a card with no website) there is no row height for
+   aspect-ratio to follow and it collapses to 0x0, so it takes the .btn's own
+   height: padding 12 + 13, one 15px line, two 2px borders = 44px. */
+.dest__icon:only-child { block-size: calc(var(--s-4) + 13px + var(--t-caps) * var(--lh-flat) + 2 * var(--border-btn)); }
 .dest__icon::after { transform: translateY(100%); }   /* waiting below */
 .dest__icon:hover::before,
 .dest__icon:focus-visible::before { transform: translateY(-100%); }
@@ -1502,12 +1509,14 @@ select.field__control { cursor: pointer; }
 .gallery__count { order: -1; margin-inline-end: auto; min-width: 4ch; }
 
 @media (min-width: 1024px) {
-  .gallery__stage { height: 520px; --rise: 120px; --recede: 560px; }
-  /* Square, like the mobile card above — the artwork is square now, so the
-     desktop card is the same 480 tall it always was and simply widens to
-     match. Keeping the height is what leaves the stage (520px), --rise and
-     --recede correct: they are all measured against a 480-tall front card. */
-  .gallery__slide { width: 480px; height: 480px; }
+  /* Square, like the mobile card above. The desktop card is 624px (the
+     original 480 scaled up 1.3), and every other measure scales by the same
+     1.3 (stage, --rise, --recede, and the top room for the peeking cards) so
+     the stack keeps its shape. They are all measured against the front card,
+     so change them together. */
+  .gallery { padding-block-start: 156px; }
+  .gallery__stage { height: 676px; --rise: 156px; --recede: 728px; }
+  .gallery__slide { width: 624px; height: 624px; }
   .gallery__nav {
     position: absolute;
     inset-block-start: 50%;
@@ -1927,11 +1936,14 @@ select.field__control { cursor: pointer; }
 .floors__table { padding: var(--s-9) var(--gutter); }
 .floors__head, .floor {
   display: grid;
-  grid-template-columns: 4.5em 1fr auto;
+  grid-template-columns: 4rem 1fr 118px;   /* rem + px, not em/auto: head and rows are separate grids at different font sizes, so both must resolve the same */
   gap: var(--s-4);
   align-items: center;
 }
 .floors__head { padding-block-end: var(--s-4); font-size: var(--t-caps); text-transform: uppercase; }
+/* Phones have no room for "Max capacity (1:10)" on one line beside the sizes, so
+   the ratio drops underneath; desktop un-stacks it (below). */
+.floors__ratio { display: block; }
 .floor { padding-block: var(--s-4); border-block-start: 1px solid rgb(0 0 0 / 0.25); font-size: var(--t-body); }
 .floors__list > .floor:last-child { border-block-end: 1px solid rgb(0 0 0 / 0.25); }
 .floor__cap { display: inline-flex; align-items: center; gap: var(--s-2); }
@@ -1950,7 +1962,13 @@ select.field__control { cursor: pointer; }
   .floors__carousel { display: none; }                       /* desktop uses the cross-fade render */
   .floors__img { display: block; position: relative; overflow: hidden; flex: 1 1 0; aspect-ratio: auto; }
   .floors__table { flex: 1 1 0; align-self: center; }
-  .floors__head, .floor { grid-template-columns: 170px 1fr 100px; }   /* [figma] Floor 170 / Size 1fr / Capacity 100 */
+  /* [figma] Floor 170 / Size 1fr / Capacity 100. Capacity is widened to 160 so
+     "Max capacity (1:10)" holds one line, and fixed, not auto: the head and each
+     row are separate grids, so an auto column would size differently in each and
+     the numbers would drift. Floor flexes (1:2 with Size) instead of a fixed 170
+     so a narrow desktop still leaves Size room; it lands near 170 at 1440. */
+  .floors__head, .floor { grid-template-columns: minmax(5rem, 1fr) 2fr 160px; }
+  .floors__ratio { display: inline; }
 }
 
 /* --------------------------------------------------------------------------
@@ -2099,6 +2117,10 @@ select.field__control { cursor: pointer; }
 }
 .rbenefit { display: flex; flex-direction: column; gap: var(--s-5); align-items: center; text-align: center; }
 .rbenefit img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+/* Linked benefits (a.rbenefit): the cut-out eases up a touch on hover. */
+a.rbenefit img { transition: transform 300ms var(--ease); }
+a.rbenefit:hover img, a.rbenefit:focus-visible img { transform: scale(1.04); }
+@media (prefers-reduced-motion: reduce) { a.rbenefit img { transition: none; } }
 /* [figma Republic/Title/Title 24] The same Garamond display as .rtitle, one
    step down. --f-serif, never the literal "Garamond Premier Pro": the kit
    registers the family under its Typekit SLUG, and the display name silently
