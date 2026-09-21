@@ -827,9 +827,8 @@
 
 .form { width: min(100%, 600px); display: flex; flex-direction: column; gap: var(--s-9); }
 .form__intro { text-align: center; }
-/* Mobile [figma 465:11856]: enquiry type hidden but stays in the DOM so it posts */
+/* Mobile [figma 465:11856]: intro hidden */
 @media (max-width: 1023px) {
-  .form > .field--select,
   .form__intro { display: none; }
 }
 /* [figma 465:8185] 8px is off-scale on purpose */
