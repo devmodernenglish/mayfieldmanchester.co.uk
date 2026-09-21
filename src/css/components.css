@@ -1503,33 +1503,19 @@ select.field__control { cursor: pointer; }
 
 /* ---- 30. Floors [figma 465:7910] ---- */
 .floors { display: flex; flex-direction: column; background: var(--c-paper); color: var(--c-ink); }
-/* Absolute img in a fixed-height box so renders of different ratios never shift the page */
-/* Mobile [figma 465:11866]: scroll-snap carousel, no JS */
-.floors__carousel {
-  display: flex;
-  gap: 2px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
+/* Background + building sprite; edge to edge and pinned under the nav on phones */
+.floors__img {
+  position: sticky; inset-block-start: var(--nav-h); z-index: 1;
+  overflow: hidden; aspect-ratio: 4 / 3; container-type: size;
 }
-.floors__carousel::-webkit-scrollbar { display: none; }
-.floors__slide {
-  flex: 0 0 min(92vw, 345px);
-  scroll-snap-align: start;
-  position: relative;
-  margin: 0;
-}
-.floors__slide { border-radius: 20px; overflow: hidden; }   /* clip children to the rounded corners too */
-.floors__slide img { display: block; width: 100%; height: 435px; object-fit: cover; border-radius: 20px; }
-.floors__slide figcaption {
-  position: absolute; inset-block-start: 10px; inset-inline-end: 8px;
-  padding: 6px;
-  background: #fff; color: #000;
-  font-size: 12px; line-height: 1.1; text-transform: uppercase;
-}
-.floors__img { display: none; }   /* mobile shows the carousel instead */
 .floors__img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* Building frames from one 4x4 sprite (833x822 cells): Ground, 1st-11th, then the unlit default */
+.floors__frame {
+  position: absolute; inset-block-start: 50%; inset-inline-start: 50%;
+  width: min(88cqw, 88cqh * 833 / 822); aspect-ratio: 833 / 822;
+  translate: -50% -50%;
+  background: url("../assets/republic/floors-sprite.webp") 0% 100% / 400% 400% no-repeat;
+}
 .floors__table { padding: var(--s-9) var(--gutter); }
 .floors__head, .floor {
   display: grid;
@@ -1554,8 +1540,7 @@ select.field__control { cursor: pointer; }
 [data-mode="night"]:not([data-brand="republic"]) .floors__list > .floor:last-child { border-color: rgb(255 255 255 / 0.3); }
 @media (min-width: 1024px) {
   .floors { flex-direction: row; }
-  .floors__carousel { display: none; }                       /* desktop uses the cross-fade render */
-  .floors__img { display: block; position: relative; overflow: hidden; flex: 1 1 0; aspect-ratio: auto; }
+  .floors__img { position: relative; inset-block-start: auto; flex: 1 1 0; aspect-ratio: auto; }
   .floors__table { flex: 1 1 0; align-self: center; }
   /* Capacity fixed at 160 so head and rows align and (1:10) fits one line */
   .floors__head, .floor { grid-template-columns: minmax(5rem, 1fr) 2fr 160px; }
@@ -1655,11 +1640,13 @@ select.field__control { cursor: pointer; }
   .rloc__map.is-on { opacity: 1; }
 }
 
-/* ---- Floors: render cross-fades as motion.js swaps layers on hover ---- */
-.floors__img img { transition: opacity 0.4s ease; }
+/* ---- Floors ---- */
 /* Instant on hover, 300ms fade out: the base rule times the return */
 .floor { transition: background 300ms ease-out; }
 .floor:hover { background: var(--c-republic); transition-duration: 0ms; }
+/* Touch: the tapped row stays lit to match the building */
+.floor { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+@media (hover: none) { .floor.is-active { background: var(--c-republic); transition-duration: 0ms; } }
 
 @media (prefers-reduced-motion: reduce) {
   .rloc__map { transition: none; }
