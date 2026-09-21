@@ -1524,8 +1524,6 @@ select.field__control { cursor: pointer; }
   align-items: center;
 }
 .floors__head { padding-block-end: var(--s-4); font-size: var(--t-caps); text-transform: uppercase; }
-/* Ratio wraps under on phones; unstacked on desktop */
-.floors__ratio { display: block; }
 .floor { padding-block: var(--s-4); border-block-start: 1px solid rgb(0 0 0 / 0.25); font-size: var(--t-body); }
 .floors__list > .floor:last-child { border-block-end: 1px solid rgb(0 0 0 / 0.25); }
 .floor__cap { display: inline-flex; align-items: center; gap: var(--s-2); }
@@ -1542,9 +1540,7 @@ select.field__control { cursor: pointer; }
   .floors { flex-direction: row; }
   .floors__img { position: relative; inset-block-start: auto; flex: 1 1 0; aspect-ratio: auto; }
   .floors__table { flex: 1 1 0; align-self: center; }
-  /* Capacity fixed at 160 so head and rows align and (1:10) fits one line */
   .floors__head, .floor { grid-template-columns: minmax(5rem, 1fr) 2fr 160px; }
-  .floors__ratio { display: inline; }
 }
 
 /* ---- 31. Republic display type + hover interactions ---- */
