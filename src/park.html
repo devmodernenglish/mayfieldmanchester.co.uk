@@ -99,10 +99,13 @@
     <!-- ================================================ HERO  [figma 465:7959] -->
     <header class="phero phero--park">
       <div class="phero__media">
-        <!-- A still, not a video. Eager and high priority: this is the LCP
-           element, so it must not be deferred behind anything. -->
-        <img src="assets/park/park-header.jpg" alt="Mayfield Park" width="1920" height="1212" fetchpriority="high"
-          decoding="async">
+        <!-- Background footage, set up like the Republic hero. The poster is the
+           video's own first frame, so the first paint (and the no-autoplay
+           fallback) hands over to playback without a jump. -->
+        <video autoplay muted loop playsinline preload="metadata" poster="assets/park/park-header-poster.jpg"
+          aria-label="Mayfield Park">
+          <source src="assets/videos/park-header.mp4" type="video/mp4">
+        </video>
       </div>
 
       <div class="initial-nav">
