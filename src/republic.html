@@ -301,66 +301,40 @@
         touching distance.</p>
     </section>
 
-    <!-- ================================================ FLOORS  [figma 465:7910] hover swaps the render via data-render -->
+    <!-- ================================================ FLOORS  [figma 465:7910] hover/tap shows that floor from the sprite -->
     <section class="floors" aria-label="Floor availability">
-      <!-- Mobile: a swipeable carousel of labelled floor renders [figma 465:11866] -->
-      <div class="floors__carousel" aria-label="Floor renders">
-        <figure class="floors__slide"><img src="assets/republic/cg-4.jpg" alt="Floor 11 render" loading="lazy"
-            decoding="async">
-          <figcaption>Floor 11</figcaption>
-        </figure>
-        <figure class="floors__slide"><img src="assets/republic/building-2.jpg" alt="Floor 9 render" loading="lazy"
-            decoding="async">
-          <figcaption>Floor 9</figcaption>
-        </figure>
-        <figure class="floors__slide"><img src="assets/republic/building-3.jpg" alt="Floor 6 render" loading="lazy"
-            decoding="async">
-          <figcaption>Floor 6</figcaption>
-        </figure>
-        <figure class="floors__slide"><img src="assets/republic/building-4.jpg" alt="Floor 4 render" loading="lazy"
-            decoding="async">
-          <figcaption>Floor 4</figcaption>
-        </figure>
-        <figure class="floors__slide"><img src="assets/republic/building-5.jpg" alt="Mezzanine render" loading="lazy"
-            decoding="async">
-          <figcaption>Mezzanine</figcaption>
-        </figure>
-        <figure class="floors__slide"><img src="assets/republic/building-6.jpg" alt="Ground floor render" loading="lazy"
-            decoding="async">
-          <figcaption>Ground floor</figcaption>
-        </figure>
+      <div class="floors__img"><img src="assets/republic/floors-bg.jpg" alt="" loading="lazy" decoding="async">
+        <div class="floors__frame" role="img" aria-label="The Republic building, highlighting the selected floor"></div>
       </div>
-      <div class="floors__img"><img src="assets/republic/cg-4.jpg" alt="The Republic building" loading="lazy"
-          decoding="async"></div>
       <div class="floors__table">
         <div class="floors__head"><span>Floor</span><span>Size</span><span>Max capacity <span
               class="floors__ratio">(1:10)</span></span></div>
         <div class="floors__list">
-          <div class="floor" data-render="assets/republic/cg-4.jpg"><span>11th</span><span>1,559m&sup2; /
+          <div class="floor" data-frame="11"><span>11th</span><span>1,559m&sup2; /
               16,777ft&sup2;</span><span class="floor__cap">155</span></div>
-          <div class="floor" data-render="assets/republic/building-2.jpg"><span>10th</span><span>1,559m&sup2; /
+          <div class="floor" data-frame="10"><span>10th</span><span>1,559m&sup2; /
               16,777ft&sup2;</span><span class="floor__cap">155</span></div>
-          <div class="floor" data-render="assets/republic/building-3.jpg"><span>9th</span><span>1,930m&sup2; /
+          <div class="floor" data-frame="9"><span>9th</span><span>1,930m&sup2; /
               20,770ft&sup2;</span><span class="floor__cap">195</span></div>
-          <div class="floor" data-render="assets/republic/building-4.jpg"><span>8th</span><span>1,930m&sup2; /
+          <div class="floor" data-frame="8"><span>8th</span><span>1,930m&sup2; /
               20,770ft&sup2;</span><span class="floor__cap">195</span></div>
-          <div class="floor" data-render="assets/republic/building-5.jpg"><span>7th</span><span>1,904m&sup2; /
+          <div class="floor" data-frame="7"><span>7th</span><span>1,904m&sup2; /
               20,497ft&sup2;</span><span class="floor__cap">190</span></div>
-          <div class="floor" data-render="assets/republic/building-6.jpg"><span>6th</span><span>2,129m&sup2; /
+          <div class="floor" data-frame="6"><span>6th</span><span>2,129m&sup2; /
               22,918ft&sup2;</span><span class="floor__cap">210</span></div>
-          <div class="floor" data-render="assets/republic/cg-4.jpg"><span>5th</span><span>2,129m&sup2; /
+          <div class="floor" data-frame="5"><span>5th</span><span>2,129m&sup2; /
               22,918ft&sup2;</span><span class="floor__cap">210</span></div>
-          <div class="floor" data-render="assets/republic/building-2.jpg"><span>4th</span><span>2,129m&sup2; /
+          <div class="floor" data-frame="4"><span>4th</span><span>2,129m&sup2; /
               22,918ft&sup2;</span><span class="floor__cap">210</span></div>
-          <div class="floor" data-render="assets/republic/building-3.jpg"><span>3rd</span><span>2,129m&sup2; /
+          <div class="floor" data-frame="3"><span>3rd</span><span>2,129m&sup2; /
               22,918ft&sup2;</span><span class="floor__cap">210</span></div>
-          <div class="floor" data-render="assets/republic/building-4.jpg"><span>2nd</span><span>2,129m&sup2; /
+          <div class="floor" data-frame="2"><span>2nd</span><span>2,129m&sup2; /
               22,918ft&sup2;</span><span class="floor__cap">210</span></div>
-          <div class="floor" data-render="assets/republic/building-5.jpg"><span>1st</span><span>2,129m&sup2; /
+          <div class="floor" data-frame="1"><span>1st</span><span>2,129m&sup2; /
               22,918ft&sup2;</span><span class="floor__cap">210</span></div>
-          <div class="floor" data-render="assets/republic/building-6.jpg"><span>Mezz</span><span>1,058m&sup2; /
+          <div class="floor" data-frame="0"><span>Mezz</span><span>1,058m&sup2; /
               11,388ft&sup2;</span><span class="floor__cap">105</span></div>
-          <div class="floor" data-render="assets/republic/cg-4.jpg"><span>Ground</span><span>169m&sup2; /
+          <div class="floor" data-frame="0"><span>Ground</span><span>169m&sup2; /
               1,819ft&sup2;</span><span class="floor__cap">N/A</span></div>
         </div>
       </div>

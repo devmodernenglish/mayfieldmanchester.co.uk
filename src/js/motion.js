@@ -672,38 +672,20 @@
     layout();
   });
 
-  /* ---- 8. Republic floors: hover swaps the building render ---- */
-  const floorsBox = document.querySelector(".floors__img");
-  if (floorsBox && floorsBox.querySelector("img")) {
-    const rows = [...document.querySelectorAll(".floor[data-render]")];
-    /* Preload the distinct renders so a swap never waits on the network. */
-    [...new Set(rows.map((r) => r.dataset.render))].forEach((s) => { const i = new Image(); i.src = s; });
-    // Two stacked layers so the render crossfades.
-    const a = floorsBox.querySelector("img");
-    const b = a.cloneNode(false);
-    b.removeAttribute("alt");
-    b.style.opacity = "0";
-    floorsBox.appendChild(b);
-    let front = a, cur = a.getAttribute("src");
-    const swap = (src) => {
-      if (!src || src === cur) return;
-      cur = src;
-      const back = front === a ? b : a;
-      const leaving = front;                 /* captured — reveal must NOT read the live `front` */
-      back.src = src;
-      const reveal = () => {
-        if (cur !== src) return;             /* a newer hover superseded this swap */
-        back.style.opacity = "1";
-        leaving.style.opacity = "0";
-        front = back;
-      };
-      // decode() resolves exactly once, even when cached.
-      if (back.decode) back.decode().then(reveal, reveal);
-      else back.onload = reveal;
-    };
+  /* ---- 8. Republic floors: hover jumps the building sprite to that floor ---- */
+  const frame = document.querySelector(".floors__frame");
+  if (frame) {
+    // Sprite is 4x4: Ground, 1st ... 11th, then the unlit default (CSS start frame).
+    const pos = (n) => `${(n % 4) * 100 / 3}% ${Math.floor(n / 4) * 100 / 3}%`;
+    const rows = document.querySelectorAll(".floor[data-frame]");
     rows.forEach((row) => {
-      row.addEventListener("pointerenter", () => swap(row.dataset.render));
-      row.addEventListener("focusin", () => swap(row.dataset.render));
+      const show = () => {
+        frame.style.backgroundPosition = pos(Number(row.dataset.frame));
+        rows.forEach((r) => r.classList.toggle("is-active", r === row));
+      };
+      row.addEventListener("pointerenter", show);
+      row.addEventListener("click", show);
+      row.addEventListener("focusin", show);
     });
   }
 
