@@ -1,8 +1,8 @@
 /* /api/contact: validates the contact form and emails it via Resend (JSON or HTML response).
    Needs secret RESEND_API_KEY; optional vars CONTACT_TO, CONTACT_FROM. */
 
-const TO_DEFAULT   = "hello@mayfieldpark.com";
-const FROM_DEFAULT  = "Mayfield <noreply@mayfieldpark.com>";
+const TO_DEFAULT   = "dev@modern-english.co.uk";   /* TODO: client inbox before launch */
+const FROM_DEFAULT  = "Mayfield <noreply@web.republicofmayfield.com>";
 
 /* Required fields and labels; message is optional. */
 const REQUIRED = {
@@ -42,7 +42,7 @@ const page = (title, body, status = 200) =>
     border:2px solid #000;border-radius:70px;font-size:15px;
     text-transform:uppercase;text-decoration:none}
 </style></head><body><main><h1>${title}</h1><p>${body}</p>
-<a href="/v2/contact.html">Back to contact</a></main></body></html>`,
+<a href="/contact">Back to contact</a></main></body></html>`,
     { status, headers: { "content-type": "text/html; charset=utf-8" } }
   );
 
