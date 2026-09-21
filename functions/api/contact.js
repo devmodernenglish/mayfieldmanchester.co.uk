@@ -1,28 +1,10 @@
-/* ==========================================================================
-   /api/contact — Cloudflare Pages Function
-
-   Receives the contact form and emails it to the team via Resend. It exists as
-   a Function, not a mailto, so the enquiry is validated, spam is dropped, and
-   the sending credential never reaches the client. The key lives in the Pages
-   project as an environment secret:
-
-     npx wrangler pages secret put RESEND_API_KEY --project-name mayfieldmanchester-co-uk
-
-   Two optional vars override the defaults without a code change:
-     CONTACT_TO    where enquiries land   (default hello@mayfieldpark.com)
-     CONTACT_FROM  the verified sender    (default Mayfield <noreply@mayfieldpark.com>)
-
-   The form is progressively enhanced, so this answers two callers:
-     - the JS path sends `Accept: application/json` and gets JSON back;
-     - a no-JS native POST gets a small HTML page — a confirmation, or the
-       error with a way back — so the form works with scripting off.
-   ========================================================================== */
+/* /api/contact: validates the contact form and emails it via Resend (JSON or HTML response).
+   Needs secret RESEND_API_KEY; optional vars CONTACT_TO, CONTACT_FROM. */
 
 const TO_DEFAULT   = "hello@mayfieldpark.com";
 const FROM_DEFAULT  = "Mayfield <noreply@mayfieldpark.com>";
 
-/* Required fields and their human labels. Message is deliberately absent — the
-   design marks it optional. */
+/* Required fields and labels; message is optional. */
 const REQUIRED = {
   enquiry: "Enquiry type",
   name: "Contact name",
@@ -31,9 +13,7 @@ const REQUIRED = {
   employees: "Number of employees",
 };
 
-/* Deliberately loose. A stricter pattern rejects valid addresses more often
-   than it catches typos; the honest check is "one @ with something either
-   side", and Resend does the real deliverability check. */
+/* Loose on purpose; Resend does the real check. */
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
 const wantsJSON = (request) =>
@@ -45,7 +25,7 @@ const json = (body, status = 200) =>
     headers: { "content-type": "application/json; charset=utf-8" },
   });
 
-/* A minimal branded page for the no-JS paths — same acid green, same type. */
+/* Branded response page for no-JS form posts. */
 const page = (title, body, status = 200) =>
   new Response(
     `<!doctype html><html lang="en-GB"><head><meta charset="utf-8">
@@ -71,8 +51,7 @@ const escape = (s) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])
   );
 
-/* Read the body whichever way it arrived: a native form post is url-encoded or
-   multipart, the JS enhancement may send either that or JSON. */
+/* Accepts JSON, url-encoded or multipart bodies. */
 async function readFields(request) {
   const type = request.headers.get("content-type") || "";
   if (type.includes("application/json")) {
@@ -95,13 +74,11 @@ export async function onRequestPost({ env, request }) {
       : page("Something went wrong", "We couldn’t read that submission. Please try again.", 400);
   }
 
-  /* Honeypot. A person never sees this field, so anything in it is a bot —
-     answered 200 with no send, so the bot cannot tell it was caught. */
+  /* Honeypot: fake success, no send. */
   if ((f.website || "").trim()) {
     return json_ ? json({ ok: true }) : page("Thank you", "Your message has been sent.");
   }
 
-  /* Validate. Trim first so a field of spaces is empty. */
   const v = {};
   for (const k of Object.keys(REQUIRED)) v[k] = (f[k] || "").trim();
   const message = (f.message || "").trim();
@@ -120,8 +97,7 @@ export async function onRequestPost({ env, request }) {
 
   const key = env && env.RESEND_API_KEY;
 
-  /* No key configured: do not tell anyone their message was sent when it was
-     not. Hand back the addresses so the enquiry still has somewhere to go. */
+  /* No key: fail with 503 and give the address to email instead. */
   if (!key) {
     const to = (env && env.CONTACT_TO) || TO_DEFAULT;
     return json_
@@ -163,7 +139,7 @@ export async function onRequestPost({ env, request }) {
       body: JSON.stringify({
         from,
         to,
-        /* So a reply in the inbox goes to the enquirer, not to noreply@. */
+        /* Replies go to the enquirer. */
         reply_to: v.email,
         subject,
         text,
@@ -180,16 +156,13 @@ export async function onRequestPost({ env, request }) {
       ? json({ ok: true })
       : page("Thank you", "Your message has been sent — we’ll be in touch soon.");
   } catch (err) {
-    /* The enquiry did not send. Say so honestly and give the address, rather
-       than a cheerful confirmation for a mail that never left. */
     return json_
       ? json({ ok: false, error: "send-failed", reason: String(err.message || err), to }, 502)
       : page("Please try again", `We couldn’t send that just now — please email ${to} if it keeps happening.`, 502);
   }
 }
 
-/* Anything other than POST is not what this endpoint is for. */
 export async function onRequest({ request }) {
-  if (request.method === "POST") return; /* handled above */
+  if (request.method === "POST") return; /* handled by onRequestPost */
   return new Response("Method Not Allowed", { status: 405, headers: { allow: "POST" } });
 }

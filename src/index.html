@@ -8,9 +8,7 @@
   <link rel="icon" href="assets/favicon/flag-32.png" type="image/png" data-anim="assets/favicon/flag-sprite.png">
   <meta name="description"
     content="Mayfield is a new city district built around Manchester's first public park in over 100 years.">
-  <!-- No Typekit. V2's type is BDO Grotesk, self-hosted and same-origin, so
-     there is no third-party font chain in the critical path at all — the
-     thing that cost V1 1,530ms of render-blocking time on mobile. -->
+  <!-- Self-hosted BDO Grotesk only; no third-party fonts. -->
   <link rel="preload" href="assets/fonts/bdo-grotesk-extrabold.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/bdo-grotesk-medium.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/tokens.css">
@@ -21,25 +19,10 @@
 
 <body>
 
-  <!--
-  MAYFIELD V2 — homepage.
-  Figma: Desktop 261:8641 (home top 261:8642, main scroll 261:8665) and
-  Mobile 281:15867 (281:15868 / 281:15888).
-
-  The page is one continuous scroll built around a single fixed video panel —
-  "a fixed centered video that layers with images and text to create a window
-  into the park". The hero video IS that panel: it starts full-bleed and
-  scales down into it as you scroll, which is why the two share markup.
--->
+  <!-- Homepage. Figma: desktop 261:8641, mobile 281:15867 -->
 
 
-  <!-- ======================================= NAV + MENU  [figma 214:2280/2440]
-     One element, not two. The bar and the open menu are the same green box:
-     it grows from 36px to the full viewport, and the wordmark is pinned to
-     its bottom edge the whole way. That is what makes the logo appear to be
-     "pulled down and expanded, then pinched and shrunk back" — it literally
-     is one element, and its position is DERIVED from the panel's height, so
-     the two can never outrun each other.                                   -->
+  <!-- ======================================= NAV + MENU  [figma 214:2280/2440] -->
   <nav class="nav" id="nav" aria-label="Primary">
     <div class="nav__bar">
       <span class="nav__temp t-caps"><span id="navTemp"></span><span class="wx-icon"></span><span class="wx-word"
@@ -49,9 +32,7 @@
       </button>
     </div>
 
-    <!-- The menu: four full-height video panels. Videos are preload="none" and
-       started by motion.js only when the menu opens, so four clips do not
-       download on every page load. -->
+    <!-- Menu: four video panels; motion.js plays them only when the menu opens. -->
     <ul class="nav__menu" id="navMenu">
       <li><a class="mpanel" href="index.html" aria-current="page">
           <video class="mpanel__media" muted loop playsinline preload="none"
@@ -114,10 +95,7 @@
 
   </nav>
 
-  <!-- ==================================================== HERO  [figma 261:8642]
-     A 200vh runway with a sticky 100svh stage. Scrolling the runway is what
-     drives the hero down into the window — "as the user scrolls from this
-     video background we scale this down... the user will be in control".   -->
+  <!-- ==================================================== HERO  [figma 261:8642] -->
   <div class="runway" id="runway">
     <header class="hero" id="hero">
       <div class="hero__media" id="heroMedia">
@@ -138,9 +116,7 @@
 
       <div class="hero__inner">
         <!-- [figma 373:26289] eight vector letterforms, composed into one SVG -->
-        <!-- Inlined, not <img>. An external SVG cannot inherit currentColor
-           from the page, so as a file reference the wordmark rendered black
-           against the video instead of white. -->
+        <!-- Inline SVG so it inherits currentColor. -->
         <h1 class="hero__mark" id="heroMark">
           <svg xmlns="http://www.w3.org/2000/svg" focusable="false" viewBox="0 0 755.361 116.64" fill="currentColor"
             role="img" aria-label="Mayfield">
@@ -173,20 +149,9 @@
     </header>
   </div>
 
-  <!-- ================================================= THE WINDOW  [figma 261:8672]
-     Fixed, dead centre, for the whole of the rest of the page. The collage
-     plates pass BEHIND it; the white benefit panels pass in front.        -->
+  <!-- ================================================= THE WINDOW  [figma 261:8672] -->
   <div class="window" id="window" aria-hidden="true">
-    <!-- One <video> per section, stacked and crossfaded — NOT one element
-       whose src is reassigned. A media element blanks to its poster while a
-       new src loads, so swapping src mid-page flickered the window exactly
-       when the eye was on it. Keeping a layer per cut also means each clip
-       holds its own playback position when you scroll back through.
-
-       data-video keys the layer to the section's data-word, so the footage
-       and the word are the same decision made once: they cannot drift apart.
-       The first layer is the intro cut — it is what the hero's video lands
-       on, and what the window shows again above the first section. -->
+    <!-- One <video> layer per section, crossfaded; data-video matches the section's data-word. -->
     <div class="window__media" id="windowMedia">
       <video class="window__video is-live" data-video="Mayfield" muted loop playsinline preload="none" id="windowVideo"
         poster="assets/videos/mayfield-header-poster.jpg">
@@ -204,7 +169,7 @@
       </video>
     </div>
     <!-- [figma 214:2748/2770/2807] the word for the section you are in -->
-    <!-- Starts on MAYFIELD, not Work: this is where the hero's wordmark lands. -->
+    <!-- Starts on MAYFIELD, where the hero wordmark lands. -->
     <div class="window__word t-slab is-intro">
       <div class="window__track" id="windowTrack">
         <span>Mayfield</span>
@@ -257,10 +222,6 @@
       </div>
     </section>
 
-    <!-- The "Power of Mayfield" press-quote + live-Google-rating deck was removed
-       from the homepage in the V3 board (home now runs benefit -> Instagram ->
-       footer). It still lives on the Park page (park.html #power), so the
-       Google-rating integration is unchanged — just no longer duplicated here. -->
 
     <!-- ============================================= INSTAGRAM  [figma 230:3831] -->
     <!-- The waving flag: fixed bottom-left, parks just above the insta row. Desktop only. -->
@@ -302,8 +263,7 @@
     <!-- ================================================ FOOTER  [figma 261:8674] -->
     <footer class="foot">
       <div class="foot__top">
-        <!-- Two separate lines. On mobile both rotate a quarter turn and read
-           bottom-up, side by side, with the (c) landing at the foot. -->
+        <!-- Two lines; rotated side by side on mobile. -->
         <p class="foot__stamp">
           <span class="foot__stamp-a">&copy;Mayfield 2026</span>
           <span class="foot__stamp-b">Manchester&rsquo;s<br>Green Revolution</span>

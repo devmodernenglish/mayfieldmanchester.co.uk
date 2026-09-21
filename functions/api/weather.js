@@ -1,37 +1,14 @@
-/* ==========================================================================
-   /api/weather — Cloudflare Pages Function
-
-   Proxies the Google Weather API and reduces its 39 condition types down to
-   the five states the design system paints with.
-
-   It exists as a Function rather than a fetch from the page because the
-   Google key would otherwise be public in client JS. The key lives in the
-   Pages project as an environment secret:
-
-     npx wrangler pages secret put GOOGLE_WEATHER_KEY --project-name mayfieldmanchester-co-uk
-
-   Without a key it returns the design's default rather than an error, so the
-   page is never blocked on weather it cannot get.
-   ========================================================================== */
+/* /api/weather: proxies Google Weather API, maps conditions to the design's weather states.
+   Needs secret GOOGLE_WEATHER_KEY; without it returns the default (overcast). */
 
 /* Mayfield Park, Baring Street, Manchester M1 2PY. */
 const LAT = 53.4769;
 const LON = -2.2270;
 
-/* Weather changes slowly and the quota does not. */
-const TTL = 600; /* seconds */
+/* 10 min cache to save API quota. */
+const TTL = 600;
 
-/* ---- The mapping --------------------------------------------------------
-   From the walkthrough (11:32): "if it's cloudy we go for green, so that's
-   like an overcast colour, if it's sunny we'll go for an orange, if it's
-   raining we'll go for a blue, if it's snowing or frosty then we can go for
-   a sort of ice, teal colour".
-
-   Anything unlisted falls through to `overcast`, which is the design's
-   default — a new or unexpected condition type should look deliberate, not
-   broken. Google documents 39 types; all of them are covered below, but the
-   fallback means the list can drift without the site noticing.
-   ---------------------------------------------------------------------- */
+/* Google condition types -> state. Unlisted types fall back to overcast. */
 const SUNNY = ["CLEAR", "MOSTLY_CLEAR"];
 
 const OVERCAST = ["PARTLY_CLOUDY", "MOSTLY_CLOUDY", "CLOUDY", "WINDY"];
@@ -41,8 +18,7 @@ const RAIN = [
   "SCATTERED_SHOWERS", "RAIN_SHOWERS", "HEAVY_RAIN_SHOWERS",
   "LIGHT_TO_MODERATE_RAIN", "MODERATE_TO_HEAVY_RAIN", "RAIN", "LIGHT_RAIN",
   "HEAVY_RAIN", "RAIN_PERIODICALLY_HEAVY",
-  /* Thunder and hail read as rain: the palette has no fifth colour for them,
-     and blue is the honest reading of the sky. */
+  /* Thunder and hail map to rain. */
   "THUNDERSTORM", "THUNDERSHOWER", "LIGHT_THUNDERSTORM_RAIN",
   "SCATTERED_THUNDERSTORMS", "HEAVY_THUNDERSTORM", "HAIL", "HAIL_SHOWERS",
 ];
@@ -61,25 +37,18 @@ for (const t of OVERCAST) STATES.set(t, "overcast");
 for (const t of RAIN)     STATES.set(t, "rain");
 for (const t of FROST)    STATES.set(t, "frost");
 
-/* All five conditions are drawn (Components page, 214:2236). The WORD map is
-   kept only as a safety net: if an unmapped state ever appears it says the
-   condition rather than showing nothing. */
+/* WORD is a text fallback if a state has no icon. */
 const GLYPH = { sunny: "clear", overcast: "cloudy", rain: "rain", frost: "frost" };
 const WORD  = { sunny: "Clear", overcast: "Cloudy", rain: "Rain", frost: "Frost" };
 
-/* Always hand back Celsius. Converted here rather than trusted, so the page
-   renders the unit the design means no matter what the account's regional
-   default does — the readout is a bare degree sign with nothing beside it. */
+/* Always return Celsius, whatever unit the API sends. */
 const celsius = (t) => {
   const d = t && t.degrees;
   if (typeof d !== "number") return null;
   return Math.round(t.unit === "FAHRENHEIT" ? ((d - 32) * 5) / 9 : d);
 };
 
-/* Night takes the moon whatever the sky is doing. In night mode the accent is
-   the dark navy rather than a weather colour, so the condition is not being
-   expressed by the palette either — the moon is what says "it is night in
-   Manchester", and a sun after dark would simply be wrong. */
+/* At night the icon is always the moon. */
 const badge = (state, night) => {
   const icon = night ? "night" : GLYPH[state] || null;
   return { icon, label: icon ? null : WORD[state] || null };
@@ -96,11 +65,7 @@ const json = (body, seconds) =>
 export async function onRequest({ env, request }) {
   const q = new URL(request.url).searchParams;
 
-  /* Preview. The page forwards its own ?weather= / ?mode= through, so a state
-     can be reviewed end to end — colour, icon and word — without waiting on
-     the sky. It short-circuits before the upstream call, so reviewing states
-     costs no quota. Keeping it here rather than in the page means the badge
-     mapping stays in one place. */
+  /* Preview: ?weather=<state>&mode=night returns a fake reading, no API call. */
   const preview = q.get("weather");
   if (["overcast", "sunny", "rain", "frost"].includes(preview)) {
     const night = q.get("mode") === "night";
@@ -119,11 +84,7 @@ export async function onRequest({ env, request }) {
 
   const key = env && env.GOOGLE_WEATHER_KEY;
 
-  /* ---- 5-day forecast (the park page's weather strip) ------------------
-     ?days=N returns an array of { day, icon, high, low } from the Weather API's
-     forecast endpoint — same key and location as the current reading. The page
-     leaves its placeholder markup in place if this is unavailable, so the strip
-     never looks broken. */
+  /* ?days=N: daily forecast (max 10) for the park page's weather strip. */
   const daysParam = parseInt(q.get("days") || "0", 10);
   if (daysParam > 0) {
     if (!key) return json({ days: null, source: "default", reason: "no GOOGLE_WEATHER_KEY set" }, 60);
@@ -154,8 +115,6 @@ export async function onRequest({ env, request }) {
     }
   }
 
-  /* No key configured: hand back the default so the page still renders in
-     the brand's own colour rather than failing to a fallback it never chose. */
   if (!key) {
     return json(
       { state: "overcast", mode: "day", ...badge("overcast", false), source: "default", reason: "no GOOGLE_WEATHER_KEY set" },
@@ -166,8 +125,6 @@ export async function onRequest({ env, request }) {
   const url =
     "https://weather.googleapis.com/v1/currentConditions:lookup" +
     `?key=${encodeURIComponent(key)}&location.latitude=${LAT}&location.longitude=${LON}` +
-    /* Metric is the default, but ask for it: the readout is a bare "19°" with
-       no unit beside it, so it had better be the one the design means. */
     "&unitsSystem=METRIC";
 
   try {
@@ -181,16 +138,12 @@ export async function onRequest({ env, request }) {
 
     return json(
       {
-        /* Night ignores the weather entirely — it is a separate axis, not a
-           sixth condition — so both are returned and the page applies them
-           independently. */
+        /* state and mode are independent; the page applies both. */
         state,
         mode: day ? "day" : "night",
         ...badge(state, !day),
         condition: type,
         description: data?.weatherCondition?.description?.text ?? null,
-        /* Converted here rather than trusted, so the page only ever renders
-           Celsius no matter what the account's regional default does. */
         temperature: celsius(data?.temperature),
         unit: "C",
         source: "google",
@@ -198,7 +151,6 @@ export async function onRequest({ env, request }) {
       TTL
     );
   } catch (err) {
-    /* Never let the weather break the page. */
     return json(
       { state: "overcast", mode: "day", ...badge("overcast", false), source: "fallback", reason: String(err.message || err) },
       60
