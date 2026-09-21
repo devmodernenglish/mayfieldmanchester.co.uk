@@ -1,15 +1,6 @@
-/* ==========================================================================
-   MAYFIELD V2 — COMPONENTS
-   Each block is tagged with the Figma node it came from.
-   Mobile-first; the desktop overrides live at the end of each block.
-   ========================================================================== */
+/* ==== Components: mobile-first, desktop overrides at the end of each block ==== */
 
-/* --------------------------------------------------------------------------
-   1. Nav + menu — one growing green box    [figma 214:2280 / 214:2440 / Loom]
-   The bar IS the menu. Its height runs from --nav-h to the full viewport on
-   --menu-p, and every other moving part is derived from that same value, so
-   nothing can outrun anything else.
-   -------------------------------------------------------------------------- */
+/* ---- 1. Nav + menu [figma 214:2280 / 214:2440] ---- */
 .nav {
   position: fixed;
   inset-block-start: 0;
@@ -19,8 +10,7 @@
   overflow: hidden;
   background: var(--c-accent);
   color: var(--c-ink);
-  /* Held out of the way until the hero has been scrolled past; motion.js adds
-     .is-live. Without JS it simply shows, which is the safe default. */
+  /* Hidden until motion.js adds .is-live; shows by default without JS */
   transform: translateY(-100%);
   opacity: 0;
   transition: transform 0.5s var(--ease-menu), opacity 0.5s var(--ease);
@@ -28,14 +18,11 @@
 .nav.is-live { transform: none; opacity: 1; }
 .no-js .nav { transform: none; opacity: 1; }
 
-/* The bar's own row stays pinned to the top as the box grows. */
 .nav__bar {
   position: absolute;
   inset-block-start: 0;
   inset-inline: 0;
-  /* Above the links and the wordmark. Both of those span the whole box, so
-     without this the links container sat on top of the toggle and swallowed
-     every click on CLOSE. */
+  /* Links and mark span the whole box; without this they swallow clicks on Close */
   z-index: 3;
   height: var(--nav-h);
   display: flex;
@@ -44,24 +31,18 @@
   padding-inline: var(--s-3);
   color: var(--c-ink);
 }
-/* Closed, the bar is black on the acid box. Open, it sits over the dark video
-   panels, so the whole row — temp, wordmark, Close — turns white. */
+/* Open menu sits over dark video, so the bar row turns white */
 .menu-open .nav__bar,
 .menu-open .nav__mark { color: var(--c-on-media); }
 .nav__temp { display: flex; align-items: center; gap: var(--s-2); font-size: var(--t-ui); text-transform: uppercase; }
 .nav__temp img { width: 20px; height: 20px; }
 
 .nav__toggle { cursor: pointer; }
-/* The label swaps on the same state, so there is only ever one control. */
 .nav__toggle-close { display: none; }
 .menu-open .nav__toggle-open { display: none; }
 .menu-open .nav__toggle-close { display: inline; }
 
-/* The small wordmark, centred IN the bar. [figma 465:8227] The earlier design
-   grew a big wordmark out of the bar as the menu opened; the new menu is four
-   video panels instead, so the mark simply stays put at bar size and the panels
-   do the opening. It follows the bar's colour — black on the acid bar, white
-   once the panels are behind it. */
+/* [figma 465:8227] Stays bar-sized and follows the bar colour */
 .nav__mark {
   position: absolute;
   z-index: 3;
@@ -76,14 +57,7 @@
 }
 .nav__mark svg { display: block; width: 100%; height: auto; }
 
-/* --------------------------------------------------------------------------
-   The menu — four full-height video panels    [figma 465:7814 / 496:17251]
-   HOME · PARK · WORK · VISIT. Each is a link over looping footage with the
-   section word centred and an acid bar that fills on hover/at the current page.
-   Stacked on mobile, four columns up. Revealed on the same .menu-open the box
-   grows on, a beat after the box starts opening so the panels arrive into a
-   space that is already there rather than being squashed.
-   -------------------------------------------------------------------------- */
+/* ---- The menu: four video panels [figma 465:7814 / 496:17251] ---- */
 .nav__menu {
   position: absolute;
   inset: 0;
@@ -126,7 +100,7 @@
   height: 100%;
   object-fit: cover;
 }
-/* A wash so the word reads on any frame of any panel's footage. */
+/* Wash so the label reads on any frame */
 .mpanel::before {
   content: "";
   position: absolute;
@@ -146,8 +120,7 @@
   text-transform: uppercase;
 }
 
-/* [figma 465:5137] the acid underline: present on the current page, and drawn
-   in on hover/focus for the others. */
+/* [figma 465:5137] Acid underline: shown on current page, drawn in on hover */
 .mpanel::after {
   content: "";
   position: absolute;
@@ -165,14 +138,8 @@
 
 @media (min-width: 1024px) {
   .nav__mark { width: 104px; }
-  /* Four columns across the full viewport. */
   .nav__menu { flex-direction: row; }
-  /* Once the panels are side by side each one is only a quarter of the
-     viewport, so the longest label sets the size. At --t-title (58px) the four
-     labels measure 1079px against a 1024px row and the widest is cut. Fluid
-     rather than a smaller fixed size: no single value fits 1024 AND still
-     looks right at 1920, because the panel grows with the viewport and the
-     type does not. The cap keeps 58px on wide screens, where there is room. */
+  /* At 58px the four labels overflow a 1024px row; fluid, capped at 58px */
   .mpanel__label { font-size: clamp(30px, 3.5vw, 58px); }
 }
 
@@ -185,12 +152,7 @@
   .nav { transition: none; }
 }
 
-/* --------------------------------------------------------------------------
-   2. Initial nav — the landing bar                       [figma 214:2433]
-   48px tall, but only its top 12px carry the acid green; the rest is
-   transparent so the hero video runs underneath. SCROLL / MENU sit in white
-   ON the video, which is why they are in the lower 36px, not the green.
-   -------------------------------------------------------------------------- */
+/* ---- 2. Initial nav [figma 214:2433]: 12px acid band, transparent row over the hero ---- */
 .initial-nav {
   position: absolute;
   inset-block-start: 0;
@@ -219,19 +181,11 @@
   justify-content: space-between;
   padding: 9px var(--s-3) 0;             /* [figma] text 9px below the band, 10px each side */
 }
-/* The Menu <button> has a UA text-transform:none that beats the row's inherited
-   uppercase (the Scroll <span> inherits fine), so "Menu" rendered mixed-case while
-   Scroll was CAPS. Force Caps 15 to match both words and the sticky nav's toggle. */
+/* UA text-transform:none on <button> beats the inherited uppercase */
 .initial-nav__row button { text-transform: uppercase; }
 
-/* --------------------------------------------------------------------------
-   3. Hero                                          [figma 261:8642 / 281:15868]
-   Full-bleed video from y=12 (under the green strip). The MAYFIELD wordmark
-   is a composed SVG — in Figma it is eight separate vector letterforms, so
-   there is no font to match and it stays razor sharp at any width.
-   -------------------------------------------------------------------------- */
-/* The runway is the scroll distance the transition is spent over; the hero
-   sticks inside it so the video stays put while the page scrolls past. */
+/* ---- 3. Hero [figma 261:8642 / 281:15868] ---- */
+/* Scroll distance for the hero->window transition; hero sticks inside it */
 .runway { position: relative; z-index: 20; height: 200svh; }
 
 .hero {
@@ -241,10 +195,7 @@
   height: 100svh;
   min-height: 560px;
   padding-block-start: var(--nav-band);
-  /* Paper, not ink: as the scroll-jacked video shrinks into the centre window
-     the hero fills the viewport, so its background is what shows AROUND the
-     shrinking panel. That reveal should be the page's paper (white by day, navy
-     at night — same as <body>), not a black plate. */
+  /* Paper, not ink: this shows around the shrinking video */
   background: var(--c-paper);
   isolation: isolate;
 }
@@ -272,13 +223,11 @@
   padding-inline: var(--s-3);
 }
 
-/* [figma 373:26289] 755 of the 1280 frame — 59vw, capped so it never crowds
-   the edges on a wide display. */
+/* [figma 373:26289] 755/1280 = 59vw, capped for wide screens */
 .hero__mark { width: min(59vw, 940px); color: var(--c-on-media); transform-origin: 50% 50%; }
 .hero__mark svg { width: 100%; height: auto; }
 
-/* [figma 261:8645] the time/weather row sits UNDER the wordmark, spanning the
-   same measure as the video's inner column — not the full page width. */
+/* [figma 261:8645] Spans the video's inner column, not full width */
 .hero__meta {
   display: flex;
   align-items: center;
@@ -291,25 +240,12 @@
 .hero__meta .temp { display: flex; align-items: center; gap: var(--s-2); }
 .hero__meta img { width: 20px; height: 20px; }
 
-/* --------------------------------------------------------------------------
-   4. The window                       [figma 261:8672 / 281:15889, Loom 02:05]
-   The signature interaction. A FIXED, centred video panel that the collage
-   scrolls over — "a window into the park". It is not sticky: sticky would
-   need a scrolling ancestor to stick within, and this has to hold dead centre
-   of the viewport across the entire page.
-
-   It sits ABOVE every content row — the collage plates, the white benefit
-   panels, the Instagram bed and the footer all pass beneath it — and below
-   only the nav, so the bar and the menu still open over it. It is
-   pointer-events: none, so nothing underneath becomes unclickable.
-   -------------------------------------------------------------------------- */
+/* ---- 4. The window [figma 261:8672 / 281:15889]: fixed, not sticky, to hold viewport centre ---- */
 .window {
   position: fixed;
   inset-block-start: 50%;
   inset-inline-start: 50%;
-  /* --win-park is 0 for most of the page and goes negative once the window
-     has reached the last benefit panel, which leaves it behind on the page
-     instead of riding the scroll into the footer. Set by motion.js. */
+  /* --win-park (motion.js) goes negative near the end to park the window before the footer */
   translate: -50% calc(-50% + var(--win-park, 0px));
   /* Above the content rows (20), below the nav (60). */
   z-index: 50;
@@ -326,9 +262,7 @@
 .window video,
 .window img { width: 100%; height: 100%; object-fit: cover; }
 
-/* The section cuts are stacked layers, crossfaded on the same beat as the
-   word. Only the live layer is opaque; JS pauses the rest once they have
-   faded, so one clip is decoding at a time even though four are loaded. */
+/* Stacked crossfade layers; JS pauses hidden ones so only one decodes */
 .window__media { position: absolute; inset: 0; }
 .window__video {
   position: absolute;
@@ -338,7 +272,6 @@
 }
 .window__video.is-live { opacity: 1; }
 
-/* The word that crosses the window as each section passes. */
 .window__word {
   position: absolute;
   inset-block-start: 50%;
@@ -352,8 +285,7 @@
   font-size: var(--t-panel);
 }
 
-/* [figma 214:2748] three copies, gap 20/30px, translated -50% for a seamless
-   loop. The track is duplicated in the markup so the reset is invisible. */
+/* [figma 214:2748] Track duplicated in markup; -50% loops seamlessly */
 .window__track {
   display: flex;
   align-items: center;
@@ -364,12 +296,10 @@
 }
 @keyframes window-scroll { to { transform: translateX(-50%); } }
 
-/* With JS on, motion.js §2 drives the track as a scroll-jacked transform, so
-   the constant animation above is the no-JS fallback only. */
+/* motion.js §2 drives the track on scroll; the animation is the no-JS fallback */
 .js .window__track { animation: none; }
 
-/* The intro state — the word the hero's wordmark became. It holds still and
-   centred; only the section words travel. */
+/* Intro word holds still and centred; only section words travel */
 .window__word.is-intro .window__track {
   animation: none;
   justify-content: center;
@@ -383,26 +313,17 @@
   .window__track { gap: var(--s-10); padding-inline-end: var(--s-10); }
 }
 
-/* --------------------------------------------------------------------------
-   5. Collage                       [figma 261:8669-8671 / 281:15893, Loom 02:05]
-   Full-bleed imagery that the window cuts through. Each plate is its own
-   viewport-height band so the window always has something behind it.
-   -------------------------------------------------------------------------- */
+/* ---- 5. Collage [figma 261:8669-8671 / 281:15893] ---- */
 .plate {
   position: relative;
-  z-index: 10;          /* under everything; the collage is the backdrop */
+  z-index: 10;          /* under the benefit rows (20) and window (50) */
   height: 100svh;
   min-height: 480px;
   overflow: hidden;
 }
 .plate img { width: 100%; height: 100%; object-fit: cover; }
 
-/* --------------------------------------------------------------------------
-   6. Benefit                                 [figma 214:2630 / 281:15831]
-   Mobile stacks headline over copy+button across a 667px band. Desktop puts
-   them side by side with the headline hugging the top and the copy the
-   bottom — the gap between the columns is the design's 420px.
-   -------------------------------------------------------------------------- */
+/* ---- 6. Benefit [figma 214:2630 / 281:15831] ---- */
 .benefit {
   position: relative;
   z-index: 20;          /* over the plates, under the window */
@@ -417,20 +338,13 @@
 
 .benefit__body { display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-6); }
 
-/* Mobile only: the white text blocks pass IN FRONT of the cascading video window
-   so it slides BEHIND them (keeping the copy readable), while the image plates stay
-   behind it. Desktop keeps the window on top of everything. [user 2026-09-17] */
+/* Mobile: copy passes in front of the window so it stays readable; plates stay behind */
 @media (max-width: 1023px) {
   .benefit { z-index: 51; }          /* above .window (50), below the nav (60) */
 }
 
 @media (min-width: 1024px) {
-  /* The Figma component is 480px tall, but it does NOT sit flush against the
-     plates above and below it: img1 ends at 1640 and the benefit starts at
-     1840, and the benefit ends at 2320 with img2 starting at 2520. That is
-     200px of white on each side, and it is most of what gives this section
-     its air. Building the 480px row alone made the copy feel cramped against
-     the imagery. */
+  /* [figma] 480px row plus 200px of white above and below */
   .benefit {
     flex-direction: row;
     align-items: stretch;
@@ -442,10 +356,7 @@
   .benefit__body { flex: 1 0 0; min-width: 0; justify-content: flex-end; }
 }
 
-/* --------------------------------------------------------------------------
-   7. Button                                              [figma 214:2637]
-   A 2px black stroke, fully rounded, never filled. Inverts on hover.
-   -------------------------------------------------------------------------- */
+/* ---- 7. Button [figma 214:2637] ---- */
 .btn[hidden] { display: none; }   /* honour the hidden attribute despite .btn's display */
 .btn {
   display: inline-flex;
@@ -461,21 +372,7 @@
   cursor: pointer;
 }
 
-/* ---- The roll ------------------------------------------------------------
-   The hover for the whole button system, generalised from the brochure
-   button's download cell: the content is clipped to one cell and duplicated,
-   and on hover the pair slides up exactly one cell — so the visible copy
-   shoots up and out while its twin rises into the gap.
-
-   It replaces the old invert (ink fill, accent label). Nothing changes colour
-   on hover any more; the movement IS the feedback, which is why the colour
-   transition came off .btn above.
-
-   The label markup is built by motion.js §13 rather than written into all five
-   pages: a roll needs the label twice, and a label that lives in two places
-   in the HTML is a label that will eventually disagree with itself. Without
-   JS the button is simply a button that does not roll.
-   -------------------------------------------------------------------------- */
+/* ---- The roll: motion.js §13 duplicates the label; the pair slides up one cell on hover ---- */
 .btn__roll {
   display: block;
   height: 1lh;                      /* exactly one cell: --t-caps at --lh-flat */
@@ -493,11 +390,7 @@
 
 .btn--block { display: flex; width: 100%; }
 
-/* Brochure / download button — the design-system variant. [figma 465:7873]
-   A rectangle (4px), not a pill: 2px black stroke on the Republic yellow, the
-   label at left and a divided 52px download cell flush to the right edge. The
-   divider + arrow live in download.svg, painted as a mask so they invert with
-   the label on hover. */
+/* [figma 465:7873] Brochure variant; divider + arrow are a mask from download.svg */
 .btn--brochure {
   gap: var(--s-8);
   padding: 0 0 0 20px;
@@ -507,9 +400,7 @@
   color: var(--c-ink);
   overflow: hidden;
 }
-/* The download cell: a static divider on the left, and a clipped column holding
-   two identical arrows — the original of the roll above, kept here because this
-   button rolls only its arrow while the label stays put. */
+/* Download cell: only the arrow rolls, the label stays put */
 .btn__dl {
   align-self: stretch;
   flex: 0 0 auto;
@@ -535,7 +426,7 @@
   -webkit-mask: url("../assets/republic/download-arrow.svg") center / 54px 52px no-repeat;
           mask: url("../assets/republic/download-arrow.svg") center / 54px 52px no-repeat;
 }
-/* Reduced motion: the roll still swaps, it just does not travel. */
+/* Reduced motion: swap without travel */
 @media (prefers-reduced-motion: reduce) {
   .btn__dl-track,
   .btn__roll-track,
@@ -543,17 +434,10 @@
   .dest__icon::after { transition: none; }
 }
 
-/* --------------------------------------------------------------------------
-   8. Instagram                                    [figma 230:3831 / 281:15356]
-   Acid bed. Mobile scrolls the tiles horizontally at a fixed 160px; desktop
-   fits six equal tiles across the full width.
-   -------------------------------------------------------------------------- */
+/* ---- 8. Instagram [figma 230:3831 / 281:15356] ---- */
 .insta {
   position: relative;
-  /* Above the window (50), with the footer. These two are the page's closing
-     blocks — the scroll narrative through the three sections is over by the
-     time you reach them, so they take the screen back rather than having the
-     panel float across the grid and the sign-off. */
+  /* Above the window (50); the closing blocks cover it */
   z-index: 55;
   display: flex;
   flex-direction: column;
@@ -573,15 +457,12 @@
   padding-inline: var(--gutter);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  /* The scrollport ignores padding-inline when snapping, so the last tile
-     would sit flush to the edge without this. */
+  /* Snapping ignores padding-inline; without this the last tile sits flush */
   scroll-padding-inline: var(--gutter);
   scrollbar-width: none;
 }
 .insta__grid::-webkit-scrollbar { display: none; }
 
-/* Each tile is a link out to its post; the tile box lives on the link and
-   the image fills it. */
 .insta__grid > a {
   flex: 0 0 160px;
   width: 160px;
@@ -609,14 +490,8 @@
   .insta__cta { padding-inline: 0; }
 }
 
-/* --------------------------------------------------------------------------
-   9. Footer                                      [figma 261:8674 / 281:15918]
-   Mobile rotates the ©Mayfield 2026 slab to run up the right-hand edge with
-   the link columns beside it; desktop lays it flat across the top.
-   -------------------------------------------------------------------------- */
-/* Above the window (50), with the Instagram bed. The video passes over the
-   collage plates and the benefit copy; these last two blocks close the page
-   and the panel slides away behind them. */
+/* ---- 9. Footer [figma 261:8674 / 281:15918] ---- */
+/* Above the window (50) so the video slides behind the closing blocks */
 .foot { position: relative; z-index: 55; background: var(--c-paper); overflow: hidden; }
 
 .foot__top { position: relative; display: flex; gap: var(--s-6); padding: var(--s-9) var(--s-5) var(--s-11); }
@@ -629,15 +504,12 @@
 }
 .foot__col { display: flex; flex-direction: column; gap: var(--s-6); }
 
-/* [figma 281:15784] Two lines, each rotated a quarter turn and reading
-   bottom-up, sitting side by side with the big one outermost. Authored in a
-   row so the rotation does not have to reorder them. */
+/* [figma 281:15784] Two lines rotated to read bottom-up, big one outermost */
 .foot__stamp {
   flex: 0 0 auto;
   display: flex;
   flex-direction: row;
-  /* Both lines start from the same bottom edge, so the © and the strapline's
-     first letter sit on one line and the pair reads as a single block. */
+  /* Shared bottom edge so the pair reads as one block */
   align-items: flex-end;
   gap: var(--s-2);
   font-weight: var(--w-xbold);
@@ -647,20 +519,16 @@
 }
 .foot__stamp span {
   writing-mode: vertical-rl;
-  /* `mixed` is the default and it rotates Latin letters while leaving
-     non-letters upright — so MAYFIELD 2026 turned but the © stayed standing,
-     sitting off-axis at the foot of the line. `sideways` turns everything
-     together, which is what makes it read as one set line. */
+  /* `mixed` leaves the © upright; `sideways` rotates everything */
   text-orientation: sideways;
   rotate: 180deg;
   white-space: nowrap;
 }
 .foot__stamp-a { font-size: var(--t-stamp); }
 .foot__stamp-b { font-size: calc(var(--t-stamp) * 0.46); }
-/* Rotated on mobile, so it reads as one line up the side. */
+/* One line when rotated on mobile */
 .foot__stamp-b br { display: none; }
 
-/* The acid bar: partner logos over the legal line on mobile, side by side up. */
 .foot__base {
   display: flex;
   flex-direction: column;
@@ -672,15 +540,7 @@
 .foot__logos { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px var(--s-6); }
 .foot__logos img { height: auto; }
 
-/* The partner marks are PAINTED, not placed. Each exported SVG is solid black,
-   which is invisible on the navy bar once night flips the footer — and an
-   <img> cannot be recoloured. So each one is a mask filled with currentColor,
-   the same technique as .rhero__logo and .dest__icon.
-
-   It takes --c-ink rather than a hardcoded white, so there is no night-only
-   rule to keep in sync: black on the acid bar by day, white on the navy at
-   night, and correct in any state added later. Sizes stay on the element
-   because they are the artwork's own dimensions. */
+/* Masks filled with --c-ink so logos flip at night; an <img> can't be recoloured */
 .foot__logo {
   display: block;
   flex: 0 0 auto;
@@ -711,10 +571,7 @@
 }
 .foot__legal { display: flex; justify-content: space-between; gap: var(--s-6); width: 100%; }
 
-/* Mobile only. The links read first and the stamp sits to their right; DOM
-   order keeps the stamp first for a screen reader. Scoped to this breakpoint
-   because .foot__top is a COLUMN up, where an order swap would drop the stamp
-   underneath the links instead of beside them. */
+/* Mobile only: stamp moves right of the links; DOM order keeps it first */
 @media (max-width: 1023px) {
   .foot__stamp { order: 2; }
 }
@@ -722,17 +579,10 @@
 
 @media (min-width: 1024px) {
   .foot__top { padding: 64px var(--s-8) var(--s-11); flex-direction: column; gap: var(--s-11); }
-  /* [figma 261:8674] flat across the top up here, the strapline set beside it.
-
-     Figma's 100px only fits its own 1280 artboard: the pair measures ~1190px,
-     so anywhere narrower the strapline ran past the edge and was silently
-     clipped by the footer's overflow. Fluid between 1024 and 1280, with the
-     strapline held at Figma's 0.3 ratio to it. */
+  /* [figma 261:8674] 100px only fits 1280; fluid below that, strapline at 0.3x */
   .foot__stamp { align-items: baseline; gap: var(--s-6); flex-wrap: wrap; }
   .foot__stamp span { writing-mode: horizontal-tb; rotate: none; }
-  /* [figma 261:8674] two lines, and the break is explicit rather than left to
-     whatever the measure happens to allow — relying on wrapping meant it only
-     broke once it had already run past the edge. */
+  /* Explicit break; wrapping only broke after overflowing */
   .foot__stamp-b {
     font-size: calc(var(--t-stamp) * 0.3);
     white-space: normal;
@@ -744,17 +594,7 @@
   .foot__legal { width: auto; flex-direction: column; gap: 0; }
 }
 
-/* --------------------------------------------------------------------------
-   11. Hero -> window, on the scroll timeline
-   "as the user scrolls from this video background we scale this down... the
-   user will be in control of this track."
-
-   Driven by `animation-timeline: scroll()` rather than a scroll listener.
-   Three reasons: it runs off the main thread so the shrink cannot stutter
-   behind other work; it is genuinely position-driven, so scrubbing backwards
-   is exact rather than reconstructed; and there is no listener to leak.
-   motion.js carries an equivalent JS path for browsers without it.
-   -------------------------------------------------------------------------- */
+/* ---- 11. Hero -> window on animation-timeline: scroll(); motion.js has the JS fallback ---- */
 @supports (animation-timeline: scroll()) {
   .js .hero__media,
   .js .hero__mark,
@@ -767,7 +607,6 @@
     animation-timeline: scroll(root block);
   }
 
-  /* The shrink occupies the first viewport of the runway. */
   .js .hero__media {
     animation-name: hero-shrink;
     animation-range: 0 100svh;
@@ -787,32 +626,19 @@
     }
   }
 
-  /* 0.26 is the panel wordmark measured against the hero wordmark in Figma
-     (44/... on mobile, 60/... up) — the word travels down with the video. */
+  /* 0.26 = panel wordmark / hero wordmark in Figma */
   .js .hero__mark { animation-name: mark-shrink; animation-range: 0 100svh; }
   @keyframes mark-shrink { from { scale: 1; } to { scale: 0.26; } }
 
-  /* The handover. The animated hero (video + its SVG wordmark) fades out as the
-     fixed window video fades in, over the last 8% of the runway. */
+  /* Hero fades out as the window fades in over the last 8% of the runway */
   .js .hero   { animation-name: hero-out;   animation-range: 92svh 100svh; }
   .js .window { animation-name: window-in;  animation-range: 92svh 100svh; }
 
-  /* The window's INTRO word waits until the hero has fully gone, then resolves
-     in on its own. The hero's SVG wordmark and this t-slab word are different
-     renderings of MAYFIELD, so crossfading them over each other ghosted into a
-     doubled, offset wordmark. Instead the hero mark carries the word down
-     through the shrink, leaves at 100svh, and this takes over just after — one
-     wordmark on screen at a time. (Section words are exempt: once JS drops
-     `.is-intro` this rule stops matching and the scroll-jacked marquee owns it.) */
+  /* Starts after the hero leaves; crossfading two different wordmarks ghosted */
   .js .window__word.is-intro { animation-name: introword-in; animation-range: 100svh 103svh; }
   @keyframes introword-in { from { opacity: 0; } to { opacity: 1; } }
 
-  /* The bar gets a much longer runway than the handover itself — 55svh rather
-     than the last 8% — and an ease-out curve so it decelerates into place.
-     Over 8svh it was effectively instant: scroll-linked means a flick of the
-     wheel covered the whole range in one frame, which is what made it snap.
-     It also fades rather than only sliding, so a solid block never arrives
-     with a hard edge. */
+  /* 55svh runway + ease-out; a short range snapped on a single wheel flick */
   .js .nav {
     animation-name: nav-in;
     animation-range: 45svh 100svh;
@@ -828,7 +654,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  /* No scrub. The window is simply present and the hero simply leaves. */
   .js .hero__media, .js .hero__mark, .js .hero, .js .window, .js .nav {
     animation: none;
   }
@@ -836,28 +661,12 @@
   .nav { transform: none; }
 }
 
-/* Menu open → force the bar on-screen even at the top of the page. The scroll-
-   timeline `nav-in` animation (fill-mode:both) otherwise holds the bar at
-   translateY(-100%) until 45svh, so opening from the hero's initial-nav "Menu"
-   expanded the menu off-screen and locked the page. Killing the animation lets the
-   transform take effect. Placed after the @supports block so it wins the cascade. */
+/* nav-in fill-mode holds the bar off-screen at the top; must follow the @supports block */
 .menu-open .nav { animation: none; transform: none; opacity: 1; }
 
-/* --------------------------------------------------------------------------
-   12. Link hover — the directional rule
-   Carried over from V1 in behaviour, but hand-built: V2 has no GSAP, and this
-   is ~40 lines of CSS against ~78KB of library for the same result.
+/* ---- 12. Link hover: rule enters from the pointer side, leaves by the opposite ---- */
 
-   The rule enters from whichever side the pointer crossed and leaves by the
-   opposite one, so it reads as passing THROUGH the word rather than rewinding.
-   That is the whole effect — the type itself does not move.
-   -------------------------------------------------------------------------- */
-
-/* `width: fit-content` is as load-bearing as `position: relative`. These links
-   are block-level inside the menu and footer columns, so their box is the full
-   column width while the word is much shorter — and the rule, being
-   left:0/right:0, would stretch the whole column and fire when you hovered the
-   empty space beside a short word. */
+/* fit-content: block links would otherwise fire across the whole column */
 .js-underline .u-link {
   position: relative;
   width: fit-content;
@@ -883,17 +692,10 @@
   .u { transition: none; }
 }
 
-
-/* Where a condition has no glyph drawn for it, the readout says the word
-   instead of borrowing another condition's icon. Same size and case as the
-   temperature it sits beside. */
+/* Conditions without a glyph show the word instead */
 .wx-word { text-transform: uppercase; white-space: nowrap; }
 
-/* The weather glyph is painted as a MASK, not loaded as an <img>. An external
-   SVG in an <img> cannot inherit currentColor — the same trap the wordmark
-   fell into — and these have to be black on the accent in the nav and white
-   over video in the hero. As a mask, one asset serves both and follows the
-   text colour it sits beside. */
+/* Mask, not <img>, so the glyph follows currentColor */
 .wx-icon {
   display: block;
   width: 20px;
@@ -904,17 +706,7 @@
   mask: var(--wx, url("../assets/icons/weather-cloudy.svg")) center / contain no-repeat;
 }
 
-/* --------------------------------------------------------------------------
-   The weather badge waits for its reading
-   The markup used to ship 19° and a default cloud, which then corrected
-   itself the moment the API answered — a visible flicker, and for a beat the
-   page stated a temperature nobody had checked. Both readouts are held at
-   zero until the call resolves, then the time and the weather arrive
-   together.
-
-   Gated on .js so that without JavaScript nothing is hidden that will never
-   be revealed.
-   -------------------------------------------------------------------------- */
+/* ---- Weather readouts hidden until the API resolves (JS only) ---- */
 .js .hero__meta,
 .js .nav__temp {
   opacity: 0;
@@ -927,16 +719,10 @@
   .js .hero__meta, .js .nav__temp { transition: none; }
 }
 
-/* --------------------------------------------------------------------------
-   13. The power of Mayfield
-   An acid bed carrying curated press quotes under a live Google rating.
-   Everything is centred; the quote deck cross-fades in place so the panel
-   never changes height as you page through it.
-   -------------------------------------------------------------------------- */
+/* ---- 13. The power of Mayfield ---- */
 .power {
   position: relative;
-  /* With the Instagram bed and the footer — the video window passes behind
-     the closing blocks, not across them. */
+  /* With insta + footer, above the window */
   z-index: 55;
   display: flex;
   flex-direction: column;
@@ -952,8 +738,7 @@
   display: flex;
   align-items: center;
   gap: var(--s-4);
-  /* Held back until the score is known, like the weather badge — a placeholder
-     rating would be a claim about the park nobody had checked. */
+  /* Hidden until the real score loads */
   opacity: 0;
   transition: opacity 0.45s var(--ease);
 }
@@ -962,16 +747,13 @@
 
 .power__google { font-size: 26px; font-weight: var(--w-medium); letter-spacing: -0.02em; }
 .power__score  { font-size: 20px; font-weight: var(--w-medium); }
-/* The span carries the size, not the SVG. base.css sets `svg { max-width:
-   100% }`, and 100% of a parent whose own width depends on the SVG resolves
-   to zero — the stars painted but the box measured 0 wide. */
+/* Size on the span: base.css svg max-width:100% collapses the SVG to 0 */
 .power__stars { flex: 0 0 auto; width: 108px; height: 20px; }
 .power__stars svg { width: 100%; height: 100%; max-width: none; display: block; }
 
 .power__title { max-width: 18ch; }
 
-/* The deck is a grid with every quote in the same cell, so the tallest sets
-   the height once and paging cannot make the panel jump. */
+/* All quotes share one grid cell so the tallest sets the height */
 .power__deck { display: grid; width: min(100%, 940px); }
 .power__quote {
   grid-area: 1 / 1;
@@ -1006,18 +788,9 @@
   .power__rating, .power__quote { transition: none; }
 }
 
-/* --------------------------------------------------------------------------
-   14. Interior pages — the bar is present from the top   [figma 465:8206]
-   The homepage nav arrives on the hero -> window handover; every other page
-   has no hero to scroll past, so the 36px bar is simply there from the first
-   frame. `nav--static` opts the bar out of the scroll-timeline animation the
-   homepage drives it with, and `.page` drops the first band below the fixed
-   bar so nothing hides beneath it. The menu still grows from this bar exactly
-   as it does on the homepage — only the arrival is different.
-   -------------------------------------------------------------------------- */
+/* ---- 14. Interior pages: nav present from the top [figma 465:8206] ---- */
 .nav--static { transform: none; opacity: 1; }
-/* Beats the @supports `animation-name: nav-in` on `.js .nav` (equal
-   specificity, later in source) so the bar is not animated from off-screen. */
+/* Overrides the @supports nav-in on .js .nav (same specificity, later) */
 .js .nav--static { animation: none; }
 
 .page {
@@ -1026,12 +799,7 @@
   background: var(--c-paper);
 }
 
-/* --------------------------------------------------------------------------
-   15. Page head — the acid title band                    [figma 465:8192]
-   A full-bleed accent band opening an interior page: a Title over a line of
-   body copy, both centred. Inherits the weather/night colour like everything
-   else, so it is orange on a sunny day and navy at night without a second rule.
-   -------------------------------------------------------------------------- */
+/* ---- 15. Page head [figma 465:8192] ---- */
 .page-head {
   display: flex;
   flex-direction: column;
@@ -1049,16 +817,7 @@
   .page-head { gap: var(--s-9); padding: var(--s-11) var(--gutter) 120px; }
 }
 
-/* --------------------------------------------------------------------------
-   16. Form + field                             [figma 465:8182 / 255:4767]
-   A field is a grey rounded box holding a label over its control. The control
-   is a real <input>/<select>/<textarea> — the design is progressively
-   enhanced, so the form posts and validates natively with scripting off, and
-   the JS below only upgrades the submit to stay on the page.
-
-   Dropdowns carry a white chevron well on the right; text fields do not. The
-   whole box is a <label>, so a tap anywhere lands on its control.
-   -------------------------------------------------------------------------- */
+/* ---- 16. Form + field [figma 465:8182 / 255:4767] ---- */
 .contact-form {
   display: flex;
   justify-content: center;
@@ -1068,16 +827,12 @@
 
 .form { width: min(100%, 600px); display: flex; flex-direction: column; gap: var(--s-9); }
 .form__intro { text-align: center; }
-/* Mobile [figma 465:11856]: the form is just the five fields + submit. The enquiry
-   type (fixed to this page) and the intro line are desktop-only; the select stays in
-   the DOM so its default value still posts. */
+/* Mobile [figma 465:11856]: enquiry type hidden but stays in the DOM so it posts */
 @media (max-width: 1023px) {
   .form > .field--select,
   .form__intro { display: none; }
 }
-/* [figma 465:8185] the block of fields tightens to 8px between boxes, inside
-   the 40px rhythm of the form as a whole. 8 is off the spacing scale by
-   design — this is the one place the fields read as a single stacked group. */
+/* [figma 465:8185] 8px is off-scale on purpose */
 .form__fields { display: flex; flex-direction: column; gap: 8px; }
 
 .field {
@@ -1091,9 +846,7 @@
 .field__main { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: var(--s-4); }
 .field__label { color: var(--c-ink); }
 
-/* Transparent control that inherits the box — no border or fill of its own, so
-   the grey box IS the input. Native appearance is stripped from the select
-   because the chevron well stands in for its arrow. */
+/* Transparent control; the grey box is the input. Select appearance stripped for the chevron well */
 .field__control {
   width: 100%;
   font: inherit;
@@ -1108,15 +861,14 @@
 }
 .field__control:focus { outline: none; }
 .field:focus-within { outline: 2px solid var(--c-ink); outline-offset: 2px; }
-/* "Type here" is the placeholder, greyed against the field's own text. */
 .field__control::placeholder { color: var(--c-ink); opacity: 0.45; }
 select.field__control { cursor: pointer; }
 
 .field--area { align-items: flex-start; }
-/* [figma 465:8190] the message box is 270 tall including its 20px padding. */
+/* [figma 465:8190] 270 tall incl. 20px padding */
 .field--area .field__control { min-height: 230px; resize: vertical; }
 
-/* [figma 255:4790] a 52px white well with the chevron, full field height. */
+/* [figma 255:4790] 52px chevron well, full field height */
 .field__arrow {
   flex: 0 0 auto;
   align-self: stretch;
@@ -1131,14 +883,13 @@ select.field__control { cursor: pointer; }
   content: "";
   width: 20px;
   height: 10px;
-  /* Painted as a mask so it follows --c-ink into night mode, the same trick
-     the weather glyph uses — the exported chevron is a black stroke otherwise. */
+  /* Mask so the chevron follows --c-ink at night */
   background: var(--c-ink);
   -webkit-mask: url("../assets/icons/chevron-down.svg") center / contain no-repeat;
           mask: url("../assets/icons/chevron-down.svg") center / contain no-repeat;
 }
 
-/* The enquiry addresses under the form. [figma 465:8196] */
+/* Enquiry addresses [figma 465:8196] */
 .enquiries {
   display: flex;
   flex-direction: column;
@@ -1150,9 +901,7 @@ select.field__control { cursor: pointer; }
   text-align: center;
 }
 .enquiry { display: flex; flex-direction: column; gap: var(--s-4); }
-/* [figma Title 32] the design sets these in Bold 700; the project ships only
-   Medium and ExtraBold (tokens.css), and every headline is ExtraBold, so these
-   follow that rule rather than shipping a third weight for two lines. */
+/* Figma says Bold 700; only Medium/ExtraBold are shipped */
 .enquiry__type {
   font-weight: var(--w-xbold);
   font-size: 26px;
@@ -1161,8 +910,7 @@ select.field__control { cursor: pointer; }
   text-transform: uppercase;
 }
 
-/* The submit's own feedback line, revealed by the JS enhancement. Without JS
-   the form posts natively and the page returns the same message server-side. */
+/* Shown by the JS submit; no-JS posts get the message server-side */
 .form__status { text-align: center; }
 .form__status[hidden] { display: none; }
 .form__status--err { color: inherit; font-weight: var(--w-xbold); }
@@ -1171,21 +919,11 @@ select.field__control { cursor: pointer; }
   .enquiry__type { font-size: 32px; }
 }
 
-/* --------------------------------------------------------------------------
-   17. Flag loop — the little waving marker             [figma 534:21157]
-   A decorative animated flag that rides the left margin down the page. Sticky
-   with a zero-height box, so it holds near the top as you scroll without ever
-   pushing a band sideways. Desktop only: at 375px there is no margin to spare,
-   and the mobile frame drops it too.
-   -------------------------------------------------------------------------- */
+/* ---- 17. Flag loop [figma 534:21157], desktop only ---- */
 .flag { display: none; }
 
 @media (min-width: 1024px) {
-  /* Sits fixed at the bottom-left of the viewport (sticky, bottom) while scrolling,
-     then — because the element lives in the flow just before .insta — it un-sticks and
-     parks just above the "#mayfieldmcr / The lens of Mayfield" row rather than riding
-     on over the footer. height:0 so it takes no flow space; the img hangs up from the
-     sticky line. [user 2026-09-17] */
+  /* Sticky bottom-left; sits before .insta so it parks above it, not over the footer */
   .flag {
     display: block;
     position: sticky;
@@ -1195,8 +933,7 @@ select.field__control { cursor: pointer; }
     height: 0;
     pointer-events: none;
   }
-  /* The link is the positioned, clickable element (the flag → Republic). The .flag
-     box stays pointer-events:none so its empty area never blocks the page. */
+  /* .flag stays pointer-events:none so its empty box never blocks the page */
   .flag__link {
     position: absolute;
     inset-block-end: 0;                 /* hang the flag up from the sticky line */
@@ -1210,13 +947,7 @@ select.field__control { cursor: pointer; }
   .flag__link img { width: 100%; height: 100%; object-fit: contain; display: block; }
 }
 
-/* --------------------------------------------------------------------------
-   18. Interior hero — a video header band              [figma 465:8175]
-   Spaces/Park/Republic open on a full-bleed video header with the initial-nav
-   over it and a centred title, rather than the homepage's shrink-to-window
-   hero. The persistent bar arrives as this scrolls away — driven by the same
-   scroll-timeline nav-in the homepage uses, with a JS fallback in motion.js.
-   -------------------------------------------------------------------------- */
+/* ---- 18. Interior hero [figma 465:8175] ---- */
 .phero {
   position: relative;
   isolation: isolate;
@@ -1233,16 +964,13 @@ select.field__control { cursor: pointer; }
 .phero__media { position: absolute; inset: 0; z-index: -2; }
 .phero__media video,
 .phero__media img { width: 100%; height: 100%; object-fit: cover; }
-/* The footage carries real detail; a wash keeps the white title legible over
-   whatever frame is showing. */
+/* Wash keeps the white title legible */
 .phero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: rgb(0 0 0 / 0.32); }
 
 .phero__inner { display: flex; flex-direction: column; align-items: center; gap: var(--s-6); width: min(100%, 880px); }
 .phero__sub { text-transform: uppercase; }
 
-/* The Park wordmark standing in for a text h1. aspect-ratio comes from the
-   file's own 200x46 viewBox, so the box can never crop or letterbox the art —
-   only the width below decides how big it gets. */
+/* aspect-ratio matches the SVG's 200x46 viewBox */
 .phero__mark {
   width: min(86vw, 660px);
   aspect-ratio: 200 / 46;
@@ -1255,11 +983,7 @@ select.field__control { cursor: pointer; }
   .phero { min-height: 808px; }
 }
 
-/* --------------------------------------------------------------------------
-   19. Intro — a centred statement                      [figma 465:8157]
-   A Title over a short paragraph, both centred, opening a page's body. The
-   title holds at 40 rather than riding the 58 desktop Title, per the frame.
-   -------------------------------------------------------------------------- */
+/* ---- 19. Intro [figma 465:8157]: title holds at 40, not 58 ---- */
 .intro {
   display: flex;
   flex-direction: column;
@@ -1285,12 +1009,7 @@ select.field__control { cursor: pointer; }
   .intro__title { font-size: 40px; }
 }
 
-/* --------------------------------------------------------------------------
-   20. Destinations — the grid of spaces        [figma 465:8163 / 274:11766]
-   Each card is a 440px image with the venue's white logo centred on it, then a
-   blurb and a pair of actions: an outlined pill and a square arrow button.
-   One column on mobile, three across on desktop.
-   -------------------------------------------------------------------------- */
+/* ---- 20. Destinations [figma 465:8163 / 274:11766] ---- */
 .dests {
   display: grid;
   grid-template-columns: 1fr;
@@ -1311,38 +1030,31 @@ select.field__control { cursor: pointer; }
   background: var(--c-ink);
 }
 .dest__photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-/* A light wash so the white logo reads on a pale or busy photo. */
+/* Wash so the white logo reads */
 .dest__img::after { content: ""; position: absolute; inset: 0; background: rgb(0 0 0 / 0.15); }
 .dest__logo { position: relative; z-index: 1; display: grid; place-items: center; width: 200px; height: 200px; }
 .dest__logo img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; }
 
 .dest__body { display: flex; flex-direction: column; gap: var(--s-6); padding-block-start: var(--s-6); }
 .dest__blurb { font-size: var(--t-caps); line-height: var(--lh-body); }
-/* Inline links in a blurb (links are undecorated site-wide, so mark them). */
+/* Links are undecorated site-wide, so mark inline ones */
 .dest__blurb a { text-decoration: underline; text-underline-offset: 0.15em; }
 .dest__blurb a:hover { text-decoration-thickness: 2px; }
 .dest__actions { display: flex; gap: var(--s-3); align-items: stretch; }
 
-/* The square arrow button. Mirrors .btn's invert-on-hover, but holds a 1:1 box
-   with the exported arrow painted as a mask so it follows the theme colour. */
+/* Square arrow button; the arrow is a mask so it follows the theme */
 .dest__icon {
   flex: 0 0 auto;
   aspect-ratio: 1;
   display: grid;
   place-items: center;
-  /* No padding-inline. It used to set the width around a 24px icon, but the
-     box is sized by aspect-ratio against the row height now — and because the
-     roll cells below are width:100%, any inline padding narrows the mask box
-     and squashes the arrow (it rendered 16px wide inside a 44px circle). */
+  /* No padding-inline: it narrows the mask box and squashes the arrow */
   border: var(--border-btn) solid currentColor;
   border-radius: var(--radius-btn);
   color: var(--c-ink);
   overflow: hidden;                 /* clips the roll */
 }
-/* The same roll as .btn, but an icon-only button has nothing to duplicate in
-   the DOM — so the two cells are the pseudo-elements. Both fill the content
-   box and sit in the one grid cell, which is what makes translateY(100%) move
-   exactly one cell and clear the clip no matter how big the button gets. */
+/* Roll cells are the pseudo-elements, sharing one grid cell */
 .dest__icon::before,
 .dest__icon::after {
   content: "";
@@ -1354,9 +1066,7 @@ select.field__control { cursor: pointer; }
           mask: url("../assets/icons/arrow.svg") center / 24px 24px no-repeat;
   transition: transform var(--dur-roll) var(--ease-roll);
 }
-/* With no .btn beside it (a card with no website) there is no row height for
-   aspect-ratio to follow and it collapses to 0x0, so it takes the .btn's own
-   height: padding 12 + 13, one 15px line, two 2px borders = 44px. */
+/* 44px = .btn height; keeps the lone icon from collapsing */
 .dest__icon:only-child { block-size: calc(var(--s-4) + 13px + var(--t-caps) * var(--lh-flat) + 2 * var(--border-btn)); }
 .dest__icon::after { transform: translateY(100%); }   /* waiting below */
 .dest__icon:hover::before,
@@ -1368,17 +1078,9 @@ select.field__control { cursor: pointer; }
   .dests { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 60px var(--s-9); }
 }
 
-/* --------------------------------------------------------------------------
-   21. Park hero weather strip + the ratings-on-white variant  [figma 465:7964]
-   The Park header carries a five-day forecast strip near its foot, and the
-   "power of Mayfield" ratings block reappears here on white rather than the
-   acid bed — so `.power--plain` just repaints it; everything else is §13.
-   TODO: the Park titles are Stratos Bold in Figma; V2 ships only BDO, so they
-   fall back to ExtraBold until a Stratos woff2 is self-hosted.
-   -------------------------------------------------------------------------- */
+/* ---- 21. Park weather strip + ratings on white [figma 465:7964] ---- */
 .power--plain { background: var(--c-paper); }
 
-/* The Park hero title runs larger than a section Title — nearer the Figma 80. */
 .phero--park h1 { font-size: clamp(44px, 8vw, 80px); }
 
 .wxstrip {
@@ -1403,26 +1105,11 @@ select.field__control { cursor: pointer; }
           mask: var(--wx) center / contain no-repeat;
 }
 
-/* --------------------------------------------------------------------------
-   22. Gallery — a receding depth stack           [figma 496:18061 / 499:18094]
-   The active image sits front and centre; the next ones recede behind it,
-   smaller and darker, with Prev/Next paging through. With no JS the first
-   image simply shows — the `:first-child` fallback below is overridden the
-   moment the script assigns every slide a `data-pos`.
-   -------------------------------------------------------------------------- */
-/* overflow:hidden clips the dropped card at the section's own edges so it can
-   never reappear over the section below; the gradient well fades it out before
-   the clip, so the cut is never visible. Top padding leaves room for the
-   receding cards to peek without being clipped. */
+/* ---- 22. Gallery: receding depth stack [figma 496:18061 / 499:18094] ---- */
+/* Clips the dropped card; top padding leaves room for the peeking cards */
 .gallery { position: relative; overflow: hidden; padding: 120px var(--gutter) var(--s-11); background: var(--c-paper); color: var(--c-ink); }
 
-/* The stage is a 3D scene. The cards recede INTO it on the Z axis — perspective
-   shrinks them, so there is no `scale()`; that is what gives the real depth the
-   flat version lacked. Transposed from paulkalkbrenner.net's `dropping-stack`
-   (perspective ~100em on the list, preserve-3d, each card stepped up in Y and
-   back in Z with a descending z-index) — rebuilt here in vanilla CSS + JS, no
-   GSAP. `--rise`/`--recede` are the per-card step; JS sets each card's `--d`
-   (0 = front), z-index, dim and opacity. */
+/* Cards recede on Z via perspective, no scale; JS sets --d, z-index, dim, opacity */
 .gallery__stage {
   position: relative;
   height: min(86vw, 335px);       /* [figma mobile] front card is a 335px square */
@@ -1450,7 +1137,7 @@ select.field__control { cursor: pointer; }
   will-change: transform, opacity;
 }
 .gallery__slide img { width: 100%; height: 100%; object-fit: cover; }
-/* Cards darken as they drop back, so the stack reads even over busy imagery. */
+/* Darken as they recede */
 .gallery__slide::after {
   content: "";
   position: absolute;
@@ -1460,19 +1147,14 @@ select.field__control { cursor: pointer; }
 }
 /* No-JS fallback: the first image, front and centre. */
 .gallery__slide:first-child { opacity: 1; z-index: 3; }
-/* Once JS takes over it adds this to every slide; it then sets --d/z-index/
-   opacity per card, so the fallback front card no longer forces itself on. */
+/* JS positions every card, so drop the no-JS front card */
 .gallery.is-live .gallery__slide:first-child { opacity: 0; }
 .gallery.is-live .gallery__slide { opacity: 0; }
 .gallery.is-live .gallery__slide.is-shown { opacity: 1; }
-/* The front card is the grab handle for the drag. */
 .gallery.is-live .gallery__slide.is-front { cursor: grab; }
 .gallery.is-live.is-dragging .gallery__slide.is-front { cursor: grabbing; }
 
-/* NEXT drops the front card straight down and off, fading as it falls (its
-   reset to the back happens under snap() in motion.js with the transition
-   suppressed, so it is never seen). Ease-in so it accelerates like a fall; PREV
-   is the mirror, eased in from above by the JS. */
+/* Next: front card falls and fades; motion.js snaps it to the back unseen */
 .gallery.is-live .gallery__slide.is-dropping {
   transform: translate(-50%, -50%) translateY(230%);
   opacity: 0;
@@ -1480,11 +1162,7 @@ select.field__control { cursor: pointer; }
   transition: transform 0.6s cubic-bezier(0.45, 0.05, 0.85, 0.4), opacity 0.44s ease 0.14s;
 }
 
-/* The card falls into a soft "well" at the foot of the gallery: a gradient that
-   fades the card out to the page as it drops (paper-on-paper, so it is invisible
-   until a card passes through). With the card also blurring, it reads as
-   dropping into a faded, out-of-focus void rather than over the section below.
-   The upper half is fully transparent so it never touches the front card. */
+/* Paper gradient well the card fades into as it drops; top half transparent */
 .gallery::after {
   content: "";
   position: absolute;
@@ -1496,10 +1174,7 @@ select.field__control { cursor: pointer; }
   z-index: 2100;
 }
 
-/* Mobile [figma 517:20074-76]: the controls sit in a row BELOW the stack — count
-   far left, Prev/Next far right. On desktop they move to flank the stack, vertically
-   centred (Figma 496:18061), letting pointer events through so they never block the
-   drag in the middle. */
+/* Mobile [figma 517:20074-76]: controls below; desktop flanks the stack, pointer-events off */
 .gallery__nav {
   display: flex;
   align-items: center;
@@ -1513,11 +1188,7 @@ select.field__control { cursor: pointer; }
 .gallery__count { order: -1; margin-inline-end: auto; min-width: 4ch; }
 
 @media (min-width: 1024px) {
-  /* Square, like the mobile card above. The desktop card is 624px (the
-     original 480 scaled up 1.3), and every other measure scales by the same
-     1.3 (stage, --rise, --recede, and the top room for the peeking cards) so
-     the stack keeps its shape. They are all measured against the front card,
-     so change them together. */
+  /* 624px card = 480 x 1.3; stage, --rise, --recede and top room scale together */
   .gallery { padding-block-start: 156px; }
   .gallery__stage { height: 676px; --rise: 156px; --recede: 728px; }
   .gallery__slide { width: 624px; height: 624px; }
@@ -1536,11 +1207,7 @@ select.field__control { cursor: pointer; }
   .gallery__slide, .gallery__slide::after { transition: none; }
 }
 
-/* --------------------------------------------------------------------------
-   23. Press — coverage cards                     [figma 517:20584 / 517:20880]
-   A square publication image over its name and the headline, with a Read
-   article pill pinned to the foot. One column on mobile, three across up.
-   -------------------------------------------------------------------------- */
+/* ---- 23. Press [figma 517:20584 / 517:20880] ---- */
 .press { display: grid; grid-template-columns: 1fr; gap: var(--s-9); padding: 0 var(--gutter) var(--s-9); background: var(--c-paper); color: var(--c-ink); }
 .press__card { display: flex; flex-direction: column; gap: var(--s-4); }
 .press__img { aspect-ratio: 1; overflow: hidden; }
@@ -1548,19 +1215,13 @@ select.field__control { cursor: pointer; }
 .press__pub { text-align: center; font-size: var(--t-caps-l); text-transform: uppercase; }
 .press__body { display: flex; flex: 1 0 auto; flex-direction: column; justify-content: space-between; gap: var(--s-6); }
 .press__title { font-weight: var(--w-xbold); font-size: 26px; line-height: var(--lh-flat); letter-spacing: -0.03em; text-transform: uppercase; }
-/* The full-width CTA spans every column beneath the cards. */
 .press__cta { grid-column: 1 / -1; padding-block-start: var(--s-6); }
 
 @media (min-width: 1024px) {
   .press { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 60px var(--s-9); }
 }
 
-/* --------------------------------------------------------------------------
-   24. Park info + FAQ                             [figma 465:7935 / 261:10184]
-   An address block over a map, then a native <details> accordion — no JS, the
-   browser owns the open/close. TODO: Stratos Bold titles fall back to xbold;
-   the FAQ answer copy is placeholder pending real text.
-   -------------------------------------------------------------------------- */
+/* ---- 24. Park info + FAQ [figma 465:7935 / 261:10184] ---- */
 .parkinfo {
   display: flex;
   flex-direction: column;
@@ -1571,50 +1232,24 @@ select.field__control { cursor: pointer; }
   color: var(--c-ink);
   text-align: center;
 }
-/* --------------------------------------------------------------------------
-   The Park page carries the weather colour
-   The body takes --c-accent and the content rows stop painting white over it,
-   so the page changes with the forecast like the accent everywhere else —
-   green when overcast, orange when sunny, and so on.
-
-   Painted ONCE on the body rather than re-declared per section: .intro is
-   shared with Spaces and .gallery with Republic, so repainting those classes
-   would drag the colour onto pages that should stay white. Scoping to
-   [data-page] keeps it to this page, and any row added here later inherits it
-   without being listed.
-   -------------------------------------------------------------------------- */
+/* ---- Park page: weather colour on body, scoped by [data-page] as .intro/.gallery are shared ---- */
 [data-page="park"] body { background: var(--c-accent); }
 [data-page="park"] .intro,
 [data-page="park"] .gallery,
 [data-page="park"] .power--plain,
 [data-page="park"] .press { background: transparent; }
 
-/* The gallery's drop-well fades a falling card out INTO the page, so it has to
-   fade to whatever the page now is — left on --c-paper it reads as a white
-   smear across the colour. */
+/* Drop-well must fade to the page colour, not paper */
 [data-page="park"] .gallery::after {
   background: linear-gradient(to bottom, transparent 0%, transparent 58%, var(--c-accent) 96%);
 }
 
-/* Park info sits on a 60% white scrim OVER the body colour, not on white: an
-   alpha background composites against whatever weather colour is behind it,
-   so the tint follows the forecast instead of being mixed per state. */
+/* 60% white scrim so the tint follows the weather colour */
 [data-page="park"] .parkinfo { background: rgb(255 255 255 / 0.6); }
-/* Night repoints --c-accent to the dark navy, and 60% white over that is a
-   pale grey slab — it loses the night entirely. 10% is enough to lift the
-   block off the page without bleaching it. Both attributes sit on <html>, so
-   this is a compound selector, and its extra attribute outranks the rule
-   above without needing !important. */
+/* Night: 60% white over navy goes grey; 10% lifts it without bleaching */
 [data-mode="night"][data-page="park"] .parkinfo { background: rgb(255 255 255 / 0.1); }
 
-/* Night on Park keeps the chrome dark but hands the content rows back to
-   white. Night repoints --c-paper/--c-ink globally, which took these rows
-   navy along with the nav and the footer; here the two tokens are re-declared
-   at row level so the day values apply to the row AND everything inside it —
-   headings, body copy, button strokes — without hardcoding a colour per
-   descendant. The nav and footer sit outside these rows, so they keep the
-   night treatment, and the navy body skin still reads in the gaps between
-   rows and behind the park-info scrim. */
+/* Night on Park: content rows restore day tokens; nav/footer stay dark */
 [data-mode="night"][data-page="park"] .intro,
 [data-mode="night"][data-page="park"] .gallery,
 [data-mode="night"][data-page="park"] .power--plain,
@@ -1624,28 +1259,12 @@ select.field__control { cursor: pointer; }
   background: var(--c-paper);
   color: var(--c-ink);
 }
-/* The drop-well fades into the row it sits in, which is white again — left on
-   --c-accent it would smear navy up the foot of a white gallery. */
+/* Row is white again, so the well fades to paper */
 [data-mode="night"][data-page="park"] .gallery::after {
   background: linear-gradient(to bottom, transparent 0%, transparent 58%, var(--c-paper) 96%);
 }
 
-/* --------------------------------------------------------------------------
-   Night on every page EXCEPT Park: only the chrome goes dark
-   Night repoints --c-paper/--c-ink at the root, which took whole pages navy.
-   Here the two are handed back to their day values on <main>, so the content
-   reads as it does in daylight, and then back to night values on the footer —
-   which sits INSIDE <main> on all five pages, so it cannot simply be left
-   out. The nav closes before <main> opens everywhere, so it needs no rule and
-   keeps the dark treatment.
-
-   Park is excluded: it runs its own night treatment above, where the body
-   skin carries the night colour deliberately.
-
-   `color` is set alongside the tokens on both, not just the background:
-   a section that never declares its own colour inherits straight from <body>,
-   which night leaves white — that put white text on the white Contact form.
-   -------------------------------------------------------------------------- */
+/* ---- Night, except Park/Republic: <main> back to day tokens, footer (inside main) back to night ---- */
 [data-mode="night"]:not([data-page="park"]):not([data-brand="republic"]) main {
   --c-paper: #ffffff;
   --c-ink:   #000000;
@@ -1657,10 +1276,7 @@ select.field__control { cursor: pointer; }
   --c-ink:   #ffffff;
   color: var(--c-ink);
 }
-/* Bands inside <main> that are painted with --c-accent stay navy, because
-   night overrides the weather colour by design. They have to keep the night
-   ink with it — the black restored above would otherwise land on navy: the
-   Contact page head and the Instagram bed both went unreadable that way. */
+/* Accent bands stay navy at night, so they keep night ink */
 [data-mode="night"]:not([data-page="park"]):not([data-brand="republic"]) .insta,
 [data-mode="night"]:not([data-page="park"]):not([data-brand="republic"]) .power,
 [data-mode="night"]:not([data-page="park"]):not([data-brand="republic"]) .page-head {
@@ -1673,31 +1289,25 @@ select.field__control { cursor: pointer; }
 .parkinfo__map { width: min(100%, 816px); height: auto; border-radius: var(--radius-field); }
 
 .faq { width: min(100%, 640px); display: flex; flex-direction: column; gap: 60px; padding-block-start: var(--s-9); text-align: left; }
-/* Each row: question (always shown) -> collapsible answer panel -> the toggle,
-   pinned at the BOTTOM of the row, under the answer. */
+/* Question, answer panel, then the toggle at the bottom */
 .faq__item { display: flex; flex-direction: column; }
 .faq__q { margin: 0; font-weight: var(--w-xbold); font-size: 26px; line-height: var(--lh-crush); letter-spacing: -0.02em; text-transform: uppercase; }
 
-/* The panel animates its height via the grid 0fr -> 1fr trick (the inner clips),
-   so open AND close are one smooth physical transition. Open by default so the
-   answers are readable with no JS; the .js branch collapses them until opened. */
+/* 0fr -> 1fr grid height trick; open by default for no-JS */
 .faq__panel { display: grid; grid-template-rows: 1fr; transition: grid-template-rows 0.45s var(--ease); }
 .faq__panel-inner { overflow: hidden; min-height: 0; }
 .js .faq__item:not(.is-open) .faq__panel { grid-template-rows: 0fr; }
 .faq__a { margin-block: var(--s-6) 0; font-size: var(--t-body); max-width: 60ch; transition: opacity 0.4s var(--ease); }
-/* base.css resets every ul to list-style:none, so the one answer that is a
-   list has to ask for its bullets back. It carries .faq__a too, so it fades
-   and spaces with the paragraphs around it. */
+/* base.css strips ul bullets */
 .faq__list { list-style: disc; padding-inline-start: 1.5em; }
 .faq__list li { margin-block-start: var(--s-2); }
 .js .faq__item:not(.is-open) .faq__a { opacity: 0; }
 
-/* The toggle sits at the bottom of the row. Its + is two bars so it can morph to
-   a − (the vertical bar retracts) when open. No-JS: no toggle, answers just show. */
+/* + is two bars so it morphs to a −; no toggle without JS */
 .faq__toggle {
   order: 3;
   align-self: flex-start;
-  margin-block-start: var(--s-6);   /* space between the title/answer and the toggle */
+  margin-block-start: var(--s-6);
   display: inline-flex;
   align-items: center;
   gap: var(--s-3);
@@ -1722,7 +1332,7 @@ select.field__control { cursor: pointer; }
 .faq__item:not(.is-open) .faq__toggle:hover .faq__plus,
 .faq__item:not(.is-open) .faq__toggle:focus-visible .faq__plus { transform: rotate(90deg); }
 
-/* Open: vertical bar retracts to leave a −, and the label swaps to Hide answer. */
+/* Open: vertical bar retracts to a − */
 .faq__item.is-open .faq__plus::after { scale: 0 1; opacity: 0; }
 .faq__label--hide { display: none; }
 .faq__item.is-open .faq__label--read { display: none; }
@@ -1738,20 +1348,14 @@ select.field__control { cursor: pointer; }
   .faq__q { font-size: 36px; }
 }
 
-/* ==========================================================================
-   REPUBLIC  [figma 465:7870]
-   The Republic sub-brand: its own acid yellow (--c-republic) and a Garamond
-   serif display (--f-serif, roman + italic). Both are noted TODOs — the yellow
-   is applied here, the serif falls back to a platform serif until a woff2 lands.
-   ========================================================================== */
+/* ==== REPUBLIC [figma 465:7870]: own yellow (--c-republic) and serif (--f-serif) ==== */
 
-/* -- 25. Republic hero — bg image, centred logo + portrait   [figma 465:7922] */
+/* ---- 25. Republic hero [figma 465:7922] ---- */
 .rhero {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  /* Height comes from the shared .phero (72svh mobile, fixed 808px desktop);
-     a second svh min-height here ballooned the header on tall viewports. */
+  /* Height comes from .phero; an extra svh min-height ballooned it */
   display: grid;
   place-items: center;
   padding: calc(var(--nav-init-h) + var(--s-10)) var(--gutter) var(--s-11);
@@ -1760,8 +1364,7 @@ select.field__control { cursor: pointer; }
 }
 .rhero__bg { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
 .rhero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: rgb(0 0 0 / 0.28); }
-/* Recoloured to the Republic acid yellow via a mask (the SVG is shared with the
-   Spaces cards, so its own fill is left alone). */
+/* Mask: the SVG is shared with Spaces, so its fill is left alone */
 .rhero__logo {
   position: absolute;
   inset-block-start: calc(var(--nav-init-h) + var(--s-5));
@@ -1776,7 +1379,7 @@ select.field__control { cursor: pointer; }
 .rhero__portrait { width: min(74vw, 420px); aspect-ratio: 517 / 591; }
 .rhero__portrait img { width: 100%; height: 100%; object-fit: cover; }
 
-/* -- 26. Republic display serif + centred bands           [figma Title 80] */
+/* ---- 26. Republic display serif + centred bands [figma Title 80] ---- */
 .r-title {
   font-family: var(--f-serif);
   font-weight: 400;
@@ -1787,29 +1390,26 @@ select.field__control { cursor: pointer; }
 }
 .r-title em { font-style: italic; }
 
-/* A centred content band — used for the intro, the paragraphs between sections,
-   the brochure CTA and the application lead-in. */
+/* Centred band: intro, between-section copy, CTA, application lead-in */
 .rband {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--s-9);              /* [figma] 40px between lead, button, logo */
-  padding: 200px var(--gutter);  /* [figma mobile] airy 200px block padding */
+  padding: 200px var(--gutter);  /* [figma mobile] 200px block padding */
   background: var(--c-paper);
   color: var(--c-ink);
   text-align: center;
 }
-@media (min-width: 1024px) { .rband { padding-block: 140px; } }   /* the intro band's generous vertical space */
+@media (min-width: 1024px) { .rband { padding-block: 140px; } }
 .rband__logo { width: 138px; height: auto; }
 /* [figma Hero 48] Garamond 48px, lh 1.0, tracking -4%. */
 .rband__lead { max-width: 30ch; font-family: var(--f-serif); font-weight: 400; font-size: clamp(40px, 4vw, 48px); line-height: 1; letter-spacing: -0.04em; }   /* [figma] Hero 40 mobile → 48 desktop */
 .rband__text { max-width: 60ch; }
 
-/* -- 27. Location list                                    [figma 465:7886] */
+/* ---- 27. Location list [figma 465:7886] ---- */
 .rlocations { background: var(--c-paper); color: var(--c-ink); }
-/* Mobile [figma 330:16898]: a 110px green-duotone map thumbnail on the left, then
-   the name (Garamond 30) above the walk-time (12) — the desktop cursor-follow map
-   is restored in the @media below. */
+/* Mobile [figma 330:16898]: 110px map thumb on the left; desktop hover map below */
 .rloc {
   display: grid;
   grid-template-columns: 110px minmax(0, 1fr);
@@ -1825,7 +1425,7 @@ select.field__control { cursor: pointer; }
 .rloc__name { grid-column: 2; grid-row: 1; font-family: var(--f-serif); font-weight: 400; font-size: 30px; line-height: 1; letter-spacing: -0.08em; text-transform: uppercase; }
 .rloc__time { grid-column: 2; grid-row: 3; align-self: end; font-size: 12px; line-height: 1.1; white-space: nowrap; }   /* [figma Body 12] */
 
-/* -- 28. Benefit stats — a row of figures                 [figma 505:19992] */
+/* ---- 28. Benefit stats [figma 505:19992] ---- */
 .rstats {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -1840,17 +1440,12 @@ select.field__control { cursor: pointer; }
 .rstat__label { font-size: var(--t-caps); text-transform: uppercase; }
 @media (min-width: 1024px) { .rstats { grid-template-columns: repeat(4, 1fr); } }
 
-/* -- 29. Benefit panels — pinned stacking deck   [figma 214:2088 / motion.js §11]
-   The section is a tall scroll runway; the .bpanels__pin wrapper pins (sticky) while
-   the cards slide up from below and stack — each card behind scaled -0.05 and lifted
-   a little — then, once stacked, the whole pinned deck releases and scrolls away as
-   ONE. Technique reverse-engineered from sohub.digital's GSAP pin, rebuilt here in
-   vanilla CSS + JS (motion.js drives the per-card transform from scroll progress). */
+/* ---- 29. Benefit panels: pinned stacking deck [figma 214:2088], driven by motion.js §11 ---- */
 .bpanels { background: var(--c-paper); }
 /* Fallback (no JS / reduced motion): the cards just stack in normal flow. */
 .bpanels__pin { display: flex; flex-direction: column; align-items: center; gap: var(--s-9); padding: var(--s-10) var(--gutter); }
 
-/* Mobile card = Figma mobile panel [281:16286]: portrait, image top / text bottom. */
+/* Mobile card [figma 281:16286]: image top, text bottom */
 .bpanel {
   display: flex;
   flex-direction: column;
@@ -1871,13 +1466,13 @@ select.field__control { cursor: pointer; }
 .bpanel__tags { display: flex; flex-wrap: wrap; gap: 4px var(--s-7); font-size: 12px; text-transform: uppercase; }
 .bpanel__text .t-body { font-size: 15px; }
 
-/* Pin behaviour: runway + sticky wrapper + absolutely-stacked cards (JS drives them). */
+/* Pin: runway + sticky wrapper + stacked cards (JS-driven) */
 .js .bpanels { position: relative; height: 300vh; }
 .js .bpanels__pin { position: sticky; top: 0; height: 100svh; display: block; padding: 0; overflow: hidden; }
 .js .bpanel { position: absolute; top: 0; left: 0; right: 0; margin-inline: auto; transform-origin: center top; will-change: transform; }
 
 @media (min-width: 1024px) {
-  /* Desktop card: horizontal — image left / text right [figma 465:7895]. */
+  /* Desktop card [figma 465:7895]: image left, text right */
   .bpanel {
     flex-direction: row;
     align-items: stretch;
@@ -1897,21 +1492,16 @@ select.field__control { cursor: pointer; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  /* No pin/scroll animation — cards fall back to readable normal flow. */
+  /* No pin: normal flow */
   .js .bpanels { height: auto; }
   .js .bpanels__pin { position: static; height: auto; display: flex; flex-direction: column; align-items: center; gap: var(--s-9); padding: var(--s-10) var(--gutter); overflow: visible; }
   .js .bpanel { position: static; transform: none; }
 }
 
-/* -- 30. Floors — image + schedule table                  [figma 465:7910] */
+/* ---- 30. Floors [figma 465:7910] ---- */
 .floors { display: flex; flex-direction: column; background: var(--c-paper); color: var(--c-ink); }
-/* The render is positioned absolutely inside a definite-height box so that
-   swapping between renders of different aspect ratios (building-1 is a tall
-   562x1200 portrait; the rest are ~square) can never change the box height and
-   shove the page on hover. The box takes its height from its aspect-ratio
-   (mobile) or from the flex row = table height (desktop); the img just covers. */
-/* Mobile: horizontal swipe carousel of labelled floor renders [figma 465:11866].
-   Native scroll-snap — no JS. The single-render .floors__img is desktop-only. */
+/* Absolute img in a fixed-height box so renders of different ratios never shift the page */
+/* Mobile [figma 465:11866]: scroll-snap carousel, no JS */
 .floors__carousel {
   display: flex;
   gap: 2px;
@@ -1940,13 +1530,12 @@ select.field__control { cursor: pointer; }
 .floors__table { padding: var(--s-9) var(--gutter); }
 .floors__head, .floor {
   display: grid;
-  grid-template-columns: 4rem 1fr 118px;   /* rem + px, not em/auto: head and rows are separate grids at different font sizes, so both must resolve the same */
+  grid-template-columns: 4rem 1fr 118px;   /* rem + px: head and rows are separate grids at different font sizes */
   gap: var(--s-4);
   align-items: center;
 }
 .floors__head { padding-block-end: var(--s-4); font-size: var(--t-caps); text-transform: uppercase; }
-/* Phones have no room for "Max capacity (1:10)" on one line beside the sizes, so
-   the ratio drops underneath; desktop un-stacks it (below). */
+/* Ratio wraps under on phones; unstacked on desktop */
 .floors__ratio { display: block; }
 .floor { padding-block: var(--s-4); border-block-start: 1px solid rgb(0 0 0 / 0.25); font-size: var(--t-body); }
 .floors__list > .floor:last-child { border-block-end: 1px solid rgb(0 0 0 / 0.25); }
@@ -1957,8 +1546,7 @@ select.field__control { cursor: pointer; }
   -webkit-mask: url("../assets/icons/person.svg") center / contain no-repeat;
           mask: url("../assets/icons/person.svg") center / contain no-repeat;
 }
-/* Republic is exempt from night (see the token restore in tokens.css), so its
-   floor rules keep the daylight border too. */
+/* Republic is exempt from night (tokens.css) */
 [data-mode="night"]:not([data-brand="republic"]) .floor,
 [data-mode="night"]:not([data-brand="republic"]) .floors__list > .floor:last-child { border-color: rgb(255 255 255 / 0.3); }
 @media (min-width: 1024px) {
@@ -1966,28 +1554,17 @@ select.field__control { cursor: pointer; }
   .floors__carousel { display: none; }                       /* desktop uses the cross-fade render */
   .floors__img { display: block; position: relative; overflow: hidden; flex: 1 1 0; aspect-ratio: auto; }
   .floors__table { flex: 1 1 0; align-self: center; }
-  /* [figma] Floor 170 / Size 1fr / Capacity 100. Capacity is widened to 160 so
-     "Max capacity (1:10)" holds one line, and fixed, not auto: the head and each
-     row are separate grids, so an auto column would size differently in each and
-     the numbers would drift. Floor flexes (1:2 with Size) instead of a fixed 170
-     so a narrow desktop still leaves Size room; it lands near 170 at 1440. */
+  /* Capacity fixed at 160 so head and rows align and (1:10) fits one line */
   .floors__head, .floor { grid-template-columns: minmax(5rem, 1fr) 2fr 160px; }
   .floors__ratio { display: inline; }
 }
 
-/* --------------------------------------------------------------------------
-   31. The Republic — display type, real content & the two hover interactions
-   From the walkthrough: the location list reveals a green-duotone map per row,
-   and hovering a floor swaps the building render on the left. Titles are set in
-   the Garamond fallback (--f-serif) until a woff2 is self-hosted.
-   TODO: self-host Garamond Premier Pro (roman + italic subhead).
-   -------------------------------------------------------------------------- */
+/* ---- 31. Republic display type + hover interactions ---- */
 
 /* The inline logo inside the intro sentence: "The [Republic] is a place…". */
 .rband__inline { display: inline-block; height: 0.6em; width: auto; margin-inline: 0.14em; transform: translateY(0.04em); }
 
-/* Republic title block — Garamond, uppercase, three lines each aligned
-   differently, with one italic accent word. [figma republic title block] */
+/* Title block: three lines, differing alignment, one italic word */
 .rtitle-sec { padding: var(--s-11) var(--gutter); background: var(--c-paper); color: var(--c-ink); }
 .rtitle {
   font-family: var(--f-serif);
@@ -2000,15 +1577,13 @@ select.field__control { cursor: pointer; }
   flex-direction: column;
 }
 .rtitle em { font-style: italic; }
-/* [figma mobile 465:11833] The title block zig-zags by POSITION: first line left,
-   last line right, any middle line centred (so 2-line titles read left/right, and a
-   lone line stays left). Each line drops 40px with a slight overlap. */
+/* [figma mobile 465:11833] Zig-zag: first line left, last right, middles centred */
 .rtitle > span { text-align: center; }
 .rtitle > span:first-child { text-align: left; }
 .rtitle > span:last-child { text-align: right; }
 .rtitle > span:only-child { text-align: left; }
 
-/* Desktop widens into the cascading staircase [figma 465:7900]. */
+/* Desktop staircase [figma 465:7900] */
 @media (min-width: 1024px) {
   .rtitle { font-size: clamp(46px, 11vw, 100px); line-height: 1; align-items: flex-start; }
   .rtitle > span { width: fit-content; text-align: left; }
@@ -2017,10 +1592,7 @@ select.field__control { cursor: pointer; }
   .rtitle > span:nth-child(3) { margin-inline-start: 45%; }
 }
 
-/* The acid-yellow title laid over the feature photo. */
-/* Mobile [figma 465:11828]: a 10px paper gutter on the top and sides, flush to the
-   section's bottom, square corners. The gutter is a border so the <img> can keep the
-   reliable inset:0/100%/cover sizing (auto width on a replaced element breaks it). */
+/* Mobile [figma 465:11828]: 10px gutter as a border so the img keeps inset:0 cover sizing */
 .rtitle-sec--image {
   position: relative;
   isolation: isolate;
@@ -2039,21 +1611,16 @@ select.field__control { cursor: pointer; }
   .rtitle-sec--image { min-height: 640px; padding-inline: var(--gutter); border-width: 0; }
 }
 
-/* [figma 465:7892] The between-section paragraph is a LEFT-aligned 600px block
-   inset from the left, NOT centred — padding t100 / b150 / x100 on desktop. */
+/* [figma 465:7892] Left-aligned 600px block, not centred */
 .rpara { padding: var(--s-9) var(--gutter) var(--s-10); background: var(--c-paper); color: var(--c-ink); }
 .rpara p { width: min(100%, 600px); text-align: left; font-size: var(--t-body); line-height: var(--lh-body); }
 @media (min-width: 1024px) { .rpara { padding: 100px 100px 150px; } }
 
-/* -- Location list — the green-duotone map -------------------------------
-   The map is a photo multiplied down over the Republic yellow, so it reads as
-   the green duotone the design uses. On mobile it is a static 110px thumbnail
-   (styled in the base .rloc rules above); on desktop it becomes a cursor-
-   following hover reveal. */
+/* ---- Location list map: photo multiplied over yellow; cursor-follow on desktop ---- */
 .rlocations { position: relative; isolation: isolate; }
 .rloc { position: static; }
 @media (min-width: 1024px) {
-  /* Restore the desktop row: name left, walk-time right, no inline thumbnail. */
+  /* Desktop row: name left, walk-time right, no thumbnail */
   .rloc {
     display: flex;
     align-items: baseline;
@@ -2064,10 +1631,7 @@ select.field__control { cursor: pointer; }
   .rloc:hover { background: transparent; }   /* the reveal is the image, not a row wash */
   .rloc__name { font-size: clamp(28px, 5vw, 42px); }
   .rloc__time { font-size: var(--t-caps-l); }   /* [figma Body 18] */
-  /* The map now FOLLOWS the cursor with a subtle swing (motion.js §10 drives the
-     transform): it lerps toward the pointer and rotates from its own horizontal
-     velocity, so it trails and swings like it is hanging from the cursor.
-     transform-origin at the top edge makes it a pendulum. */
+  /* Follows the cursor (motion.js §10); top transform-origin makes it swing */
   .rloc__map {
     display: block;
     position: absolute;
@@ -2088,12 +1652,9 @@ select.field__control { cursor: pointer; }
   .rloc__map.is-on { opacity: 1; }
 }
 
-/* -- Floors — the left render cross-fades as motion.js swaps layers on hover -- */
+/* ---- Floors: render cross-fades as motion.js swaps layers on hover ---- */
 .floors__img img { transition: opacity 0.4s ease; }
-/* The yellow appears immediately on hover but DECAYS out over 300ms — sweeping
-   the rows leaves a trailing gradient of fading-yellow rows. The direction split
-   is the transition-on-the-target-state trick: the base rule governs the return
-   to white (slow), the :hover rule governs the arrival (instant). */
+/* Instant on hover, 300ms fade out: the base rule times the return */
 .floor { transition: background 300ms ease-out; }
 .floor:hover { background: var(--c-republic); transition-duration: 0ms; }
 
@@ -2101,16 +1662,11 @@ select.field__control { cursor: pointer; }
   .rloc__map { transition: none; }
 }
 
-/* --------------------------------------------------------------------------
-   32. The Republic — yellow bands, the benefits row & the brochure card
-   Corrections from the client walkthrough: the intro and the "MCR's first
-   office" title sit on the Republic yellow (not white); the four benefits are
-   captioned photos (not figures); the brochure CTA is a rounded yellow card.
-   -------------------------------------------------------------------------- */
+/* ---- 32. Republic yellow bands, benefits row, brochure card ---- */
 .rband--brand { background: var(--c-republic); color: var(--c-ink); }
 .rtitle-sec--brand { background: var(--c-republic); color: var(--c-ink); }
 
-/* Four captioned photos. [figma 505:20004] */
+/* Four captioned photos [figma 505:20004] */
 .rbenefits {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -2121,14 +1677,10 @@ select.field__control { cursor: pointer; }
 }
 .rbenefit { display: flex; flex-direction: column; gap: var(--s-5); align-items: center; text-align: center; }
 .rbenefit img { width: 100%; aspect-ratio: 1; object-fit: cover; }
-/* Linked benefits (a.rbenefit): the cut-out eases up a touch on hover. */
 a.rbenefit img { transition: transform 300ms var(--ease); }
 a.rbenefit:hover img, a.rbenefit:focus-visible img { transform: scale(1.04); }
 @media (prefers-reduced-motion: reduce) { a.rbenefit img { transition: none; } }
-/* [figma Republic/Title/Title 24] The same Garamond display as .rtitle, one
-   step down. --f-serif, never the literal "Garamond Premier Pro": the kit
-   registers the family under its Typekit SLUG, and the display name silently
-   falls back to Times. Centring comes from .rbenefit. */
+/* Use --f-serif, not "Garamond Premier Pro": the kit registers it by slug */
 .rbenefit h3 {
   font-family: var(--f-serif);
   font-weight: 400;
@@ -2138,12 +1690,11 @@ a.rbenefit:hover img, a.rbenefit:focus-visible img { transform: scale(1.04); }
   text-transform: uppercase;
   color: #061202;              /* near-black green, as the caption below */
 }
-/* [figma 55:3789] captions are Halyard Text Regular 15/1.4 in near-black green
-   (halyard-text is in the same Adobe kit already loaded on this page). */
+/* [figma 55:3789] Halyard Text 15/1.4, same Adobe kit */
 .rbenefit p { font-family: "halyard-text", var(--f-sans, sans-serif); font-weight: 400; font-size: var(--t-caps); line-height: 1.4; color: #061202; max-width: 24ch; }
 @media (min-width: 1024px) { .rbenefits { grid-template-columns: repeat(4, 1fr); gap: var(--s-7) 48px; } }   /* [figma] 24px row / 48px col */
 
-/* Brochure CTA — a rounded yellow card rather than a full-bleed band. [465:7915] */
+/* Brochure CTA card [figma 465:7915] */
 .rcta { padding: var(--s-10) var(--gutter); background: var(--c-paper); }
 .rcta__card {
   display: flex;
@@ -2167,13 +1718,7 @@ a.rbenefit:hover img, a.rbenefit:focus-visible img { transform: scale(1.04); }
 }
 @media (min-width: 1024px) { .rcta__card { border-radius: 80px; padding: var(--s-11); } }
 
-/* --------------------------------------------------------------------------
-   Character reveal on scroll — SplitText-style, done in vanilla. motion.js
-   splits titles/body/paragraphs into .reveal-char spans (skipping the header,
-   footer, sticky nav, the window video span and the stacking cards) and adds
-   .is-revealed when each element scrolls into view; the chars then fade + rise
-   in, staggered by --d. [ref codepen bGEqbaQ] Progressive: no JS = plain text.
-   -------------------------------------------------------------------------- */
+/* ---- Character reveal on scroll: motion.js splits text into .reveal-char; no JS = plain text ---- */
 .reveal-word { display: inline-block; white-space: nowrap; }   /* keep words whole; wrap only between them */
 .reveal-char {
   display: inline-block;

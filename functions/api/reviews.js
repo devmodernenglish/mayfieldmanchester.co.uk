@@ -1,29 +1,12 @@
-/* ==========================================================================
-   /api/reviews — Cloudflare Pages Function
-
-   The star rating for Mayfield Park, from the Google Places API (New).
-
-   Only the RATING comes from Google. The quotes in the panel are curated
-   press, not Google review text — which is deliberate: displaying review text
-   drags in per-review attribution obligations (reviewer avatar, name, profile
-   link, publication time, an explanation of ordering, no reordering). An
-   aggregate rating needs only that Google is credited, which the panel's logo
-   does.
-
-   Shares the key with the weather Function. Requires the Places API (New) to
-   be enabled on the same Google Cloud project.
-   ========================================================================== */
+/* /api/reviews: Mayfield Park's Google rating (no review text, which carries attribution rules).
+   Needs GOOGLE_MAPS_KEY or GOOGLE_WEATHER_KEY with Places API (New) enabled; optional GOOGLE_PLACE_ID. */
 
 const PLACE_QUERY = "Mayfield Park, Baring Street, Manchester M1 2PY";
 
-/* Resolved from PLACE_QUERY on 2026-09-08 and pinned here. Place IDs are the
-   one field Google exempts from its caching restrictions, so this saves a
-   billable Text Search call on every cache miss. Override with the
-   GOOGLE_PLACE_ID binding if the listing is ever re-created. */
+/* Pinned to skip a billable Text Search; Place IDs are exempt from Google's caching limits. */
 const PLACE_ID = "ChIJgYvh-9Oxe0gRqMwGbUU2AE4";
 
-/* Ratings move slowly and the Enterprise SKU is not cheap, but Places terms
-   are restrictive about caching anything except the place ID. Kept short. */
+/* Short: Places terms restrict caching anything but the place ID. */
 const TTL = 300;
 
 const json = (body, seconds) =>
@@ -34,8 +17,7 @@ const json = (body, seconds) =>
     },
   });
 
-/* Only reached if the pinned PLACE_ID above is cleared and no GOOGLE_PLACE_ID
-   binding is set — i.e. when re-resolving a moved or re-created listing. */
+/* Only used if PLACE_ID and GOOGLE_PLACE_ID are both empty. */
 async function findPlaceId(key) {
   const res = await fetch("https://places.googleapis.com/v1/places:searchText", {
     method: "POST",
@@ -56,8 +38,7 @@ async function findPlaceId(key) {
 export async function onRequest({ env, request }) {
   const q = new URL(request.url).searchParams;
 
-  /* Preview, matching the weather Function: lets the panel be reviewed with a
-     known rating, and short-circuits before any billable call. */
+  /* Preview: ?rating=4.5&count=N returns a fake rating, no API call. */
   const previewRating = parseFloat(q.get("rating"));
   if (!Number.isNaN(previewRating)) {
     return json(
@@ -77,8 +58,7 @@ export async function onRequest({ env, request }) {
       placeId = resolved.id;
     }
 
-    /* The field mask is mandatory, and it decides the SKU — asking only for
-       what is shown keeps this on the smallest bill it can be. */
+    /* Field mask is required and sets the billing SKU; keep it minimal. */
     const res = await fetch(
       `https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}`,
       {
@@ -97,8 +77,7 @@ export async function onRequest({ env, request }) {
         count: typeof d.userRatingCount === "number" ? d.userRatingCount : null,
         url: d.googleMapsUri ?? null,
         name: d.displayName?.text ?? null,
-        /* Returned so it can be pinned as GOOGLE_PLACE_ID and the search call
-           dropped for good. */
+        /* So a searched ID can be pinned as GOOGLE_PLACE_ID. */
         placeId,
         resolvedBySearch: !!resolved,
         source: "google",
@@ -106,8 +85,6 @@ export async function onRequest({ env, request }) {
       TTL
     );
   } catch (err) {
-    /* Never let a missing rating break the panel — the quotes still stand on
-       their own, and the rating simply does not appear. */
     return json({ rating: null, source: "fallback", reason: String(err.message || err) }, 60);
   }
 }

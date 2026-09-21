@@ -15,14 +15,7 @@
 </head>
 <body>
 
-<!--
-  MAYFIELD V2 — contact.  Figma: desktop 465:8181, mobile 465:11993.
-
-  An interior page: no hero, no window. The 36px bar is present from the top
-  (nav--static), the acid page-head opens the page, and the form posts to the
-  /v2/api/contact Pages Function — natively without JS, upgraded to stay on the
-  page with it. Instagram and the footer are the homepage's, unchanged.
--->
+<!-- Contact page. Figma: desktop 465:8181, mobile 465:11993 -->
 
 <!-- ================================================= NAV + MENU (static) -->
 <nav class="nav nav--static is-live" id="nav" aria-label="Primary">
@@ -88,11 +81,7 @@
     <p class="page-head__sub t-body">Get in touch using the form below so that we can direct your enquiry to the correct team</p>
   </header>
 
-  <!-- ===================================================== FORM  [465:8182]
-       Posts to the /v2/api/contact Function. `novalidate` is NOT set: without
-       JS the browser's own required/email checks are the validation, and the
-       Function re-checks server-side. The JS enhancement below intercepts to
-       keep the confirmation on the page. -->
+  <!-- ===================================================== FORM  [465:8182] posts to /v2/api/contact -->
   <section class="contact-form">
     <form class="form" id="contactForm" action="api/contact" method="post">
 
@@ -155,9 +144,7 @@
         </label>
       </div>
 
-      <!-- Honeypot: a real field, hidden from people and off the tab order. A
-           bot fills every input it sees; a submission with this set is dropped
-           server-side and still answered 200 so the bot learns nothing. -->
+      <!-- Honeypot: submissions with this filled are dropped server-side. -->
       <div class="sr-only" aria-hidden="true">
         <label>Leave this field empty<input type="text" name="website" tabindex="-1" autocomplete="off"></label>
       </div>
