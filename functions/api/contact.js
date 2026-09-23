@@ -1,7 +1,7 @@
 /* /api/contact: validates the contact form and emails it via Resend (JSON or HTML response).
    Needs secret RESEND_API_KEY; optional vars CONTACT_TO, CONTACT_FROM. */
 
-const TO_DEFAULT   = "dev@modern-english.co.uk";   /* TODO: client inbox before launch */
+const TO_DEFAULT   = "hello@mayfieldpark.com";
 const FROM_DEFAULT  = "Mayfield <noreply@web.republicofmayfield.com>";
 
 /* Required fields and labels; message is optional. */
