@@ -1519,20 +1519,13 @@ select.field__control { cursor: pointer; }
 .floors__table { padding: var(--s-9) var(--gutter); }
 .floors__head, .floor {
   display: grid;
-  grid-template-columns: 4rem 1fr 118px;   /* rem + px: head and rows are separate grids at different font sizes */
+  grid-template-columns: 4rem 1fr;
   gap: var(--s-4);
   align-items: center;
 }
 .floors__head { padding-block-end: var(--s-4); font-size: var(--t-caps); text-transform: uppercase; }
 .floor { padding-block: var(--s-4); border-block-start: 1px solid rgb(0 0 0 / 0.25); font-size: var(--t-body); }
 .floors__list > .floor:last-child { border-block-end: 1px solid rgb(0 0 0 / 0.25); }
-.floor__cap { display: inline-flex; align-items: center; gap: var(--s-2); }
-.floor__cap::before {
-  content: ""; width: 20px; height: 20px; flex: 0 0 auto;
-  background-color: currentColor;
-  -webkit-mask: url("../assets/icons/person.svg") center / contain no-repeat;
-          mask: url("../assets/icons/person.svg") center / contain no-repeat;
-}
 /* Republic is exempt from night (tokens.css) */
 [data-mode="night"]:not([data-brand="republic"]) .floor,
 [data-mode="night"]:not([data-brand="republic"]) .floors__list > .floor:last-child { border-color: rgb(255 255 255 / 0.3); }
@@ -1540,7 +1533,7 @@ select.field__control { cursor: pointer; }
   .floors { flex-direction: row; }
   .floors__img { position: relative; inset-block-start: auto; flex: 1 1 0; aspect-ratio: auto; }
   .floors__table { flex: 1 1 0; align-self: center; }
-  .floors__head, .floor { grid-template-columns: minmax(5rem, 1fr) 2fr 160px; }
+  .floors__head, .floor { grid-template-columns: minmax(5rem, 1fr) 2fr; }
 }
 
 /* ---- 31. Republic display type + hover interactions ---- */
@@ -1574,6 +1567,8 @@ select.field__control { cursor: pointer; }
   .rtitle > span:nth-child(1) { margin-inline-start: 11%; }
   .rtitle > span:nth-child(2) { margin-inline-start: 34%; }
   .rtitle > span:nth-child(3) { margin-inline-start: 45%; }
+  /* Long last line: right-align rather than wrap */
+  .rtitle--long > span:nth-child(3) { margin-inline-start: auto; }
 }
 
 /* Mobile [figma 465:11828]: 10px gutter as a border so the img keeps inset:0 cover sizing */
@@ -1598,7 +1593,12 @@ select.field__control { cursor: pointer; }
 /* [figma 465:7892] Left-aligned 600px block, not centred */
 .rpara { padding: var(--s-9) var(--gutter) var(--s-10); background: var(--c-paper); color: var(--c-ink); }
 .rpara p { width: min(100%, 600px); text-align: left; font-size: var(--t-body); line-height: var(--lh-body); }
-@media (min-width: 1024px) { .rpara { padding: 100px 100px 150px; } }
+.rpara p + p { margin-block-start: 1em; }
+.rtitle-sec:has(+ .rpara) { padding-block-end: var(--s-9); }
+@media (min-width: 1024px) { .rpara { padding: 60px 100px 100px; } }
+
+/* Republic form intro sits closer to the form */
+.rtitle-sec--form { padding-block-end: 0; }
 
 /* ---- Location list map: photo multiplied over yellow; cursor-follow on desktop ---- */
 .rlocations { position: relative; isolation: isolate; }
