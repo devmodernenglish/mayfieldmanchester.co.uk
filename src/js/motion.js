@@ -313,10 +313,21 @@
       quotes.forEach((q, n) => q.classList.toggle("is-on", n === at));
       if (count) count.textContent = `${at + 1}/${quotes.length}`;
     };
+    // Auto-advance; pauses on hover/focus, restarts after a manual click.
+    let timer;
+    const play = () => {
+      clearInterval(timer);
+      if (!reduced) timer = setInterval(() => show(at + 1), 6000);
+    };
     power.querySelectorAll("[data-power]").forEach((b) =>
-      b.addEventListener("click", () => show(at + (b.dataset.power === "next" ? 1 : -1)))
+      b.addEventListener("click", () => { show(at + (b.dataset.power === "next" ? 1 : -1)); play(); })
     );
+    power.addEventListener("mouseenter", () => clearInterval(timer));
+    power.addEventListener("mouseleave", play);
+    power.addEventListener("focusin", () => clearInterval(timer));
+    power.addEventListener("focusout", play);
     show(0);
+    play();
 
     // Solid stars are clipped by rect width so any fractional score renders exactly.
     const STAR_PITCH = 22;   /* matches the <use x=""> spacing in the markup */
