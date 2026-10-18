@@ -24,7 +24,7 @@ from PIL import Image
 import os, glob
 
 # (glob, max edge px, JPEG quality)
-JOBS = [("src/assets/img/insta-*.png", 560, 82),
+JOBS = [("src/assets/img/insta-*.jpg", 560, 82),
         ("src/assets/img/home-*.png", 1800, 84)]
 
 for pattern, cap, q in JOBS:
