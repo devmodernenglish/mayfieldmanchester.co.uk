@@ -1545,7 +1545,8 @@ select.field__control { cursor: pointer; }
 .rband__inline { display: inline-block; height: 0.6em; width: auto; margin-inline: 0.14em; transform: translateY(0.04em); }
 
 /* Large gallery [figma 834:6472 mobile / 834:6439 desktop]: full-width crossfade, count / caption / prev-next bar */
-.lgallery { display: flex; flex-direction: column; gap: var(--s-3); padding: var(--s-3) var(--s-3) var(--s-9); background: var(--c-paper); color: var(--c-ink); }
+/* Figma gaps: 80px above (mobile), 160px above / 200px below (desktop); the title below brings its own 80px */
+.lgallery { display: flex; flex-direction: column; gap: var(--s-3); padding: calc(80px + var(--s-3)) var(--s-3) var(--s-9); background: var(--c-paper); color: var(--c-ink); }
 .lgallery__stage { position: relative; aspect-ratio: 355 / 220; overflow: hidden; touch-action: pan-y; }
 .lgallery__slide { position: absolute; inset: 0; margin: 0; opacity: 0; transition: opacity 0.5s var(--ease); }
 .lgallery__slide.is-on { opacity: 1; }
@@ -1562,7 +1563,7 @@ select.field__control { cursor: pointer; }
 .lgallery__nav { grid-area: nav; display: flex; gap: 8px; }
 .lgallery__nav button { cursor: pointer; text-transform: inherit; }
 @media (min-width: 1024px) {
-  .lgallery { padding: 30px; }
+  .lgallery { padding: calc(160px + 30px) 30px calc(120px + 30px); }
   .lgallery__stage { aspect-ratio: 1220 / 605; }
   .lgallery__bar { grid-template-columns: 92px 1fr auto; grid-template-areas: "count cap nav"; }
   .lgallery__caption { justify-self: center; max-width: 600px; }
