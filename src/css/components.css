@@ -1290,6 +1290,9 @@ select.field__control { cursor: pointer; }
 .parkinfo__head { display: flex; flex-direction: column; align-items: center; gap: var(--s-6); }
 .parkinfo__title { font-weight: var(--w-xbold); font-size: clamp(44px, 9vw, 80px); line-height: var(--lh-crush); letter-spacing: -0.02em; text-transform: uppercase; }
 .parkinfo__map { width: min(100%, 816px); height: auto; border-radius: var(--radius-field); }
+.parkinfo__map--night,
+[data-mode="night"] .parkinfo__map--day { display: none; }
+[data-mode="night"] .parkinfo__map--night { display: block; }
 
 .faq { width: min(100%, 640px); display: flex; flex-direction: column; gap: 60px; padding-block-start: var(--s-9); text-align: left; }
 /* Question, answer panel, then the toggle at the bottom */
@@ -1540,6 +1543,32 @@ select.field__control { cursor: pointer; }
 
 /* The inline logo inside the intro sentence: "The [Republic] is a place…". */
 .rband__inline { display: inline-block; height: 0.6em; width: auto; margin-inline: 0.14em; transform: translateY(0.04em); }
+
+/* Large gallery [figma 834:6472 mobile / 834:6439 desktop]: full-width crossfade, count / caption / prev-next bar */
+/* Figma gaps: 80px above (mobile), 160px above / 200px below (desktop); the title below brings its own 80px */
+.lgallery { display: flex; flex-direction: column; gap: var(--s-3); padding: calc(80px + var(--s-3)) var(--s-3) var(--s-9); background: var(--c-paper); color: var(--c-ink); }
+.lgallery__stage { position: relative; aspect-ratio: 355 / 220; overflow: hidden; touch-action: pan-y; }
+.lgallery__slide { position: absolute; inset: 0; margin: 0; opacity: 0; transition: opacity 0.5s var(--ease); }
+.lgallery__slide.is-on { opacity: 1; }
+.lgallery__slide img { width: 100%; height: 100%; object-fit: cover; }
+.lgallery__bar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas: "count nav" "cap cap";
+  row-gap: var(--s-6);
+  align-items: center;
+}
+.lgallery__count { grid-area: count; }
+.lgallery__caption { grid-area: cap; text-align: center; font-size: var(--t-caps); line-height: var(--lh-body); }
+.lgallery__nav { grid-area: nav; display: flex; gap: 8px; }
+.lgallery__nav button { cursor: pointer; text-transform: inherit; }
+@media (min-width: 1024px) {
+  .lgallery { padding: calc(160px + 30px) 30px calc(120px + 30px); }
+  .lgallery__stage { aspect-ratio: 1220 / 605; }
+  .lgallery__bar { grid-template-columns: 92px 1fr auto; grid-template-areas: "count cap nav"; }
+  .lgallery__caption { justify-self: center; max-width: 600px; }
+}
+@media (prefers-reduced-motion: reduce) { .lgallery__slide { transition: none; } }
 
 /* Title block: three lines, differing alignment, one italic word */
 .rtitle-sec { padding: var(--s-11) var(--gutter); background: var(--c-paper); color: var(--c-ink); }

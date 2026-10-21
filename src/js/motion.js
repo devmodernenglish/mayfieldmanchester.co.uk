@@ -683,6 +683,31 @@
     layout();
   });
 
+  /* ---- 7b. Large gallery: crossfade with prev/next and swipe ---- */
+  document.querySelectorAll(".lgallery").forEach((lg) => {
+    const slides = [...lg.querySelectorAll(".lgallery__slide")];
+    const count = lg.querySelector(".lgallery__count");
+    const caption = lg.querySelector(".lgallery__caption");
+    let at = 0;
+    const go = (i) => {
+      at = (i + slides.length) % slides.length;
+      slides.forEach((s, n) => s.classList.toggle("is-on", n === at));
+      count.textContent = `${at + 1}/${slides.length}`;
+      caption.textContent = slides[at].dataset.caption || "";
+    };
+    lg.querySelectorAll("[data-lgal]").forEach((b) =>
+      b.addEventListener("click", () => go(at + (b.dataset.lgal === "next" ? 1 : -1)))
+    );
+    const stage = lg.querySelector(".lgallery__stage");
+    let x0 = null;
+    stage.addEventListener("pointerdown", (e) => { x0 = e.clientX; });
+    stage.addEventListener("pointerup", (e) => {
+      if (x0 !== null && Math.abs(e.clientX - x0) > 40) go(at + (e.clientX < x0 ? 1 : -1));
+      x0 = null;
+    });
+    stage.addEventListener("pointercancel", () => { x0 = null; });
+  });
+
   /* ---- 8. Republic floors: hover jumps the building sprite to that floor ---- */
   const frame = document.querySelector(".floors__frame");
   if (frame) {
