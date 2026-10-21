@@ -1721,7 +1721,7 @@ a.rbenefit:hover img, a.rbenefit:focus-visible img { transform: scale(1.04); }
   color: #061202;
 }
 .rspecs__title { font-family: var(--f-serif); font-weight: 400; font-size: 50px; line-height: 1; letter-spacing: -0.08em; text-transform: uppercase; }
-.rspecs__list { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s-9) 48px; width: 100%; margin: 0; padding: 0; list-style: none; }
+.rspecs__list { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s-9) 48px; width: min(100%, 1100px); margin: 0; padding: 0; list-style: none; }
 .rspec {
   flex: 1 1 100%;
   padding-block-start: var(--s-5);
@@ -1736,7 +1736,7 @@ a.rbenefit:hover img, a.rbenefit:focus-visible img { transform: scale(1.04); }
 @media (min-width: 1024px) {
   .rspecs { padding-block: 140px; }
   .rspecs__title { font-size: clamp(46px, 7vw, 100px); }
-  .rspec { flex-basis: calc((100% - 3 * 48px) / 4); font-size: 28px; }
+  .rspec { flex-basis: calc((100% - 2 * 48px) / 3); font-size: 28px; }
 }
 
 /* Leasing agents: benefit-card type, logo first */
