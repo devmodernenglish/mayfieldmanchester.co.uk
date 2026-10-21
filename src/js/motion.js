@@ -543,6 +543,9 @@
         .then((r) => r.json().catch(() => ({ ok: r.ok })))
         .then((d) => {
           if (d && d.ok) {
+            (window.dataLayer = window.dataLayer || []).push({
+              event: "generate_lead", form_id: form.id, company_size: form.elements.employees?.value || "",
+            });
             form.reset();
             [...form.elements].forEach((el) => { if (el.type !== "hidden") el.disabled = true; });
             if (submit) submit.hidden = true;
