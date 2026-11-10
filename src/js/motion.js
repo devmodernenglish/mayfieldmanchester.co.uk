@@ -513,6 +513,20 @@
       .catch(() => {});
   })();
 
+  /* ---- 5c. Park opening hours by month (ROM-22) ---- */
+  // Month taken in UK time; static text is the no-JS fallback.
+  (() => {
+    const el = document.querySelector("[data-park-hours]");
+    if (!el) return;
+    const HOURS = [ // Jan..Dec
+      "06:00 – 18:00", "06:00 – 18:00", "06:00 – 19:30", "06:00 – 19:30",
+      "05:00 – 21:00", "05:00 – 21:00", "05:00 – 22:00", "05:00 – 22:00",
+      "06:00 – 21:00", "06:00 – 19:30", "06:00 – 18:00", "06:00 – 18:00",
+    ];
+    const month = +new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/London", month: "numeric" }).format(new Date());
+    el.textContent = `Open every day ${HOURS[month - 1]}`;
+  })();
+
   /* ---- 6. Contact form ---- */
   // Progressive enhancement: same FormData as the native post, but asks for JSON to stay on the page.
   const form = document.getElementById("contactForm");
