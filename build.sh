@@ -9,6 +9,8 @@ rm -rf dist && mkdir -p dist
 cp ./src/*.html dist/ 2>/dev/null || true
 cp -R src/css src/js dist/ 2>/dev/null || true
 cp src/favicon.ico dist/ 2>/dev/null || true
+# Root files; 404.html also stops Pages serving the homepage for every missing path.
+cp src/robots.txt src/sitemap.xml src/llms.txt dist/
 mkdir -p dist/assets
 # All assets except img/, which is handled below.
 find src/assets -mindepth 1 -maxdepth 1 ! -name img -exec cp -R {} dist/assets/ \;
@@ -17,6 +19,7 @@ mkdir -p dist/assets/img
 
 # JPGs in img/ copy straight through; PNGs are converted below.
 cp src/assets/img/*.jpg dist/assets/img/ 2>/dev/null || true
+cp src/assets/img/*.webp dist/assets/img/ 2>/dev/null || true
 
 # Resize and convert PNGs to JPG.
 python3 - <<'PY'
