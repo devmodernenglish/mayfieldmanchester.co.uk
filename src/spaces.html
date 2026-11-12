@@ -22,13 +22,67 @@
 
     !function(e,r,a){if(!e.__Marker){e.__Marker={};var t=[],n={__cs:t};["show","hide","isVisible","capture","cancelCapture","unload","reload","isExtensionInstalled","setReporter","clearReporter","setCustomData","on","off"].forEach(function(e){n[e]=function(){var r=Array.prototype.slice.call(arguments);r.unshift(e),t.push(r)}}),e.Marker=n;var s=r.createElement("script");s.async=1,s.src="https://edge.marker.io/latest/shim.js";var i=r.getElementsByTagName("script")[0];i.parentNode.insertBefore(s,i)}}(window,document);
   </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://republicofmayfield.com/#organization",
+        "name": "Mayfield",
+        "url": "https://republicofmayfield.com/",
+        "sameAs": [
+          "https://www.instagram.com/mayfieldmanchester/"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://republicofmayfield.com/#website",
+        "url": "https://republicofmayfield.com/",
+        "name": "Mayfield",
+        "publisher": {
+          "@id": "https://republicofmayfield.com/#organization"
+        },
+        "inLanguage": "en-GB"
+      },
+      {
+        "@type": "CollectionPage",
+        "@id": "https://republicofmayfield.com/spaces#webpage",
+        "url": "https://republicofmayfield.com/spaces",
+        "name": "What’s here — Mayfield",
+        "description": "Eat, drink, dance, listen and experience Mayfield — Freight Island, Depot, the Warehouse Project, Mayfield Park and more, a stone's throw from Piccadilly.",
+        "isPartOf": {
+          "@id": "https://republicofmayfield.com/#website"
+        },
+        "inLanguage": "en-GB",
+        "breadcrumb": {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://republicofmayfield.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "What's here",
+              "item": "https://republicofmayfield.com/spaces"
+            }
+          ]
+        }
+      }
+    ]
+  }
+  </script>
 </head>
 
 <body>
 
   <!-- Spaces page. Figma: desktop 465:8156, mobile 465:11969 -->
 
-  <!-- ================================================= NAV + MENU (4 panels) -->
+  <!-- NAV + MENU (4 panels) -->
   <nav class="nav" id="nav" aria-label="Primary">
     <div class="nav__bar">
       <span class="nav__temp t-caps"><span id="navTemp"></span><span class="wx-icon"></span><span class="wx-word"
@@ -96,7 +150,7 @@
   <main id="content">
 
 
-    <!-- ================================================ HERO  [figma 465:8175] -->
+    <!-- HERO  [figma 465:8175] -->
     <header class="phero">
       <div class="phero__media">
         <video autoplay muted loop playsinline preload="metadata" poster="assets/videos/destinations-poster.jpg"
@@ -119,7 +173,7 @@
       </div>
     </header>
 
-    <!-- ================================================ INTRO  [figma 465:8157] -->
+    <!-- INTRO  [figma 465:8157] -->
     <section class="intro">
       <h2 class="intro__title">Experiences for all, just a stone&rsquo;s throw away from Mayfield Park</h2>
       <div class="intro__body">
@@ -130,7 +184,7 @@
       </div>
     </section>
 
-    <!-- =========================================== DESTINATIONS  [figma 465:8163] -->
+    <!-- DESTINATIONS  [figma 465:8163] -->
     <section class="dests" aria-label="Spaces at Mayfield">
 
       <article class="dest" data-lat="53.474743" data-lng="-2.225680">
@@ -273,7 +327,7 @@
 
     </section>
 
-    <!-- ============================================= INSTAGRAM  [230:3831] -->
+    <!-- INSTAGRAM  [230:3831] -->
     <!-- The waving flag: fixed bottom-left, parks just above the insta row. Desktop only. -->
     <div class="flag">
       <a class="flag__link" href="republic.html" aria-label="The Republic">
@@ -310,7 +364,7 @@
       </div>
     </section>
 
-    <!-- ================================================ FOOTER  [261:8674] -->
+    <!-- FOOTER  [261:8674] -->
     <footer class="foot">
       <div class="foot__top">
         <p class="foot__stamp">
