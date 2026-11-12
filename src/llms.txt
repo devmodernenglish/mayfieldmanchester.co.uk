@@ -1,0 +1,11 @@
+# Mayfield
+
+> Mayfield is a new city district in Manchester, built around Mayfield Park: the city's first new public park in over 100 years. It is home to The Republic, a 233,000 sq ft office building due to complete in early 2028.
+
+## Pages
+
+- [Home](https://republicofmayfield.com/): Overview of the Mayfield district
+- [The Republic](https://republicofmayfield.com/republic): Office space, floor sizes, specification and sustainability ratings
+- [Mayfield Park](https://republicofmayfield.com/park): The park, opening hours and FAQs
+- [What's here](https://republicofmayfield.com/spaces): Food, drink, music and venues, including Freight Island, Depot and the Warehouse Project
+- [Contact](https://republicofmayfield.com/contact): Office enquiries, events, press and general questions
