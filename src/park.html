@@ -22,13 +22,89 @@
 
     !function(e,r,a){if(!e.__Marker){e.__Marker={};var t=[],n={__cs:t};["show","hide","isVisible","capture","cancelCapture","unload","reload","isExtensionInstalled","setReporter","clearReporter","setCustomData","on","off"].forEach(function(e){n[e]=function(){var r=Array.prototype.slice.call(arguments);r.unshift(e),t.push(r)}}),e.Marker=n;var s=r.createElement("script");s.async=1,s.src="https://edge.marker.io/latest/shim.js";var i=r.getElementsByTagName("script")[0];i.parentNode.insertBefore(s,i)}}(window,document);
   </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://republicofmayfield.com/#organization",
+        "name": "Mayfield",
+        "url": "https://republicofmayfield.com/",
+        "sameAs": [
+          "https://www.instagram.com/mayfieldmanchester/"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://republicofmayfield.com/#website",
+        "url": "https://republicofmayfield.com/",
+        "name": "Mayfield",
+        "publisher": {
+          "@id": "https://republicofmayfield.com/#organization"
+        },
+        "inLanguage": "en-GB"
+      },
+      {
+        "@type": "WebPage",
+        "@id": "https://republicofmayfield.com/park#webpage",
+        "url": "https://republicofmayfield.com/park",
+        "name": "Mayfield Park — Manchester’s first new public park in 100 years",
+        "description": "Mayfield Park is Manchester's first new public park in over 100 years — 7.5 acres, 161 trees, a daylighted river and a play yard. Open every day, with hours that change through the seasons.",
+        "isPartOf": {
+          "@id": "https://republicofmayfield.com/#website"
+        },
+        "inLanguage": "en-GB",
+        "about": {
+          "@id": "https://republicofmayfield.com/park#park"
+        },
+        "breadcrumb": {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://republicofmayfield.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Mayfield Park",
+              "item": "https://republicofmayfield.com/park"
+            }
+          ]
+        }
+      },
+      {
+        "@type": "Park",
+        "@id": "https://republicofmayfield.com/park#park",
+        "name": "Mayfield Park",
+        "description": "Mayfield Park is Manchester's first new public park in over 100 years — 7.5 acres, 161 trees, a daylighted river and a play yard. Open every day, with hours that change through the seasons.",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Baring Street",
+          "addressLocality": "Manchester",
+          "postalCode": "M1 2PY",
+          "addressCountry": "GB"
+        },
+        "hasMap": "https://www.google.com/maps/search/?api=1&query=Mayfield+Park+Baring+Street+Manchester+M1+2PY",
+        "publicAccess": true,
+        "isAccessibleForFree": true,
+        "containedInPlace": {
+          "@id": "https://republicofmayfield.com/#place"
+        }
+      }
+    ]
+  }
+  </script>
 </head>
 
 <body>
 
   <!-- Park page. Figma: desktop 465:7928, mobile 465:11918. Titles are Stratos Bold in Figma (not self-hosted yet). -->
 
-  <!-- ================================================= NAV + MENU (4 panels) -->
+  <!-- NAV + MENU (4 panels) -->
   <nav class="nav" id="nav" aria-label="Primary">
     <div class="nav__bar">
       <span class="nav__temp t-caps"><span id="navTemp"></span><span class="wx-icon"></span><span class="wx-word"
@@ -96,7 +172,7 @@
   <main id="content">
 
 
-    <!-- ================================================ HERO  [figma 465:7959] -->
+    <!-- HERO  [figma 465:7959] -->
     <header class="phero phero--park">
       <div class="phero__media">
         <!-- Poster is the video's first frame. -->
@@ -134,7 +210,7 @@
       </ul>
     </header>
 
-    <!-- ================================================ INTRO  [figma 465:7929] -->
+    <!-- INTRO  [figma 465:7929] -->
     <section class="intro">
       <h2 class="intro__title">Mayfield Park is a place for all, whether you&rsquo;re here to relax, play, or explore
       </h2>
@@ -145,7 +221,7 @@
       </div>
     </section>
 
-    <!-- ============================================== GALLERY  [figma 496:18061] -->
+    <!-- GALLERY  [figma 496:18061] -->
     <section class="gallery" id="parkGallery" aria-label="Mayfield Park gallery">
       <div class="gallery__stage">
         <figure class="gallery__slide"><img src="assets/park/park-carousel-1.jpg" alt="Mayfield Park" loading="lazy"
@@ -170,7 +246,7 @@
       </div>
     </section>
 
-    <!-- ======================================= RATINGS (power, on white)  [505:18519] -->
+    <!-- RATINGS (power, on white)  [505:18519] -->
     <section class="power power--plain" id="power">
       <div class="power__rating" id="powerRating">
         <span class="power__google">Google</span>
@@ -228,7 +304,7 @@
       </div>
     </section>
 
-    <!-- ================================================ PRESS  [figma 517:20584] -->
+    <!-- PRESS  [figma 517:20584] -->
     <section class="press" aria-label="Mayfield in the press">
       <article class="press__card">
         <div class="press__img"><img src="assets/park/press-4.jpg" alt="" loading="lazy" decoding="async"></div>
@@ -271,7 +347,7 @@
       </article>
     </section>
 
-    <!-- ========================================== PARK INFO + FAQ  [figma 465:7935] -->
+    <!-- PARK INFO + FAQ  [figma 465:7935] -->
     <section class="parkinfo">
       <div class="parkinfo__head">
         <h2 class="parkinfo__title">Park info</h2>
@@ -442,7 +518,7 @@
       </div>
     </section>
 
-    <!-- ============================================= INSTAGRAM  [230:3831] -->
+    <!-- INSTAGRAM  [230:3831] -->
     <!-- The waving flag: fixed bottom-left, parks just above the insta row. Desktop only. -->
     <div class="flag">
       <a class="flag__link" href="republic.html" aria-label="The Republic">
@@ -479,7 +555,7 @@
       </div>
     </section>
 
-    <!-- ================================================ FOOTER  [261:8674] -->
+    <!-- FOOTER  [261:8674] -->
     <footer class="foot">
       <div class="foot__top">
         <p class="foot__stamp">

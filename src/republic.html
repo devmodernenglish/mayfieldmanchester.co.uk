@@ -28,13 +28,79 @@
 
     !function(e,r,a){if(!e.__Marker){e.__Marker={};var t=[],n={__cs:t};["show","hide","isVisible","capture","cancelCapture","unload","reload","isExtensionInstalled","setReporter","clearReporter","setCustomData","on","off"].forEach(function(e){n[e]=function(){var r=Array.prototype.slice.call(arguments);r.unshift(e),t.push(r)}}),e.Marker=n;var s=r.createElement("script");s.async=1,s.src="https://edge.marker.io/latest/shim.js";var i=r.getElementsByTagName("script")[0];i.parentNode.insertBefore(s,i)}}(window,document);
   </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://republicofmayfield.com/#organization",
+        "name": "Mayfield",
+        "url": "https://republicofmayfield.com/",
+        "sameAs": [
+          "https://www.instagram.com/mayfieldmanchester/"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://republicofmayfield.com/#website",
+        "url": "https://republicofmayfield.com/",
+        "name": "Mayfield",
+        "publisher": {
+          "@id": "https://republicofmayfield.com/#organization"
+        },
+        "inLanguage": "en-GB"
+      },
+      {
+        "@type": "WebPage",
+        "@id": "https://republicofmayfield.com/republic#webpage",
+        "url": "https://republicofmayfield.com/republic",
+        "name": "The Republic — Work surrounded by nature at Mayfield",
+        "description": "The Republic is Mayfield's first office building — a sustainable, future-focused workspace set within Manchester's first new public park in 100 years.",
+        "isPartOf": {
+          "@id": "https://republicofmayfield.com/#website"
+        },
+        "inLanguage": "en-GB",
+        "about": {
+          "@id": "https://republicofmayfield.com/republic#building"
+        },
+        "breadcrumb": {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://republicofmayfield.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "The Republic",
+              "item": "https://republicofmayfield.com/republic"
+            }
+          ]
+        }
+      },
+      {
+        "@type": "Place",
+        "@id": "https://republicofmayfield.com/republic#building",
+        "name": "The Republic",
+        "description": "The Republic is Mayfield's first office building — a sustainable, future-focused workspace set within Manchester's first new public park in 100 years.",
+        "containedInPlace": {
+          "@id": "https://republicofmayfield.com/#place"
+        }
+      }
+    ]
+  }
+  </script>
 </head>
 
 <body>
 
   <!-- Republic page. Figma: desktop 465:7870, mobile 465:11823 -->
 
-  <!-- ================================================= NAV + MENU (4 panels) -->
+  <!-- NAV + MENU (4 panels) -->
   <nav class="nav" id="nav" aria-label="Primary">
     <div class="nav__bar">
       <span class="nav__temp t-caps"><span id="navTemp"></span><span class="wx-icon"></span><span class="wx-word"
@@ -101,7 +167,7 @@
 
   <main id="content">
 
-    <!-- ================================================ HERO  [figma 465:7922] -->
+    <!-- HERO  [figma 465:7922] -->
     <header class="rhero phero">
       <!-- Poster is the original hero still. -->
       <video class="rhero__bg" autoplay muted loop playsinline preload="metadata" poster="assets/republic/hero.jpg"
@@ -120,7 +186,7 @@
       </div>
     </header>
 
-    <!-- ================================================ INTRO  [figma 465:7871] -->
+    <!-- INTRO  [figma 465:7871] -->
     <section class="rband rband--brand">
 
       <h3>Republic of Mayfield</h3>
@@ -136,7 +202,7 @@
               class="btn__arrow"></span></span></span></a>
     </section>
 
-    <!-- ============================== TITLE BLOCK (over feature image)  [465:7877] -->
+    <!-- TITLE BLOCK (over feature image)  [465:7877] -->
     <section class="rtitle-sec rtitle-sec--image">
       <img class="rtitle-sec__bg" src="assets/republic/republic-inset-image-2.jpg" alt="" loading="lazy"
         decoding="async">
@@ -146,14 +212,14 @@
       </h2>
     </section>
 
-    <!-- ====================================== HERO PARAGRAPH  [figma 465:7892] -->
+    <!-- HERO PARAGRAPH  [figma 465:7892] -->
     <section class="rpara">
       <p>In the heart of Mayfield Park, Republic puts you at the centre of
         everything. Connected to Piccadilly, the city and beyond. Surrounded by culture, innovation, business and ideas
         as part of everything growing at Mayfield.</p>
     </section>
 
-    <!-- =========================================== LOCATION LIST  [figma 465:7886] -->
+    <!-- LOCATION LIST  [figma 465:7886] -->
     <section class="rlocations" aria-label="Getting here">
       <div class="rloc"><span class="rloc__name">MCR Piccadilly</span>
         <span class="rloc__map"><img src="assets/republic/loc-piccadilly.jpg" alt="" loading="lazy"></span>
@@ -177,7 +243,7 @@
       </div>
     </section>
 
-    <!-- ========================================= LARGE GALLERY  [figma 834:6439 / 834:6472] -->
+    <!-- LARGE GALLERY  [figma 834:6439 / 834:6472] -->
     <section class="lgallery" aria-label="The Republic CGIs" aria-roledescription="carousel">
       <div class="lgallery__stage">
         <figure class="lgallery__slide is-on" data-caption="Main entrance to The Republic">
@@ -203,7 +269,7 @@
       </div>
     </section>
 
-    <!-- ================================================ TITLE BLOCK  [465:7900] -->
+    <!-- TITLE BLOCK  [465:7900] -->
     <section class="rtitle-sec">
       <h2 class="rtitle"><span>THE OFFICE</span> <span>ISN'T <em>ENOUGH</em></span> <span>ANYMORE</span></h2>
     </section>
@@ -214,7 +280,7 @@
         progress is measured in more than concrete. And where work gives more than it takes.</p>
     </section>
 
-    <!-- ========================================= BENEFIT PANELS  [figma 214:2088] -->
+    <!-- BENEFIT PANELS  [figma 214:2088] -->
     <section class="bpanels" aria-label="Why work at the Republic">
       <div class="bpanels__pin">
         <article class="bpanel">
@@ -255,7 +321,7 @@
       </div>
     </section>
 
-    <!-- ============================================ BENEFITS  [figma 505:20004] -->
+    <!-- BENEFITS  [figma 505:20004] -->
     <section class="rbenefits" aria-label="On your doorstep">
       <a class="rbenefit" href="park.html">
         <img src="assets/republic/ben-1.png" alt="" loading="lazy" decoding="async">
@@ -279,7 +345,7 @@
       </a>
     </section>
 
-    <!-- ================================================ TITLE BLOCK  [505:18387] -->
+    <!-- TITLE BLOCK  [505:18387] -->
     <section class="rtitle-sec">
       <h2 class="rtitle"><span>The future of work</span> <span>is <em>growing</em></span> <span>at Mayfield</span></h2>
     </section>
@@ -289,7 +355,7 @@
         height of modern construction and has the sustainability credentials to match.</p>
     </section>
 
-    <!-- ============================================== GALLERY  [figma 505:18377] -->
+    <!-- GALLERY  [figma 505:18377] -->
     <section class="gallery" id="repGallery" aria-label="The Republic gallery">
       <div class="gallery__stage">
         <figure class="gallery__slide"><img src="assets/republic/gallery-3.jpg" alt="" loading="lazy" decoding="async">
@@ -310,7 +376,7 @@
       </div>
     </section>
 
-    <!-- ================================================ TITLE BLOCK  [465:7911] -->
+    <!-- TITLE BLOCK  [465:7911] -->
     <section class="rtitle-sec">
       <h2 class="rtitle"><span>Find space</span><span>To <em>Breathe</em></span></h2>
     </section>
@@ -322,7 +388,7 @@
         basis.</p>
     </section>
 
-    <!-- ================================================ FLOORS  [figma 465:7910] hover/tap shows that floor from the sprite -->
+    <!-- FLOORS  [figma 465:7910] hover/tap shows that floor from the sprite -->
     <section class="floors" aria-label="Floor availability">
       <div class="floors__img"><img src="assets/republic/floors-bg.jpg" alt="" loading="lazy" decoding="async">
         <div class="floors__frame" role="img" aria-label="The Republic building, highlighting the selected floor"></div>
@@ -360,7 +426,7 @@
       </div>
     </section>
 
-    <!-- ================================================ BUILDING SPEC -->
+    <!-- BUILDING SPEC -->
     <section class="rspecs" aria-labelledby="rspecsTitle">
       <h2 class="rspecs__title" id="rspecsTitle">Specification</h2>
       <ul class="rspecs__list">
@@ -384,7 +450,7 @@
       </ul>
     </section>
 
-    <!-- ================================= BROCHURE CTA  [figma 465:7915] 
+    <!-- BROCHURE CTA  [figma 465:7915] 
     <section class="rcta" id="brochure">
       <div class="rcta__card">
         <img class="rband__logo" src="assets/logos/republic-dark.svg" alt="The Republic" width="138" height="47">
@@ -396,7 +462,7 @@
       </div>
     </section>-->
 
-    <!-- ===================================== APPLICATION TITLE + FORM  [465:7912/7902] -->
+    <!-- APPLICATION TITLE + FORM  [465:7912/7902] -->
     <section class="rtitle-sec rtitle-sec--form" style="display:flex;flex-direction:column;gap:var(--s-8)">
       <h2 class="rtitle"><span>Get in</span><span>Touch</span></h2>
       <p class="rband__text t-body" style="text-align:center;max-width:600px;margin-inline:auto">Want to be the first
@@ -443,7 +509,7 @@
       </form>
     </section>
 
-    <!-- ============================================= AGENTS -->
+    <!-- AGENTS -->
     <section class="ragents" aria-label="Leasing agents">
       <article class="ragent">
         <span class="ragent__logo ragent__logo--landsec" role="img" aria-label="Landsec"></span>
@@ -482,7 +548,7 @@
       </article>
     </section>
 
-    <!-- ============================================= INSTAGRAM  [230:3831] -->
+    <!-- INSTAGRAM  [230:3831] -->
     <section class="insta" id="insta">
       <div class="insta__text">
         <div class="insta__head">
@@ -512,7 +578,7 @@
       </div>
     </section>
 
-    <!-- ================================================ FOOTER  [261:8674] -->
+    <!-- FOOTER  [261:8674] -->
     <footer class="foot">
       <div class="foot__top">
         <p class="foot__stamp">

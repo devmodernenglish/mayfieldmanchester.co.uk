@@ -59,5 +59,21 @@ for p in glob.glob('dist/*.html'):
         f.write(s)
 PY
 
+# Source comments are for developers; strip them from what ships.
+python3 - <<'PY'
+import glob, re
+def rewrite(pattern, fn):
+    for p in glob.glob(pattern):
+        with open(p) as f:
+            s = f.read()
+        with open(p, 'w') as f:
+            f.write(fn(s))
+rewrite('dist/*.html', lambda s: re.sub(r'\n?[ \t]*<!--[\s\S]*?-->', '', s))
+rewrite('dist/css/*.css', lambda s: re.sub(r'\n?[ \t]*/\*[\s\S]*?\*/', '', s))
+# JS: whole-line and trailing /* */ comments only, so strings and URLs are never touched
+rewrite('dist/js/*.js', lambda s: re.sub(r'(?m)[ \t]+/\*[^*\n]*\*/[ \t]*$', '',
+                                         re.sub(r'(?m)^[ \t]*(//.*|/\*[\s\S]*?\*/)[ \t]*\n', '', s)))
+PY
+
 find dist -name '.DS_Store' -delete
 echo "built dist — $(du -sh dist | cut -f1), $(find dist -type f | wc -l | tr -d ' ') files"
