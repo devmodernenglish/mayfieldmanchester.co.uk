@@ -990,6 +990,18 @@
     rollLabel(btn);
   }
 
+  /* ---- 13b. In-page links glide (ROM-23) ---- */
+  // Per link, not html { scroll-behavior }, so the scroll-driven sections keep instant scrolling.
+  for (const a of document.querySelectorAll('a[href^="#"]')) {
+    const target = a.hash.length > 1 && document.getElementById(a.hash.slice(1));
+    if (!target) continue;
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
+      history.replaceState(null, "", a.hash);
+    });
+  }
+
   /* ---- 14. Animated favicon ---- */
   // Only Firefox animates GIF favicons, so step sprite frames manually. Safari ignores changes after load.
   const iconLink = document.querySelector('link[rel="icon"][data-anim]');
