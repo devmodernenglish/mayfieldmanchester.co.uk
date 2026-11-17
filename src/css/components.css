@@ -1526,8 +1526,6 @@ select.field__control { cursor: pointer; }
   gap: var(--s-4);
   align-items: center;
 }
-/* [ROM-5] sq ft only on phones; desktop adds m² */
-.floor__m { display: none; }
 /* Plan link: arrow mask rolls on hover, like .dest__icon */
 .floor__plan { display: grid; width: 32px; aspect-ratio: 1; overflow: hidden; color: inherit; }
 .floor__plan::before,
@@ -1553,8 +1551,7 @@ select.field__control { cursor: pointer; }
   .floors { flex-direction: row; }
   .floors__img { position: relative; inset-block-start: auto; flex: 1 1 0; aspect-ratio: auto; }
   .floors__table { flex: 1 1 0; align-self: center; }
-  .floors__head, .floor { grid-template-columns: minmax(5rem, 0.8fr) 1.6fr 1.3fr 32px; }
-  .floor__m { display: inline; }
+  .floors__head, .floor { grid-template-columns: minmax(5rem, 1fr) 1fr 1fr 32px; }
 }
 
 /* ---- 31. Republic display type + hover interactions ---- */
