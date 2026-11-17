@@ -1522,14 +1522,16 @@ select.field__control { cursor: pointer; }
 .floors__table { padding: var(--s-9) var(--gutter); }
 .floors__head, .floor {
   display: grid;
-  grid-template-columns: 4.75rem 1fr 1fr 32px;
+  grid-template-columns: 4.75rem 1fr 1fr 4.5rem;
   gap: var(--s-4);
   align-items: center;
 }
-/* Plan link: arrow mask rolls on hover, like .dest__icon */
-.floor__plan { display: grid; width: 32px; aspect-ratio: 1; overflow: hidden; color: inherit; }
-.floor__plan::before,
-.floor__plan::after {
+/* Plan link: "View" + arrow; the arrow mask rolls on hover, like .dest__icon */
+.floor__plan { display: inline-flex; align-items: center; gap: var(--s-2); justify-self: end; color: inherit;
+  font-size: var(--t-caps); line-height: var(--lh-flat); text-transform: uppercase; }
+.floor__plan i { display: grid; width: 24px; aspect-ratio: 1; overflow: hidden; }
+.floor__plan i::before,
+.floor__plan i::after {
   content: "";
   grid-area: 1 / 1;
   background: currentColor;
@@ -1537,10 +1539,53 @@ select.field__control { cursor: pointer; }
           mask: url("../assets/icons/arrow-right.svg") center / 24px 24px no-repeat;
   transition: transform var(--dur-roll) var(--ease-roll);
 }
-.floor__plan::after { transform: translateY(100%); }
-.floor:hover .floor__plan::before, .floor__plan:focus-visible::before { transform: translateY(-100%); }
-.floor:hover .floor__plan::after, .floor__plan:focus-visible::after { transform: translateY(0); }
-@media (prefers-reduced-motion: reduce) { .floor__plan::before, .floor__plan::after { transition: none; } }
+.floor__plan i::after { transform: translateY(100%); }
+.floor:hover .floor__plan i::before, .floor__plan:focus-visible i::before { transform: translateY(-100%); }
+.floor:hover .floor__plan i::after, .floor__plan:focus-visible i::after { transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) { .floor__plan i::before, .floor__plan i::after { transition: none; } }
+
+/* Floor plan modal [ROM-5]: full screen on phones, framed on desktop */
+.plan {
+  width: 100%; max-width: none; height: 100%; max-height: none; margin: 0; padding: var(--s-5) var(--gutter);
+  border: 0; background: var(--c-paper); color: var(--c-ink);
+}
+.plan[open] { display: flex; flex-direction: column; gap: var(--s-5); }
+.plan:focus { outline: none; }
+.plan::backdrop { background: rgb(0 0 0 / 0.85); }
+.plan__bar, .plan__foot { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-4); }
+.plan__title { margin-inline-end: auto; }
+.plan__layouts { display: flex; gap: var(--s-2); order: 3; flex-basis: 100%; }   /* own row on phones */
+.plan__layouts[hidden] { display: none; }
+.plan__layouts button {
+  padding: var(--s-2) var(--s-4); border: var(--border-btn) solid currentColor; border-radius: var(--radius-btn);
+  font-size: var(--t-caps); line-height: var(--lh-flat); text-transform: uppercase; cursor: pointer;
+}
+.plan__layouts button[hidden] { display: none; }
+.plan__layouts button[aria-pressed="true"] { background: var(--c-republic); border-color: var(--c-republic); color: #061202; }
+.plan__close, .plan__nav button { width: 44px; aspect-ratio: 1; cursor: pointer; background: currentColor; }
+.plan__close {
+  order: 2;
+  -webkit-mask: linear-gradient(45deg, transparent 47%, #000 47% 53%, transparent 53%) center / 24px 24px no-repeat,
+                linear-gradient(-45deg, transparent 47%, #000 47% 53%, transparent 53%) center / 24px 24px no-repeat;
+          mask: linear-gradient(45deg, transparent 47%, #000 47% 53%, transparent 53%) center / 24px 24px no-repeat,
+                linear-gradient(-45deg, transparent 47%, #000 47% 53%, transparent 53%) center / 24px 24px no-repeat;
+}
+.plan__img { flex: 1 1 0; min-height: 0; width: 100%; object-fit: contain; }
+.plan__foot { justify-content: space-between; }
+.plan__nav { display: flex; gap: var(--s-2); }
+.plan__nav button {
+  -webkit-mask: url("../assets/icons/arrow-right.svg") center / 24px 24px no-repeat;
+          mask: url("../assets/icons/arrow-right.svg") center / 24px 24px no-repeat;
+}
+.plan__nav [data-step="-1"] { rotate: 180deg; }
+.plan__nav button:disabled { opacity: 0.25; cursor: default; }
+html:has(.plan[open]) { overflow: hidden; }
+@media (min-width: 1024px) {
+  .plan { width: min(1400px, 100vw - 2 * var(--gutter)); height: min(900px, 100vh - 2 * var(--gutter));
+    margin: auto; padding: var(--s-6); }
+  .plan__layouts { order: 2; flex-basis: auto; }
+  .plan__close { order: 3; }
+}
 .floors__head { padding-block-end: var(--s-4); font-size: var(--t-caps); text-transform: uppercase; }
 .floor { padding-block: var(--s-4); border-block-start: 1px solid rgb(0 0 0 / 0.25); font-size: var(--t-body); }
 .floors__list > .floor:last-child { border-block-end: 1px solid rgb(0 0 0 / 0.25); }
@@ -1551,7 +1596,7 @@ select.field__control { cursor: pointer; }
   .floors { flex-direction: row; }
   .floors__img { position: relative; inset-block-start: auto; flex: 1 1 0; aspect-ratio: auto; }
   .floors__table { flex: 1 1 0; align-self: center; }
-  .floors__head, .floor { grid-template-columns: minmax(5rem, 1fr) 1fr 1fr 32px; }
+  .floors__head, .floor { grid-template-columns: minmax(5rem, 1fr) 1fr 1fr 4.5rem; }
 }
 
 /* ---- 31. Republic display type + hover interactions ---- */
