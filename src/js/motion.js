@@ -743,7 +743,7 @@
   }
 
   /* ---- 8b. Floor plan modal (ROM-5): A empty, B 1:10, C 1:14 ---- */
-  // Links fall back to the A PDF without JS; the chosen layout carries across floors where it exists.
+  // Links fall back to the A PDF without JS.
   const plan = document.getElementById("planModal");
   if (plan && plan.showModal) {
     const links = [...document.querySelectorAll(".floor__plan[data-plan]")];
@@ -752,7 +752,6 @@
     const pdf = plan.querySelector(".plan__pdf");
     const group = plan.querySelector(".plan__layouts");
     const toggles = [...group.querySelectorAll("[data-layout]")];
-    const [prev, next] = plan.querySelectorAll("[data-step]");
     const file = (slug, l, ext) => `assets/republic/plans/republic-floor-${slug}-${l}.${ext}`;
     const layoutsOf = (a) => (a.dataset.layouts || "a").split(",");
     let i = 0, layout = "a";
@@ -770,12 +769,6 @@
         t.hidden = !have.includes(t.dataset.layout);
         t.setAttribute("aria-pressed", t.dataset.layout === layout);
       });
-      prev.disabled = i === 0;
-      next.disabled = i === links.length - 1;
-      // Warm the neighbours so the arrows feel instant
-      [links[i - 1], links[i + 1]].forEach((n) => {
-        if (n) new Image().src = file(n.dataset.plan, layoutsOf(n).includes(layout) ? layout : "a", "webp");
-      });
     };
     const open = (n) => { i = n; layout = "a"; show(); plan.showModal(); plan.focus(); };   // no ring on the first toggle
 
@@ -785,25 +778,11 @@
       links.forEach((a, n) => a.closest(".floor").addEventListener("click", (e) => { if (!e.target.closest("a")) open(n); }));
     }
     toggles.forEach((t) => t.addEventListener("click", () => { layout = t.dataset.layout; show(); }));
-    [prev, next].forEach((b) => b.addEventListener("click", () => { i += +b.dataset.step; show(); }));
     plan.querySelector(".plan__close").addEventListener("click", () => plan.close());
     plan.addEventListener("click", (e) => {   // backdrop only; keyboard clicks report 0,0 so check the target too
       if (e.target !== plan) return;
       const r = plan.getBoundingClientRect();
       if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) plan.close();
-    });
-    plan.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowLeft" && !prev.disabled) prev.click();
-      if (e.key === "ArrowRight" && !next.disabled) next.click();
-    });
-    let x0 = null;
-    img.addEventListener("touchstart", (e) => { x0 = e.touches.length === 1 ? e.touches[0].clientX : null; }, { passive: true });
-    img.addEventListener("touchend", (e) => {
-      if (x0 === null) return;
-      const dx = e.changedTouches[0].clientX - x0;
-      const b = dx < 0 ? next : prev;
-      if (Math.abs(dx) > 50 && !b.disabled) b.click();
-      x0 = null;
     });
   }
 
