@@ -59,6 +59,21 @@ for p in glob.glob('dist/*.html'):
         f.write(s)
 PY
 
+# Floor plan layouts (a/b/c) come from whichever images are in the plans folder.
+python3 - <<'PY'
+import glob, os, re
+have = {}
+for f in glob.glob('dist/assets/republic/plans/republic-floor-*.webp'):
+    slug, layout = re.match(r'republic-floor-(.+)-([a-z])\.webp', os.path.basename(f)).groups()
+    have.setdefault(slug, []).append(layout)
+p = 'dist/republic.html'
+with open(p) as f:
+    s = f.read()
+s = re.sub(r'data-plan="([^"]+)"', lambda m: f'{m.group(0)} data-layouts="{",".join(sorted(have.get(m.group(1), ["a"])))}"', s)
+with open(p, 'w') as f:
+    f.write(s)
+PY
+
 # Source comments are for developers; strip them from what ships.
 python3 - <<'PY'
 import glob, re
