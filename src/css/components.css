@@ -1384,6 +1384,16 @@ select.field__control { cursor: pointer; }
 }
 .rhero__portrait { width: min(74vw, 420px); aspect-ratio: 517 / 591; }
 .rhero__portrait img { width: 100%; height: 100%; object-fit: cover; }
+/* [ROM-23] Bottom-centre, mirroring the logo */
+.rhero__cta {
+  position: absolute;
+  inset-block-end: var(--s-8);
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  color: var(--c-republic);
+}
+#contact { scroll-margin-block-start: var(--nav-h); }
 
 /* ---- 26. Republic display serif + centred bands [figma Title 80] ---- */
 .r-title {
